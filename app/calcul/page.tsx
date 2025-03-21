@@ -167,7 +167,7 @@ export default function CalculPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen flex flex-col items-center justify-center bg-beige dark:bg-beigeDark text-white transition-colors px-4">
-  <div className="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+      <div className="w-full max-w-md p-6 bg-beige dark:bg-beigeDark rounded-lg shadow-lg">
     {/* 여기에 내부 컨텐츠를 추가 */}
           
           <BudgetHeader userId={userId} />
