@@ -1,6 +1,17 @@
 "use client";
+interface Budget {
+  userId: string;
+  year: string;
+  month: string;
+  생활비: number;
+  적금: number;
+  투자: number;
+  가족: number;
+}
 
-export default function BudgetComparisonTable({ userBudgets }: { userBudgets: any[] }) {
+
+
+export default function BudgetComparisonTable({ userBudgets }: { userBudgets: Budget[]  }) {
   if (userBudgets.length === 0) return null; // 데이터가 없으면 표시하지 않음
 
   return (
