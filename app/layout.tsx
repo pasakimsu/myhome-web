@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";  // globals.css를 가져옴
+import "./globals.css";  // 이미 설정된 globals.css 가져오기
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,9 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   useEffect(() => {
-    // 페이지 로드 시 바로 다크모드 적용
+    // 페이지 로드시 바로 다크모드 적용
     document.documentElement.classList.add("dark");
-  }, []);  // 페이지 로드시 다크모드 적용
+  }, []);  // 다크모드를 페이지 로드시 바로 적용
 
   return (
     <html lang="en">

@@ -37,16 +37,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-beige dark:bg-beigeDark px-4 transition-colors">
-      {/* ✅ 다크모드 토글 버튼 */}
-      <button
-        onClick={() => {
-          document.documentElement.classList.toggle("dark");
-        }}
-        className="fixed top-4 right-4 p-2 text-sm bg-camel text-white rounded shadow-md"
-      >
-        🌗 다크모드
-      </button>
-
       <div className="bg-cream dark:bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md transition-colors">
         <h2 className="text-2xl font-bold mb-6 text-center text-darkText dark:text-white">로그인</h2>
 
