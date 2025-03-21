@@ -166,12 +166,10 @@ export default function CalculPage() {
 
   return (
     <ProtectedRoute>
-      <div
-        className="flex flex-col items-center justify-center min-h-screen text-white"
-        style={{ backgroundColor: "#1F2937" }} 
-      >
-        <div className="min-h-screen flex items-center justify-center bg-beigeDark px-4 transition-colors">
-        <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-beige dark:bg-beigeDark text-white transition-colors px-4">
+  <div className="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+    {/* 여기에 내부 컨텐츠를 추가 */}
+          
           <BudgetHeader userId={userId} />
           <BudgetDateSelector
             year={year}
