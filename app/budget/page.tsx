@@ -51,17 +51,20 @@ export default function BudgetHomePage() {
   <button
     onClick={() => router.push("/budget/donations")}
     className="w-20 h-20 rounded-full text-white text-2xl
-             bg-gradient-to-b from-[#e6d5bd] to-[#bfa683]
-             shadow-[0px_6px_12px_rgba(0,0,0,0.5), inset_0px_-3px_6px_rgba(255,255,255,0.3)]
-             hover:brightness-110 hover:translate-y-[2px]
-             active:shadow-[inset_0px_4px_8px_rgba(0,0,0,0.5), inset_0px_-3px_6px_rgba(255,255,255,0.3)]
-             active:translate-y-[3px]
-             transition-all duration-200 ease-in-out
-             flex items-center justify-center"
-             >
+    bg-gradient-to-b from-[#f5e6c8] to-[#c2a679]
+    shadow-[0px_8px_14px_rgba(0,0,0,0.5)]
+    hover:translate-y-[1px] hover:shadow-[0px_6px_10px_rgba(0,0,0,0.6)]
+    active:translate-y-[3px] active:shadow-[0px_2px_5px_rgba(0,0,0,0.7)]
+    transition-all duration-300 ease-in-out
+    flex items-center justify-center">
+
     📁
   </button>
 </div>
+{/* 🧪 디버그 버튼 (Tailwind 적용 테스트) */}
+<button className="w-20 h-20 rounded-full bg-red-600 text-white text-2xl flex items-center justify-center">
+  🧪
+</button>
 
       </div>
     </div>
