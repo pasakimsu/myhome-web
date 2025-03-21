@@ -6,13 +6,14 @@ export default function ThemeToggleButton() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
+    // 페이지 로드 시 다크모드 상태 확인
     const isDarkMode = document.documentElement.classList.contains("dark");
     setIsDark(isDarkMode);
   }, []);
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle("dark");
-    setIsDark((prev) => !prev);
+    setIsDark((prev) => !prev); // 토글 상태 변경
   };
 
   return (
