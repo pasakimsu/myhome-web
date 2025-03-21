@@ -1,8 +1,5 @@
-"use client";  // 클라이언트 컴포넌트로 지정
-
-import { useEffect } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";  // 이미 설정된 globals.css 가져오기
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,16 +13,9 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  useEffect(() => {
-    // 페이지 로드시 바로 다크모드 적용
-    document.documentElement.classList.add("dark");
-  }, []);  // 다크모드를 페이지 로드시 바로 적용
-
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="ko" className="dark"> {/* ✅ 여기에 class="dark" 추가 */}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>

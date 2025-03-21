@@ -1,16 +1,13 @@
 /* app/globals.css */
 
-/* Tailwind 기본 스타일 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 다크모드만 적용 */
 html {
-  @apply bg-beigeDark text-white; /* 기본 다크모드 색상 */
+  @apply bg-beigeDark text-white;
 }
 
-/* 다크모드 추가적인 스타일링 (필요시 더 추가 가능) */
 body {
-  @apply font-sans antialiased transition-colors;
+  @apply font-sans antialiased;
 }
