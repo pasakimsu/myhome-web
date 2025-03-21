@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import DarkModeLayoutWrapper from "../components/DarkModeLayoutWrapper";
+import ThemeToggleButton from "../components/ThemeToggleButton"; // 추가
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,9 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <DarkModeLayoutWrapper>
-          {children}
-        </DarkModeLayoutWrapper>
+        <ThemeToggleButton /> {/* 다크모드 토글 버튼 */}
+        {children}
       </body>
     </html>
   );
