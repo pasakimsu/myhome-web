@@ -170,7 +170,8 @@ export default function CalculPage() {
         className="flex flex-col items-center justify-center min-h-screen text-white"
         style={{ backgroundColor: "#1F2937" }} 
       >
-        <div className="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+        <div className="min-h-screen flex items-center justify-center bg-beigeDark px-4 transition-colors">
+        <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
           <BudgetHeader userId={userId} />
           <BudgetDateSelector
             year={year}
