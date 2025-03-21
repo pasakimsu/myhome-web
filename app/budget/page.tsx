@@ -52,7 +52,7 @@ export default function BudgetHomePage() {
     onClick={() => router.push("/budget/donations")}
     className="w-20 h-20 rounded-full text-white text-2xl
              bg-gradient-to-b from-[#f8e7cd] to-[#c2a67d]
-             shadow-[0_50x_100px_rgba(0,0,0,0.5)]
+             shadow-[0_50px_100px_rgba(0,0,0,0.5)]
              hover:translate-y-[2px] hover:shadow-[0_6px_12px_rgba(0,0,0,0.5)]
              active:translate-y-[4px] active:shadow-[0_2px_5px_rgba(0,0,0,0.6)]
              transition-all duration-200 ease-in-out
