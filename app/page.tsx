@@ -20,7 +20,11 @@ export default function LoginPage() {
 
     try {
       const usersRef = collection(db, "users");
-      const q = query(usersRef, where("userId", "==", userId), where("password", "==", password));
+      const q = query(
+        usersRef,
+        where("userId", "==", userId),
+        where("password", "==", password)
+      );
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
@@ -37,10 +41,17 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-beige dark:bg-beigeDark px-4 transition-colors">
-      <div className="bg-cream dark:bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md transition-colors">
-        <h2 className="text-2xl font-bold mb-6 text-center text-darkText dark:text-white">로그인</h2>
-             
-             
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleLogin(); // ✅ Enter 키 또는 버튼 클릭 시 실행됨
+        }}
+        className="bg-cream dark:bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md transition-colors"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center text-darkText dark:text-white">
+          로그인
+        </h2>
+
         <input
           type="text"
           placeholder="아이디"
@@ -59,12 +70,12 @@ export default function LoginPage() {
         {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
 
         <button
-  type="submit"
-  className="w-full bg-beigeLight text-darkText font-semibold py-3 px-4 rounded-md shadow hover:brightness-105 active:scale-95 transition duration-150"
->
+          type="submit"
+          className="w-full bg-beigeLight text-darkText font-semibold py-3 px-4 rounded-md shadow hover:brightness-105 active:scale-95 transition duration-150"
+        >
           로그인
         </button>
-      </div>
+      </form>
     </div>
   );
 }
