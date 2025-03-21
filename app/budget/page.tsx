@@ -41,9 +41,8 @@ export default function BudgetHomePage() {
 
  
 
-    
 </div>
-
+</div>
 
       </div>
     </div>
