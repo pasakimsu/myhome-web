@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { db, doc, setDoc, getDocs, collection } from "@/lib/firebase";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import BudgetHeader from "./components/BudgetHeader";
 import BudgetInput from "./components/BudgetInput";
-import BudgetSummary from "./components/BudgetSummary";
 import BudgetDateSelector from "./components/BudgetDateSelector";
+import BudgetSummary from "./components/BudgetSummary";
 import BudgetSaveButton from "./components/BudgetSaveButton";
+import BudgetComparisonTable from "./components/BudgetComparisonTable";
+
+
+import { db, doc, setDoc, collection, getDocs } from "@/lib/firebase";
 
 const accountNumbers = {
   생활비: "1000-8998-1075(토스)",
@@ -44,11 +47,13 @@ interface Budget {
   가족: number;
 }
 
-export default function BudgetPage() {
+export default function CalculPage() {
   const router = useRouter();
   const year = "2025";
-  const [month, setMonth] = useState<string>((new Date().getMonth() + 1).toString().padStart(2, "0"));
   const [userId, setUserId] = useState<string | null>(null);
+  const [month, setMonth] = useState<string>(
+    (new Date().getMonth() + 1).toString().padStart(2, "0")
+  );
   const [allowance, setAllowance] = useState<string>("");
   const [salary, setSalary] = useState<string>("");
   const [totalSalary, setTotalSalary] = useState<number>(0);
@@ -82,9 +87,20 @@ export default function BudgetPage() {
     updateTotalSalary(allowance, numValue);
   };
 
-  const updateTotalSalary = (allowanceValue: string | number, salaryValue: string | number) => {
-    const rawAllowance = Number(typeof allowanceValue === "string" ? allowanceValue.replace(/,/g, "") : allowanceValue);
-    const rawSalary = Number(typeof salaryValue === "string" ? salaryValue.replace(/,/g, "") : salaryValue);
+  const updateTotalSalary = (
+    allowanceValue: string | number,
+    salaryValue: string | number
+  ) => {
+    const rawAllowance = Number(
+      typeof allowanceValue === "string"
+        ? allowanceValue.replace(/,/g, "")
+        : allowanceValue
+    );
+    const rawSalary = Number(
+      typeof salaryValue === "string"
+        ? salaryValue.replace(/,/g, "")
+        : salaryValue
+    );
     setTotalSalary(rawAllowance + rawSalary);
   };
 
@@ -152,43 +168,20 @@ export default function BudgetPage() {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col items-center min-h-screen justify-center bg-gray-900">
+      <div className="flex flex-col items-center min-h-screen justify-center bg-gray-900 text-white">
         <div className="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
           <BudgetHeader userId={userId} />
-          <BudgetDateSelector year="2025" month={month} onMonthChange={(e) => setMonth(e.target.value)} />
+          <BudgetDateSelector year={year} month={month} onMonthChange={(e) => setMonth(e.target.value)} />
           <BudgetInput allowance={allowance} salary={salary} onAllowanceChange={handleAllowanceChange} onSalaryChange={handleSalaryChange} />
-          {totalSalary > 0 && <p className="text-gray-400 text-sm mb-3">한글 금액: {numberToKorean(totalSalary)}</p>}
-          <button onClick={handleCalculate} className="w-full bg-blue-500 text-white font-bold py-3 rounded">계산하기</button>
+          {totalSalary > 0 && (
+            <p className="text-gray-400 text-sm mb-3">
+              한글 금액: {numberToKorean(totalSalary)}
+            </p>
+          )}
+          <button onClick={handleCalculate} className="w-full bg-blue-500 hover:bg-blue-600 font-bold py-3 rounded">계산하기</button>
           <BudgetSummary allocated={allocated} accountNumbers={accountNumbers} />
           <BudgetSaveButton onSave={handleSave} />
-
-          {userBudgets.length > 0 && (
-            <div className="mt-6 bg-gray-800 p-4 rounded-lg w-full">
-              <h3 className="text-white text-lg font-semibold mb-3">사용자별 입력된 금액</h3>
-              <table className="w-full text-white border-collapse border border-gray-600">
-                <thead>
-                  <tr className="bg-gray-700">
-                    <th className="border border-gray-600 p-2">사용자</th>
-                    <th className="border border-gray-600 p-2">생활비</th>
-                    <th className="border border-gray-600 p-2">적금</th>
-                    <th className="border border-gray-600 p-2">투자</th>
-                    <th className="border border-gray-600 p-2">가족</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userBudgets.map((budget, index) => (
-                    <tr key={index} className="text-center">
-                      <td className="border border-gray-600 p-2">{budget.userId}</td>
-                      <td className="border border-gray-600 p-2">{budget.생활비.toLocaleString()}원</td>
-                      <td className="border border-gray-600 p-2">{budget.적금.toLocaleString()}원</td>
-                      <td className="border border-gray-600 p-2">{budget.투자.toLocaleString()}원</td>
-                      <td className="border border-gray-600 p-2">{budget.가족.toLocaleString()}원</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <BudgetComparisonTable userBudgets={userBudgets} />
         </div>
       </div>
     </ProtectedRoute>
