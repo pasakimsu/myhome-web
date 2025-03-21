@@ -16,11 +16,11 @@ export default function AppIconButton({
       <div className="rounded-[28px] p-[6px] bg-gradient-to-b from-[#e0d4c2] to-[#a89273] shadow-[0_8px_16px_rgba(0,0,0,0.5)]">
         <button
           onClick={onClick}
-          className="w-20 h-20 rounded-[20px] bg-gradient-to-b from-[#e5d5bd] to-[#9c7b58]
+          className="w-16 h-16 rounded-[20px] bg-gradient-to-b from-[#e5d5bd] to-[#9c7b58]
                      shadow-[0_6px_12px_rgba(0,0,0,0.4),_0_-2px_4px_rgba(255,255,255,0.2)]
                      flex items-center justify-center transition-all duration-200 active:scale-95"
         >
-          <span className="text-white text-3xl">{icon}</span>
+          <span className="text-white text-2xl">{icon}</span>
         </button>
       </div>
       {label && <span className="text-sm text-white/80">{label}</span>}
