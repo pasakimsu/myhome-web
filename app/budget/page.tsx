@@ -38,10 +38,9 @@ export default function BudgetHomePage() {
     onClick={() => router.push("/budget/ledger")}
     className="w-20 h-20 rounded-full text-white text-2xl
              bg-gradient-to-b from-[#e6d5bd] to-[#bfa683]
-             border border-[#b9a589] border-b-[6px]
-             shadow-[0px_6px_12px_rgba(0,0,0,0.4)]
-             hover:brightness-110 hover:translate-y-[2px]
-             active:translate-y-[4px] active:shadow-[0px_3px_6px_rgba(0,0,0,0.4)] active:border-b-[3px]
+             shadow-[0px_6px_12px_rgba(0,0,0,0.4), 0px_-3px_6px_rgba(255,255,255,0.2)]
+             hover:translate-y-[2px] hover:shadow-[0px_4px_10px_rgba(0,0,0,0.5), 0px_-2px_5px_rgba(255,255,255,0.2)]
+             active:translate-y-[4px] active:shadow-[0px_2px_6px_rgba(0,0,0,0.6), 0px_-1px_3px_rgba(255,255,255,0.1)]
              transition-all duration-200 ease-in-out
              flex items-center justify-center"
              >
@@ -53,10 +52,10 @@ export default function BudgetHomePage() {
     onClick={() => router.push("/budget/donations")}
     className="w-20 h-20 rounded-full text-white text-2xl
              bg-gradient-to-b from-[#e6d5bd] to-[#bfa683]
-             border border-[#b9a589] border-b-[6px]
-             shadow-[0px_6px_12px_rgba(0,0,0,0.4)]
+             shadow-[0px_6px_12px_rgba(0,0,0,0.5), inset_0px_-3px_6px_rgba(255,255,255,0.3)]
              hover:brightness-110 hover:translate-y-[2px]
-             active:translate-y-[4px] active:shadow-[0px_3px_6px_rgba(0,0,0,0.4)] active:border-b-[3px]
+             active:shadow-[inset_0px_4px_8px_rgba(0,0,0,0.5), inset_0px_-3px_6px_rgba(255,255,255,0.3)]
+             active:translate-y-[3px]
              transition-all duration-200 ease-in-out
              flex items-center justify-center"
              >
