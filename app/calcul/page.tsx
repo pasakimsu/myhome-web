@@ -9,8 +9,6 @@ import BudgetDateSelector from "./components/BudgetDateSelector";
 import BudgetSummary from "./components/BudgetSummary";
 import BudgetSaveButton from "./components/BudgetSaveButton";
 import BudgetComparisonTable from "./components/BudgetComparisonTable";
-
-
 import { db, doc, setDoc, collection, getDocs } from "@/lib/firebase";
 
 const accountNumbers = {
@@ -182,7 +180,7 @@ export default function CalculPage() {
   
           <button
             onClick={handleCalculate}
-            className="w-full bg-blue-500 hover:bg-blue-600 font-bold py-3 rounded transition duration-300"
+            className="w-full bg-gray-700 hover:bg-gray-600 font-bold py-3 rounded transition duration-300"
           >
             계산하기
           </button>
@@ -195,5 +193,4 @@ export default function CalculPage() {
       </div>
     </ProtectedRoute>
   );
-  
 }
