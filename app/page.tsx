@@ -39,7 +39,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-beige dark:bg-beigeDark px-4 transition-colors">
       <div className="bg-cream dark:bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md transition-colors">
         <h2 className="text-2xl font-bold mb-6 text-center text-darkText dark:text-white">로그인</h2>
-
+             
+             
         <input
           type="text"
           placeholder="아이디"
@@ -58,9 +59,9 @@ export default function LoginPage() {
         {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
 
         <button
-          onClick={handleLogin}
-          className="w-full bg-camel text-white font-semibold py-3 px-4 rounded hover:brightness-105 transition"
-        >
+  type="submit"
+  className="w-full bg-beigeLight text-darkText font-semibold py-3 px-4 rounded-md shadow hover:brightness-105 active:scale-95 transition duration-150"
+>
           로그인
         </button>
       </div>

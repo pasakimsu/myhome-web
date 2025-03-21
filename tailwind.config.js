@@ -8,7 +8,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        beigeDark: "#3b3228", // 예시 다크 베이지
+        camel: "#d8bfa3",        // 기존 진한 베이지
+        beigeLight: "#f5ede1",   // ✅ 연한 베이지 추가
       },
     },
   },
