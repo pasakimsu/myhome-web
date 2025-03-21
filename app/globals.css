@@ -4,20 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 색상/폰트 커스텀 (Tailwind config와 일치) */
-:root {
-  --background: #fefcf9;
-  --foreground: #4a4a4a;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-/* Tailwind 기반 스타일 */
+/* Tailwind 기반 공통 스타일 */
 body {
-  @apply bg-beige text-darkText font-sans antialiased;
+  @apply font-sans antialiased transition-colors;
+}
+
+/* 🌞 기본 라이트 모드 */
+html {
+  @apply bg-beige text-darkText;
+}
+
+/* 🌙 다크 모드일 때 */
+html.dark {
+  @apply bg-beigeDark text-white;
 }
