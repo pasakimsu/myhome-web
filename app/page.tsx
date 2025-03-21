@@ -1,19 +1,8 @@
-// src/app/login/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { db, collection, getDocs, query, where } from "../lib/firebase";
-// app/login/page.tsx (또는 상단 네비게이션에)
-<button
-  onClick={() => {
-    document.documentElement.classList.toggle("dark");
-  }}
-  className="fixed top-4 right-4 p-2 text-sm bg-camel text-white rounded"
->
-  🌗 다크모드 전환
-</button>
-
 
 export default function LoginPage() {
   const [userId, setUserId] = useState("");
@@ -47,9 +36,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-beige px-4">
-      <div className="bg-cream p-8 rounded-xl shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-darkText">로그인</h2>
+    <div className="min-h-screen flex items-center justify-center bg-beige dark:bg-beigeDark px-4 transition-colors">
+      {/* ✅ 다크모드 토글 버튼 */}
+      <button
+        onClick={() => {
+          document.documentElement.classList.toggle("dark");
+        }}
+        className="fixed top-4 right-4 p-2 text-sm bg-camel text-white rounded shadow-md"
+      >
+        🌗 다크모드
+      </button>
+
+      <div className="bg-cream dark:bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md transition-colors">
+        <h2 className="text-2xl font-bold mb-6 text-center text-darkText dark:text-white">로그인</h2>
 
         <input
           type="text"
