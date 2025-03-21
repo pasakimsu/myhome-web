@@ -4,6 +4,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { db, collection, getDocs, query, where } from "../lib/firebase";
+// app/login/page.tsx (또는 상단 네비게이션에)
+<button
+  onClick={() => {
+    document.documentElement.classList.toggle("dark");
+  }}
+  className="fixed top-4 right-4 p-2 text-sm bg-camel text-white rounded"
+>
+  🌗 다크모드 전환
+</button>
+
 
 export default function LoginPage() {
   const [userId, setUserId] = useState("");
