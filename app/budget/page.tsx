@@ -35,13 +35,13 @@ export default function BudgetHomePage() {
         <div className="flex justify-center gap-6">
   <button
     onClick={() => router.push("/budget/ledger")}
-    className="w-16 h-16 bg-camel text-white rounded-full shadow-md hover:brightness-105 active:translate-y-[2px] transition-all duration-150 ease-in-out flex items-center justify-center text-xl"
+    className="w-16 h-16 bg-camel text-white rounded-full shadow-lg border-b-4 border-camel/80 hover:translate-y-[1px] active:translate-y-[3px] transition-all duration-150 ease-in-out flex items-center justify-center text-xl"
   >
     ⚙
   </button>
   <button
     onClick={() => router.push("/budget/donations")}
-    className="w-16 h-16 bg-camel text-white rounded-full shadow-md hover:brightness-105 active:translate-y-[2px] transition-all duration-150 ease-in-out flex items-center justify-center text-xl"
+    className="w-16 h-16 bg-camel text-white rounded-full shadow-lg border-b-4 border-camel/80 hover:translate-y-[1px] active:translate-y-[3px] transition-all duration-150 ease-in-out flex items-center justify-center text-xl"
   >
     📁
   </button>
