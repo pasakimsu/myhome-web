@@ -36,7 +36,7 @@ export default function BudgetHomePage() {
         <div className="flex justify-center gap-6">
         <div className="flex justify-center gap-6">
         <AppStyleButton icon="⚙️" label="설정"onClick={() => router.push("/budget/ledger")} />
-        <AppStyleButton icon="💰" label="계산기" onClick={() => router.push("/budget/ledger")} />
+        <AppStyleButton icon="💰" label="계산기" onClick={() => router.push("/budget/calcul")} />
         <AppStyleButton icon="📁" label="부조금" onClick={() => router.push("/budget/donations")} />
 
  
