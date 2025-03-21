@@ -34,11 +34,21 @@ const numberToKorean = (num: number): string => {
   return result.trim() + "원";
 };
 
+interface Budget {
+  userId: string;
+  year: string;
+  month: string;
+  생활비: number;
+  적금: number;
+  투자: number;
+  가족: number;
+}
+
 export default function BudgetPage() {
   const router = useRouter();
-  const [userId, setUserId] = useState<string | null>(null);
-  const [year, setYear] = useState<string>("2025");
+  const year = "2025";
   const [month, setMonth] = useState<string>((new Date().getMonth() + 1).toString().padStart(2, "0"));
+  const [userId, setUserId] = useState<string | null>(null);
   const [allowance, setAllowance] = useState<string>("");
   const [salary, setSalary] = useState<string>("");
   const [totalSalary, setTotalSalary] = useState<number>(0);
@@ -48,7 +58,7 @@ export default function BudgetPage() {
     투자: 0,
     가족: 0,
   });
-  const [userBudgets, setUserBudgets] = useState<any[]>([]);
+  const [userBudgets, setUserBudgets] = useState<Budget[]>([]);
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
