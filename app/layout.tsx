@@ -1,7 +1,10 @@
+"use client"; // 클라이언트 컴포넌트로 표시
+
+import { useEffect } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ThemeToggleButton from "../components/ThemeToggleButton"; // 추가
+import ThemeToggleButton from "../components/ThemeToggleButton"; // 다크모드 토글 버튼
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +26,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    // 다크모드를 기본으로 적용
+    document.documentElement.classList.add("dark");
+  }, []);
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
