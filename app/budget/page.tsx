@@ -37,12 +37,9 @@ export default function BudgetHomePage() {
   <button
     onClick={() => router.push("/budget/ledger")}
     className="w-20 h-20 rounded-full text-white text-2xl
-               bg-gradient-to-b from-[#e6d5bd] to-[#bfa683]
-               border border-[#b9a589] border-b-[6px]
-               shadow-[0px_6px_12px_rgba(0,0,0,0.4)]
-               hover:brightness-110 hover:translate-y-[2px] 
-               active:translate-y-[4px] active:brightness-95
-               transition-all duration-150 ease-in-out
+               bg-gradient-to-b from-[#e6d5bd] to-[#bfa683] !important
+               border border-[#b9a589] border-b-[6px] !important
+               shadow-[0px_6px_12px_rgba(0,0,0,0.4)] !important
                flex items-center justify-center"
   >
     ⚙
@@ -52,17 +49,15 @@ export default function BudgetHomePage() {
   <button
     onClick={() => router.push("/budget/donations")}
     className="w-20 h-20 rounded-full text-white text-2xl
-               bg-gradient-to-b from-[#e6d5bd] to-[#bfa683]
-               border border-[#b9a589] border-b-[6px]
-               shadow-[0px_6px_12px_rgba(0,0,0,0.4)]
-               hover:brightness-110 hover:translate-y-[2px] 
-               active:translate-y-[4px] active:brightness-95
-               transition-all duration-150 ease-in-out
+               bg-gradient-to-b from-[#e6d5bd] to-[#bfa683] !important
+               border border-[#b9a589] border-b-[6px] !important
+               shadow-[0px_6px_12px_rgba(0,0,0,0.4)] !important
                flex items-center justify-center"
   >
     📁
   </button>
 </div>
+
       </div>
     </div>
   );
