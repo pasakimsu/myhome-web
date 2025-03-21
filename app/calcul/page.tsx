@@ -168,7 +168,7 @@ export default function CalculPage() {
     <ProtectedRoute>
       <div
         className="flex flex-col items-center justify-center min-h-screen text-white"
-        style={{ backgroundColor: "#1F2937" }}  {/* bg-gray-900 */}
+        style={{ backgroundColor: "#1F2937" }} 
       >
         <div className="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
           <BudgetHeader userId={userId} />
