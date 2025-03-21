@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AppStyleButton from "@/components/AppStyleButton"; 
 
 export default function BudgetHomePage() {
   const router = useRouter();
@@ -33,38 +34,16 @@ export default function BudgetHomePage() {
 
         {/* 작은 원형 버튼 2개 */}
         <div className="flex justify-center gap-6">
-  {/* ⚙ 설정 버튼 */}
-  <button
-    onClick={() => router.push("/budget/ledger")}
-    className="w-20 h-20 rounded-full text-white text-2xl
-             bg-gradient-to-b from-[#e6d5bd] to-[#bfa683]
-             shadow-[0px_6px_12px_rgba(0,0,0,0.4), 0px_-3px_6px_rgba(255,255,255,0.2)]
-             hover:translate-y-[2px] hover:shadow-[0px_4px_10px_rgba(0,0,0,0.5), 0px_-2px_5px_rgba(255,255,255,0.2)]
-             active:translate-y-[4px] active:shadow-[0px_2px_6px_rgba(0,0,0,0.6), 0px_-1px_3px_rgba(255,255,255,0.1)]
-             transition-all duration-200 ease-in-out
-             flex items-center justify-center"
-             >
-    ⚙
-  </button>
+        <div className="flex justify-center gap-6">
+        <AppStyleButton icon="⚙️" onClick={() => router.push("/budget/ledger")} />
+<AppStyleButton icon="📁" onClick={() => router.push("/budget/donations")} />
+<AppStyleButton icon="💰" onClick={() => router.push("/budget/summary")} />
 
-  {/* 📁 폴더 버튼 */}
-  <button
-    onClick={() => router.push("/budget/donations")}
-    className="w-20 h-20 rounded-full text-white text-2xl
-             bg-gradient-to-b from-[#f8e7cd] to-[#c2a67d]
-             shadow-[0_50px_100px_rgba(0,0,0,0.5)]
-             hover:translate-y-[2px] hover:shadow-[0_6px_12px_rgba(0,0,0,0.5)]
-             active:translate-y-[4px] active:shadow-[0_2px_5px_rgba(0,0,0,0.6)]
-             transition-all duration-200 ease-in-out
-             flex items-center justify-center">
+ 
 
-    📁
-  </button>
+    
 </div>
-{/* 🧪 디버그 버튼 (Tailwind 적용 테스트) */}
-<button className="w-20 h-20 rounded-full bg-red-600 text-white text-2xl flex items-center justify-center">
-  🧪
-</button>
+
 
       </div>
     </div>
