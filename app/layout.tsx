@@ -1,3 +1,5 @@
+"use client";  // 이 라인 추가!
+
 import { useEffect } from "react"; // React import 추가
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
