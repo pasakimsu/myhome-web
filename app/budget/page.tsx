@@ -33,28 +33,37 @@ export default function BudgetHomePage() {
 
         {/* 작은 원형 버튼 2개 */}
         <div className="flex justify-center gap-6">
+  {/* 월급 버튼 */}
   <button
     onClick={() => router.push("/budget/ledger")}
-    className="w-20 h-20 bg-camel text-white text-2xl rounded-full shadow-[0_4px_8px_rgba(0,0,0,0.3)] border-b-4 border-[#b89f7b] 
-               hover:brightness-105 hover:translate-y-[1px] 
-               active:translate-y-[3px] active:brightness-95 
-               transition-all duration-150 ease-in-out 
+    className="w-20 h-20 rounded-full text-white text-2xl
+               bg-gradient-to-b from-[#d8bfa3] to-[#bfa683]
+               border border-[#b9a589]
+               shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.3)]
+               hover:brightness-105 hover:translate-y-[1px]
+               active:translate-y-[2px] active:brightness-95
+               transition-all duration-150 ease-in-out
                flex items-center justify-center"
   >
     ⚙
   </button>
 
+  {/* 부조금 버튼 */}
   <button
     onClick={() => router.push("/budget/donations")}
-    className="w-20 h-20 bg-camel text-white text-2xl rounded-full shadow-[0_4px_8px_rgba(0,0,0,0.3)] border-b-4 border-[#b89f7b] 
-               hover:brightness-105 hover:translate-y-[1px] 
-               active:translate-y-[3px] active:brightness-95 
-               transition-all duration-150 ease-in-out 
+    className="w-20 h-20 rounded-full text-white text-2xl
+               bg-gradient-to-b from-[#d8bfa3] to-[#bfa683]
+               border border-[#b9a589]
+               shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.3)]
+               hover:brightness-105 hover:translate-y-[1px]
+               active:translate-y-[2px] active:brightness-95
+               transition-all duration-150 ease-in-out
                flex items-center justify-center"
   >
     📁
   </button>
 </div>
+
       </div>
     </div>
   );
