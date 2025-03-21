@@ -33,37 +33,36 @@ export default function BudgetHomePage() {
 
         {/* 작은 원형 버튼 2개 */}
         <div className="flex justify-center gap-6">
-  {/* 월급 버튼 */}
+  {/* ⚙ 설정 버튼 */}
   <button
     onClick={() => router.push("/budget/ledger")}
     className="w-20 h-20 rounded-full text-white text-2xl
-               bg-gradient-to-b from-[#d8bfa3] to-[#bfa683]
-               border border-[#b9a589]
-               shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.3)]
-               hover:brightness-105 hover:translate-y-[1px]
-               active:translate-y-[2px] active:brightness-95
+               bg-gradient-to-b from-[#e6d5bd] to-[#bfa683]
+               border border-[#b9a589] border-b-[6px]
+               shadow-[0px_6px_12px_rgba(0,0,0,0.4)]
+               hover:brightness-110 hover:translate-y-[2px] 
+               active:translate-y-[4px] active:brightness-95
                transition-all duration-150 ease-in-out
                flex items-center justify-center"
   >
     ⚙
   </button>
 
-  {/* 부조금 버튼 */}
+  {/* 📁 폴더 버튼 */}
   <button
     onClick={() => router.push("/budget/donations")}
     className="w-20 h-20 rounded-full text-white text-2xl
-               bg-gradient-to-b from-[#d8bfa3] to-[#bfa683]
-               border border-[#b9a589]
-               shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.3)]
-               hover:brightness-105 hover:translate-y-[1px]
-               active:translate-y-[2px] active:brightness-95
+               bg-gradient-to-b from-[#e6d5bd] to-[#bfa683]
+               border border-[#b9a589] border-b-[6px]
+               shadow-[0px_6px_12px_rgba(0,0,0,0.4)]
+               hover:brightness-110 hover:translate-y-[2px] 
+               active:translate-y-[4px] active:brightness-95
                transition-all duration-150 ease-in-out
                flex items-center justify-center"
   >
     📁
   </button>
 </div>
-
       </div>
     </div>
   );
