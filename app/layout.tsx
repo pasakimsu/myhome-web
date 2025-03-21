@@ -1,9 +1,7 @@
-"use client"; // 👈 추가!
-
-import { useEffect } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import DarkModeLayoutWrapper from "../components/DarkModeLayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,14 +23,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  useEffect(() => {
-    document.documentElement.classList.add("dark"); // 🌙 다크모드 기본 적용
-  }, []);
-
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <DarkModeLayoutWrapper>
+          {children}
+        </DarkModeLayoutWrapper>
       </body>
     </html>
   );
