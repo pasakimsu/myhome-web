@@ -585,6 +585,21 @@ video {
   max-width: 28rem;
 }
 
+.translate-y-\[2px\] {
+  --tw-translate-y: 2px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.translate-y-\[3px\] {
+  --tw-translate-y: 3px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.translate-y-\[4px\] {
+  --tw-translate-y: 4px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .items-center {
   align-items: center;
 }
@@ -745,6 +760,18 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-\[0px_6px_12px_rgba\(0\2c 0\2c 0\2c 0\.4\)\2c _0px_-3px_6px_rgba\(255\2c 255\2c 255\2c 0\.2\)\] {
+  --tw-shadow: 0px 6px 12px rgba(0,0,0,0.4), 0px -3px 6px rgba(255,255,255,0.2);
+  --tw-shadow-colored: 0px 6px 12px var(--tw-shadow-color), 0px -3px 6px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.shadow-\[0px_6px_12px_rgba\(0\2c 0\2c 0\2c 0\.5\)\2c _inset_0px_-3px_6px_rgba\(255\2c 255\2c 255\2c 0\.3\)\] {
+  --tw-shadow: 0px 6px 12px rgba(0,0,0,0.5), inset 0px -3px 6px rgba(255,255,255,0.3);
+  --tw-shadow-colored: 0px 6px 12px var(--tw-shadow-color), inset 0px -3px 6px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-inner {
   --tw-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: inset 0 2px 4px 0 var(--tw-shadow-color);
@@ -807,6 +834,12 @@ body {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.hover\:shadow-\[0px_4px_10px_rgba\(0\2c 0\2c 0\2c 0\.5\)\2c _0px_-2px_5px_rgba\(255\2c 255\2c 255\2c 0\.2\)\]:hover {
+  --tw-shadow: 0px 4px 10px rgba(0,0,0,0.5), 0px -2px 5px rgba(255,255,255,0.2);
+  --tw-shadow-colored: 0px 4px 10px var(--tw-shadow-color), 0px -2px 5px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .hover\:brightness-105:hover {
   --tw-brightness: brightness(1.05);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
@@ -831,6 +864,18 @@ body {
   --tw-scale-x: .95;
   --tw-scale-y: .95;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.active\:shadow-\[0px_2px_6px_rgba\(0\2c 0\2c 0\2c 0\.6\)\2c _0px_-1px_3px_rgba\(255\2c 255\2c 255\2c 0\.1\)\]:active {
+  --tw-shadow: 0px 2px 6px rgba(0,0,0,0.6), 0px -1px 3px rgba(255,255,255,0.1);
+  --tw-shadow-colored: 0px 2px 6px var(--tw-shadow-color), 0px -1px 3px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.active\:shadow-\[inset_0px_4px_8px_rgba\(0\2c 0\2c 0\2c 0\.5\)\2c _inset_0px_-3px_6px_rgba\(255\2c 255\2c 255\2c 0\.3\)\]:active {
+  --tw-shadow: inset 0px 4px 8px rgba(0,0,0,0.5), inset 0px -3px 6px rgba(255,255,255,0.3);
+  --tw-shadow-colored: inset 0px 4px 8px var(--tw-shadow-color), inset 0px -3px 6px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 :is(.dark .dark\:bg-\[\#2f2a25\]) {
