@@ -166,28 +166,40 @@ export default function CalculPage() {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+      <div
+        className="flex flex-col items-center justify-center min-h-screen text-white"
+        style={{ backgroundColor: "#1F2937" }}  {/* bg-gray-900 */}
+      >
         <div className="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
           <BudgetHeader userId={userId} />
-          <BudgetDateSelector year={year} month={month} onMonthChange={(e) => setMonth(e.target.value)} />
-          <BudgetInput allowance={allowance} salary={salary} onAllowanceChange={handleAllowanceChange} onSalaryChange={handleSalaryChange} />
-          
+          <BudgetDateSelector
+            year={year}
+            month={month}
+            onMonthChange={(e) => setMonth(e.target.value)}
+          />
+          <BudgetInput
+            allowance={allowance}
+            salary={salary}
+            onAllowanceChange={handleAllowanceChange}
+            onSalaryChange={handleSalaryChange}
+          />
+
           {totalSalary > 0 && (
             <p className="text-gray-400 text-sm mb-3">
               한글 금액: {numberToKorean(totalSalary)}
             </p>
           )}
-  
+
           <button
             onClick={handleCalculate}
             className="w-full bg-gray-700 hover:bg-gray-600 font-bold py-3 rounded transition duration-300"
           >
             계산하기
           </button>
-  
+
           <BudgetSummary allocated={allocated} accountNumbers={accountNumbers} />
           <BudgetSaveButton onSave={handleSave} />
-  
+
           <BudgetComparisonTable userBudgets={userBudgets} />
         </div>
       </div>
