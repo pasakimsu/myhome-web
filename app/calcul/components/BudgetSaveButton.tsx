@@ -14,3 +14,4 @@ export default function BudgetSaveButton({ onSave }: BudgetSaveButtonProps) {
     </button>
   );
 }
+
