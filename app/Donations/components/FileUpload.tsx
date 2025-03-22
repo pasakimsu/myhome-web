@@ -102,22 +102,25 @@ export default function FileUpload() {
 
   return (
     <div className="flex flex-col items-center">
-      <label className="bg-gray-700 text-white p-3 rounded-lg cursor-pointer hover:bg-gray-600 mb-3">
+      <label className="bg-[#2f2a25] text-white p-3 rounded-lg cursor-pointer hover:bg-[#3a2f28] mb-3 transition-colors shadow-md">
         📂 파일 선택
         <input type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
       </label>
-
+  
       {fileName && <p className="text-gray-400 mb-4">📄 {fileName}</p>}
-
+  
       <button
         onClick={handleFileUpload}
-        className={`p-3 rounded-lg w-40 mb-4 ${
-          selectedFile ? "bg-blue-500 hover:bg-[#2f2a25]" : "bg-[#2f2a25] cursor-not-allowed"
-        }`}
         disabled={!selectedFile}
+        className={`w-40 px-4 py-3 rounded-lg font-semibold text-white shadow-md transition-colors duration-300 mb-4 ${
+          selectedFile
+            ? "bg-[#8d7864] hover:bg-[#a48d77]"
+            : "bg-[#5c5249] cursor-not-allowed"
+        }`}
       >
         {uploading ? "업로드 중..." : "⬆️ 업로드"}
       </button>
     </div>
   );
+  
 }

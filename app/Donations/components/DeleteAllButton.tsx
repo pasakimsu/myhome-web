@@ -33,17 +33,21 @@ export default function DeleteAllButton() {
     }
   };
 
-  return (
-    <div className="flex justify-center">
-      <button
-        onClick={handleDeleteAll}
-        className={`p-3 rounded-lg w-40 mb-6 ${
-          deleting ? "bg-[#2f2a25] cursor-not-allowed" : "bg-[#2f2a25] hover:bg-[#2f2a25]"
-        }`}
-        disabled={deleting}
-      >
-        {deleting ? "삭제 중..." : "🗑️ 전체 삭제"}
-      </button>
-    </div>
-  );
-}
+
+    return (
+      <div className="flex justify-center">
+        <button
+          onClick={handleDeleteAll}
+          disabled={deleting}
+          className={`w-40 px-4 py-3 rounded-lg mb-6 font-semibold text-white shadow-md transition-colors duration-300
+            ${
+              deleting
+                ? "bg-[#5c5249] cursor-not-allowed"
+                : "bg-[#8d7864] hover:bg-[#a48d77]"
+            }`}
+        >
+          {deleting ? "삭제 중..." : "🗑️ 전체 삭제"}
+        </button>
+      </div>
+    );
+  }

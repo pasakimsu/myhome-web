@@ -13,17 +13,19 @@ export default function BudgetSaveButton({
     <div className="flex flex-col gap-3 mt-3">
       <button
         onClick={onCalculate}
-        className="w-full bg-[#8d7864] hover:bg-[#a48d77] text-white font-bold py-3 rounded transition duration-300"
+        className="w-full px-4 py-3 rounded-lg shadow-md bg-[#8d7864] hover:bg-[#a48d77] text-white font-semibold transition-colors duration-300"
       >
         계산하기
       </button>
-
+  
       <button
         onClick={onSave}
-        className="w-full bg-[#8d7864] hover:bg-[#a48d77] text-white font-bold py-3 rounded transition duration-300"
+        className="w-full px-4 py-3 rounded-lg shadow-md bg-[#8d7864] hover:bg-[#a48d77] text-white font-semibold transition-colors duration-300"
       >
         저장하기
       </button>
     </div>
   );
+  
+ 
 }
