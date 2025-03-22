@@ -1,5 +1,4 @@
 // app/api/stocks/route.ts
-"use client"; 
 import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
@@ -34,9 +33,9 @@ export async function GET() {
   }
 }
 
-"use client";
-
 // app/stock/page.tsx
+
+"use client";
 
 import { useEffect, useState } from "react";
 
