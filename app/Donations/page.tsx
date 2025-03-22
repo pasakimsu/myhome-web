@@ -13,11 +13,13 @@ export default function DonationsPage() {
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
-    if (storedUserId && storedUserId !== "bak") {
+    const allowedUsers = ["bak", "yong"]; // ✅ 접근 허용할 사용자 목록
+    if (storedUserId && !allowedUsers.includes(storedUserId)) {
       alert("🚨 접근 권한이 없습니다.");
       router.push("/budget");
     }
   }, [router]);
+  
 
   return (
     <AuthGuard>
