@@ -11,15 +11,20 @@
   }
   /* calendarStyle.css */
 
+/* 기존보다 더 작고 타이트하게 */
 .duty-tile abbr::after {
-    content: " 당";
-    font-size: 10px;
-    background-color: #16a34a; /* Tailwind green-600 */
+    content: "당";
+    font-size: 8px;                  /* 🔽 더 작게 */
+    background-color: #16a34a;       /* green-600 */
     color: white;
-    padding: 1px 4px;
-    border-radius: 4px;
-    margin-left: 4px;
+    padding: 0 3px;                  /* 좌우 여백 줄이기 */
+    border-radius: 3px;
+    margin-left: 2px;                /* 글자와 간격 최소화 */
     vertical-align: middle;
+    display: inline-block;
+    line-height: 1;
+    transform: translateY(-1px);     /* 살짝 올려 정렬 맞춤 */
   }
+  
   
   
