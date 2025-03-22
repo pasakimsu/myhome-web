@@ -56,7 +56,7 @@ export default function SearchDonations() {
       <input
         type="text"
         placeholder="이름을 입력하세요"
-        className="p-3 mb-3 border border-gray-600 rounded bg-gray-700 text-white placeholder-gray-400"
+        className="p-3 mb-3 border-brownBorder rounded bg-[#2f2a25] text-white placeholder-gray-400"
         value={searchName}
         onChange={(e) => setSearchName(e.target.value)}
       />
@@ -64,7 +64,7 @@ export default function SearchDonations() {
       <button
         onClick={handleSearch}
         className={`p-3 rounded-lg w-40 mb-4 ${
-          searchName ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-500 cursor-not-allowed"
+          searchName ? "bg-[#2f2a25] hover:bg-[#2f2a25]" : "bg-[#2f2a25] cursor-not-allowed"
         }`}
         disabled={!searchName}
       >
@@ -72,11 +72,11 @@ export default function SearchDonations() {
       </button>
 
       {searchResults.length > 0 && (
-        <div className="w-full max-w-md bg-gray-800 p-4 rounded-lg shadow-lg">
+        <div className="w-full max-w-md bg-[#2f2a25] p-4 rounded-lg shadow-lg">
           <h3 className="text-lg font-semibold mb-2">검색 결과</h3>
           <ul>
             {searchResults.map((result) => (
-              <li key={result.id} className="border-b border-gray-600 py-2">
+              <li key={result.id} className="border-b border-brownBorder py-2">
                 📅 <strong>{result.date}</strong> | 👤 <strong>{result.name}</strong> | 💰 <strong>{result.amount.toLocaleString()}원</strong> | 📝 <strong>{result.reason}</strong>
               </li>
             ))}
