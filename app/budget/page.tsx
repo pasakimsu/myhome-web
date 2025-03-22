@@ -33,22 +33,24 @@ export default function BudgetHomePage() {
         id: doc.id,
         ...(doc.data() as Omit<ScheduleItem, "id">),
       }));
-
+  
       const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, "0");
-      const monthStr = `${year}-${month}`; // ex: "2025-04"
-
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1;
+  
       const filtered = all
-        .filter((item) => item.date.startsWith(monthStr))
+        .filter((item) => {
+          const [y, m] = item.date.split("-");
+          return Number(y) === currentYear && Number(m) === currentMonth;
+        })
         .sort((a, b) => a.date.localeCompare(b.date));
-
+  
       setMonthlySchedules(filtered);
     });
-
-    return () => unsubscribe(); // 🔁 정리
+  
+    return () => unsubscribe();
   }, []);
-
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-beigeDark px-4 transition-colors">
       <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
