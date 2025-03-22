@@ -9,36 +9,38 @@ export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // ✅ 임시 기준일자 (입력용)
+  // ✅ dutyStartDate는 null로 시작 (SSR 대응)
+  const [dutyStartDate, setDutyStartDate] = useState<Date | null>(null);
   const [tempStartDate, setTempStartDate] = useState(new Date("2025-03-01"));
 
-  // ✅ 확정된 기준일자 (달력에 반영되는 기준)
-  const [dutyStartDate, setDutyStartDate] = useState(() => {
-    const saved = localStorage.getItem("dutyStartDate");
-    return saved ? new Date(saved) : new Date("2025-03-01");
-  });
+  const handleRefresh = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
-  // ✅ 수동 기준일자 확정 핸들러
+  // ✅ localStorage는 클라이언트에서만 접근하므로 useEffect 사용
+  useEffect(() => {
+    const saved = typeof window !== "undefined" && localStorage.getItem("dutyStartDate");
+    if (saved) {
+      const parsed = new Date(saved);
+      if (!isNaN(parsed.getTime())) {
+        setDutyStartDate(parsed);
+        setTempStartDate(parsed);
+        return;
+      }
+    }
+
+    const defaultDate = new Date("2025-03-01");
+    setDutyStartDate(defaultDate);
+    setTempStartDate(defaultDate);
+  }, []);
+
   const handleConfirmDutyDate = () => {
     setDutyStartDate(tempStartDate);
     localStorage.setItem("dutyStartDate", tempStartDate.toISOString());
   };
 
-  // ✅ 새로고침 시 localStorage에서 초기화
-  useEffect(() => {
-    const saved = localStorage.getItem("dutyStartDate");
-    if (saved) {
-      const restored = new Date(saved);
-      if (!isNaN(restored.getTime())) {
-        setDutyStartDate(restored);
-        setTempStartDate(restored); // 입력창 동기화
-      }
-    }
-  }, []);
-
-  const handleRefresh = () => {
-    setRefreshKey((prev) => prev + 1);
-  };
+  // ✅ 로딩 중에는 null 처리 (SSR 오류 방지)
+  if (!dutyStartDate) return null;
 
   return (
     <div className="flex flex-col items-center min-h-screen justify-center bg-[#2f2a25] text-white p-6">
