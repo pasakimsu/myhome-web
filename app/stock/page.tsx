@@ -36,7 +36,7 @@ export default function StockPage() {
     }
 
     fetchStocks();
-    const interval = setInterval(fetchStocks, 30000); // ⏱️ 30초마다 주가 갱신
+    const interval = setInterval(fetchStocks, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -46,6 +46,12 @@ export default function StockPage() {
       ...prev,
       [code]: { ...prev[code], [field]: num },
     }));
+  };
+
+  const handleSingleSave = (code: string) => {
+    const updatedInputs = { ...inputs };
+    localStorage.setItem("stockInputs", JSON.stringify(updatedInputs));
+    setSubmitted(true);
   };
 
   const formatNumber = (num: number) => num.toLocaleString();
@@ -58,11 +64,6 @@ export default function StockPage() {
   const getProfit = (price: string, input: InputData) => {
     const marketPrice = parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
     return (marketPrice - input.averagePrice) * input.quantity;
-  };
-
-  const handleSave = () => {
-    localStorage.setItem("stockInputs", JSON.stringify(inputs));
-    setSubmitted(true);
   };
 
   return (
@@ -96,6 +97,12 @@ export default function StockPage() {
                     onChange={(e) => handleChange(stock.code, "averagePrice", e.target.value)}
                     className="p-2 w-full bg-gray-700 text-white rounded"
                   />
+                  <button
+                    onClick={() => handleSingleSave(stock.code)}
+                    className="self-end px-3 py-1 text-sm bg-yellow-600 hover:bg-yellow-700 rounded"
+                  >
+                    등록
+                  </button>
                 </div>
                 {submitted && (
                   <div className="text-sm text-gray-300">
@@ -107,12 +114,6 @@ export default function StockPage() {
             );
           })}
         </ul>
-        <button
-          onClick={handleSave}
-          className="mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 rounded"
-        >
-          등록 / 수정
-        </button>
       </div>
     </div>
   );
