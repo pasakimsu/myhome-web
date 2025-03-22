@@ -39,11 +39,12 @@ export default function BudgetHomePage() {
       const currentMonth = today.getMonth() + 1;
   
       const filtered = all
-        .filter((item) => {
-          const [y, m] = item.date.split("-");
-          return Number(y) === currentYear && Number(m) === currentMonth;
-        })
-        .sort((a, b) => a.date.localeCompare(b.date));
+  .filter((item) => {
+    const [y, m] = item.date.split("-");
+    return Number(y) === currentYear && Number(m) === currentMonth;
+  })
+  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // ✅ 날짜 오름차순 정렬
+
   
       setMonthlySchedules(filtered);
     });
