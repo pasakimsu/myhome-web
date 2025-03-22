@@ -1,4 +1,3 @@
-// ✅ app/api/stocks/route.ts
 import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";

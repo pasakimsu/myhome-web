@@ -48,11 +48,10 @@ export default function StockPage() {
     }));
   };
 
-  const handleSingleSave = (_code: string) => {
+  const handleSingleSave = () => {
     localStorage.setItem("stockInputs", JSON.stringify(inputs));
     setSubmitted(true);
   };
-  
 
   const formatNumber = (num: number) => num.toLocaleString();
 
@@ -98,7 +97,7 @@ export default function StockPage() {
                     className="p-2 w-full bg-gray-700 text-white rounded"
                   />
                   <button
-                    onClick={() => handleSingleSave(stock.code)}
+                    onClick={handleSingleSave}
                     className="self-end px-3 py-1 text-sm bg-yellow-600 hover:bg-yellow-700 rounded"
                   >
                     등록
