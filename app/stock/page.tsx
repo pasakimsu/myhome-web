@@ -18,6 +18,16 @@ export default function StockPage() {
   const [inputs, setInputs] = useState<{ [code: string]: InputData }>({});
   const [submitted, setSubmitted] = useState(false);
 
+  const fetchStocks = async () => {
+    try {
+      const res = await fetch("/api/stocks");
+      const data = await res.json();
+      setStocks(data.stocks);
+    } catch (err) {
+      console.error("📉 주가 불러오기 실패:", err);
+    }
+  };
+
   useEffect(() => {
     const savedInputs = localStorage.getItem("stockInputs");
     if (savedInputs) {
@@ -25,17 +35,9 @@ export default function StockPage() {
       setSubmitted(true);
     }
 
-    const fetchStocks = async () => {
-      try {
-        const res = await fetch("/api/stocks");
-        const data = await res.json();
-        setStocks(data.stocks);
-      } catch (err) {
-        console.error("📉 주가 불러오기 실패:", err);
-      }
-    };
-
     fetchStocks();
+    const interval = setInterval(fetchStocks, 30000); // ⏱️ 30초마다 주가 갱신
+    return () => clearInterval(interval);
   }, []);
 
   const handleChange = (code: string, field: keyof InputData, value: string) => {
