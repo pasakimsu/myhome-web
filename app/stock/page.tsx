@@ -48,11 +48,11 @@ export default function StockPage() {
     }));
   };
 
-  const handleSingleSave = (code: string) => {
-    const updatedInputs = { ...inputs };
-    localStorage.setItem("stockInputs", JSON.stringify(updatedInputs));
+  const handleSingleSave = (_code: string) => {
+    localStorage.setItem("stockInputs", JSON.stringify(inputs));
     setSubmitted(true);
   };
+  
 
   const formatNumber = (num: number) => num.toLocaleString();
 
