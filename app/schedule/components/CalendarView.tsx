@@ -10,8 +10,7 @@ interface Props {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   refreshKey: number;
-  dutyStartDate: Date;
-  dutyStartType: "당번" | "비번";
+  dutyStartDate: Date; // ✅ 기준일자만
 }
 
 interface ScheduleData {
@@ -25,7 +24,6 @@ export default function CalendarView({
   onDateChange,
   refreshKey,
   dutyStartDate,
-  dutyStartType,
 }: Props) {
   const [schedules, setSchedules] = useState<ScheduleData[]>([]);
 
@@ -35,12 +33,7 @@ export default function CalendarView({
   const getDutyLabel = (date: Date): "당번" | "비번" => {
     const diff = Math.floor((date.getTime() - dutyStartDate.getTime()) / (1000 * 60 * 60 * 24));
     const index = (diff % 3 + 3) % 3;
-  
-    const pattern: ("당번" | "비번")[] =
-      dutyStartType === "당번"
-        ? ["당번", "비번", "비번"]
-        : ["비번", "비번", "당번"];
-  
+    const pattern: ("당번" | "비번")[] = ["당번", "비번", "비번"];
     return pattern[index];
   };
 
