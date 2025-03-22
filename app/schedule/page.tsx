@@ -31,6 +31,7 @@ export default function SchedulePage() {
       <ScheduleList
         selectedDate={selectedDate}
         refreshKey={refreshKey}
+        onRefresh={handleRefresh}
       />
     </div>
   );
