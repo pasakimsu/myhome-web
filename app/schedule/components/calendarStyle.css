@@ -1,0 +1,12 @@
+/* calendarStyle.css */
+
+.react-calendar {
+    width: 100%;
+    max-width: 430px;
+  }
+  
+  .react-calendar__tile {
+    min-height: 80px !important;
+    padding: 4px !important;
+  }
+  

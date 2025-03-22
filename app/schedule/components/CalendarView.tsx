@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { db, collection, getDocs } from "@/lib/firebase";
+import "./calendarStyle.css"; // 커스텀 스타일 분리 (아래 설명 참고)
 
 interface ScheduleData {
   id: string;
@@ -44,7 +45,7 @@ export default function CalendarView({ selectedDate, onDateChange }: Props) {
         {daySchedules.slice(0, 1).map((s, i) => (
           <div
             key={i}
-            className="text-[10px] leading-tight text-blue-500 truncate text-center"
+            className="text-[10px] leading-tight text-blue-500 text-center whitespace-normal"
           >
             {s.content}
           </div>
@@ -64,7 +65,7 @@ export default function CalendarView({ selectedDate, onDateChange }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-lg p-4 text-black shadow-md w-[360px] sm:w-[420px]">
+    <div className="bg-white rounded-lg p-4 text-black shadow-md w-full max-w-[430px]">
       <Calendar
         onChange={handleChange}
         value={selectedDate}
