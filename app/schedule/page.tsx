@@ -7,14 +7,14 @@ import "react-calendar/dist/Calendar.css";
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const handleDateChange = (value: any) => {
-    // value가 배열이면 첫 번째 날짜만 사용
-    const selected = Array.isArray(value) ? value[0] : value;
-
-    if (!(selected instanceof Date)) return;
-
-    setSelectedDate(selected);
-    console.log("선택한 날짜:", selected.toISOString().split("T")[0]);
+  const handleDateChange = (value: unknown) => {
+    if (value instanceof Date) {
+      setSelectedDate(value);
+    } else if (Array.isArray(value) && value[0] instanceof Date) {
+      setSelectedDate(value[0]);
+    } else {
+      console.warn("날짜 포맷이 잘못되었습니다:", value);
+    }
   };
 
   return (
