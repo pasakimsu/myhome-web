@@ -53,34 +53,35 @@ export default function StockPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-start p-6 text-white">
-      <h1 className="text-2xl font-bold mb-6">📈 내 보유 주식 평가 (네이버 기준)</h1>
-      <div className="bg-gray-800 p-4 rounded-lg w-full max-w-md">
-        <ul>
+    <div className="min-h-screen bg-[#2f2a25] flex flex-col items-center justify-start p-4 text-white">
+      <h1 className="text-xl font-bold mb-4">📈 내 보유 주식 평가</h1>
+      <div className="bg-[#2f2a25] border border-brownBorder p-4 rounded-lg w-full max-w-md">
+        <ul className="space-y-6">
           {stocks.map((stock) => {
             const input = inputs[stock.code] || { quantity: 0, averagePrice: 0 };
             const evalAmount = getEvaluation(stock.price, input.quantity);
             const profit = getProfit(stock.price, input);
 
             return (
-              <li key={stock.code} className="mb-6">
-                <div className="mb-1">
-                  {stock.name} ({stock.code}) → <span className="font-semibold">{stock.price}원</span>
+              <li key={stock.code} className="border-b border-brownBorder pb-4">
+                <div className="text-base mb-2">
+                  <span className="font-semibold">{stock.name}</span> ({stock.code})<br />
+                  현재가: <span className="text-white">{stock.price}원</span>
                 </div>
-                <div className="flex gap-2 items-center mb-1">
+                <div className="flex flex-col gap-2 mb-2">
                   <input
                     type="number"
                     placeholder="보유 수량"
                     value={input.quantity || ""}
                     onChange={(e) => handleChange(stock.code, "quantity", e.target.value)}
-                    className="p-2 w-28 bg-gray-700 text-white rounded"
+                    className="p-2 w-full bg-gray-700 text-white rounded"
                   />
                   <input
                     type="number"
                     placeholder="평균 단가"
                     value={input.averagePrice || ""}
                     onChange={(e) => handleChange(stock.code, "averagePrice", e.target.value)}
-                    className="p-2 w-28 bg-gray-700 text-white rounded"
+                    className="p-2 w-full bg-gray-700 text-white rounded"
                   />
                 </div>
                 {submitted && (
@@ -95,7 +96,7 @@ export default function StockPage() {
         </ul>
         <button
           onClick={() => setSubmitted(true)}
-          className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded"
+          className="mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 rounded"
         >
           등록 / 수정
         </button>
