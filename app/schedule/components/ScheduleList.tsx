@@ -62,7 +62,17 @@ export default function ScheduleList({ selectedDate, refreshKey, onRefresh }: Pr
             key={item.id}
             className="flex justify-between items-center bg-[#3a312a] p-2 rounded"
           >
-            <span className="text-white truncate">{item.content}</span>
+           <span
+  className={`truncate ${
+    item.content.includes("(bak)")
+      ? "text-black"
+      : item.content.includes("(yong)")
+      ? "text-red-500"
+      : "text-white"
+  }`}
+>
+  {item.content}
+</span>
             <button
               onClick={() => handleDelete(item.id)}
               className="bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded"

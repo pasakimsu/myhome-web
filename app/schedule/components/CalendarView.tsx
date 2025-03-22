@@ -42,14 +42,21 @@ export default function CalendarView({ selectedDate, onDateChange, refreshKey }:
 
     return (
       <div className="mt-1 px-1">
-        {daySchedules.slice(0, 1).map((s, i) => (
-          <div
-            key={i}
-            className="text-[10px] leading-tight text-blue-500 text-center whitespace-normal"
-          >
-            {s.content}
-          </div>
-        ))}
+      {daySchedules.slice(0, 1).map((s, i) => (
+  <div
+    key={i}
+    className={`text-[10px] leading-tight text-center whitespace-normal ${
+      s.content.includes("(bak)")
+        ? "text-black"
+        : s.content.includes("(yong)")
+        ? "text-red-500"
+        : "text-blue-500"
+    }`}
+  >
+    {s.content}
+  </div>
+))}
+
         {daySchedules.length > 1 && (
           <div className="text-[10px] text-gray-400 text-center">
             +{daySchedules.length - 1}
