@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { db, collection, getDocs, deleteDoc, doc } from "@/lib/firebase";
 
-export default function DeleteAllButton() {
+interface DeleteAllButtonProps {
+  onAfterDelete?: () => void;
+}
+
+export default function DeleteAllButton({ onAfterDelete }: DeleteAllButtonProps) {
   const [deleting, setDeleting] = useState(false);
 
   const handleDeleteAll = async () => {
@@ -26,7 +30,7 @@ export default function DeleteAllButton() {
       }
 
       alert("✅ 모든 부조금 데이터가 삭제되었습니다!");
-      window.location.reload(); // ✅ 삭제 후 자동 새로고침
+      onAfterDelete?.(); // ✅ 새로고침 대신 상위에서 데이터 초기화
     } catch (error) {
       console.error("❌ 데이터 삭제 오류:", error);
       alert("❌ 데이터를 삭제하는 중 오류가 발생했습니다.");
