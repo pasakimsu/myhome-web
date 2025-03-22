@@ -190,15 +190,13 @@ export default function CalculPage() {
             </p>
           )}
 
-          <button
-            onClick={handleCalculate}
-            className="w-full bg-gray-700 hover:bg-gray-600 font-bold py-3 rounded transition duration-300"
-          >
-            계산하기
-          </button>
+         
 
           <BudgetSummary allocated={allocated} accountNumbers={accountNumbers} />
-          <BudgetSaveButton onSave={handleSave} />
+          <BudgetSaveButton
+  onSave={handleSave}
+  onCalculate={handleCalculate}
+/>
 
           <BudgetComparisonTable userBudgets={userBudgets} />
         </div>
