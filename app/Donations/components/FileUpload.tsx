@@ -16,7 +16,6 @@ export default function FileUpload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
 
-  // 🔹 파일 선택 핸들러
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -25,13 +24,13 @@ export default function FileUpload() {
     }
   };
 
-  // 🔹 CSV 파일 업로드 및 Firestore 저장
   const handleFileUpload = async () => {
     if (!selectedFile) {
       alert("업로드할 파일을 선택하세요.");
       return;
     }
 
+    const userId = localStorage.getItem("userId") || "donations";
     setUploading(true);
     try {
       const reader = new FileReader();
@@ -39,13 +38,12 @@ export default function FileUpload() {
       reader.onload = async (e) => {
         try {
           let csvData = e.target?.result as string;
-
           if (csvData.charCodeAt(0) === 0xfeff) {
             csvData = csvData.slice(1);
           }
 
           const rows = csvData.split("\n").map((row) => row.split(","));
-          rows.shift(); // 첫 번째 줄(헤더) 제거
+          rows.shift();
 
           const jsonData: DonationData[] = rows.map((row): DonationData => {
             const name = row[1]?.trim() || "이름 없음";
@@ -59,7 +57,6 @@ export default function FileUpload() {
                 : Number(row[3]?.replace(/,/g, "").trim()),
             };
           });
-          
 
           if (jsonData.length === 0) {
             alert("📢 CSV 파일이 비어 있습니다! ❌");
@@ -67,7 +64,7 @@ export default function FileUpload() {
           }
 
           for (let i = 0; i < jsonData.length; i++) {
-            await addDoc(collection(db, "donations"), jsonData[i]);
+            await addDoc(collection(db, userId), jsonData[i]);
             await new Promise((resolve) => setTimeout(resolve, 50));
           }
 
@@ -87,16 +84,13 @@ export default function FileUpload() {
     }
   };
 
-  // 🔹 **부분 검색을 위해 이름 키워드 배열 생성 (모든 연속적인 부분 문자열 추가)**
   const generateNameKeywords = (name: string): string[] => {
     const keywords = new Set<string>();
-
     for (let i = 0; i < name.length; i++) {
       for (let j = i + 1; j <= name.length; j++) {
-        keywords.add(name.substring(i, j)); // 모든 연속된 부분 문자열을 추가
+        keywords.add(name.substring(i, j));
       }
     }
-
     return Array.from(keywords);
   };
 
@@ -106,9 +100,9 @@ export default function FileUpload() {
         📂 파일 선택
         <input type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
       </label>
-  
+
       {fileName && <p className="text-gray-400 mb-4">📄 {fileName}</p>}
-  
+
       <button
         onClick={handleFileUpload}
         disabled={!selectedFile}
@@ -122,5 +116,4 @@ export default function FileUpload() {
       </button>
     </div>
   );
-  
 }
