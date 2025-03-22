@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./calendarStyle.css"; // ✅ 추가된 CSS import
+import "./calendarStyle.css";
 import { db, collection, getDocs } from "@/lib/firebase";
 
 interface Props {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   refreshKey: number;
+  dutyStartDate: Date;
+  dutyStartType: "당번" | "비번";
 }
 
 interface ScheduleData {
@@ -18,19 +20,28 @@ interface ScheduleData {
   content: string;
 }
 
-export default function CalendarView({ selectedDate, onDateChange, refreshKey }: Props) {
+export default function CalendarView({
+  selectedDate,
+  onDateChange,
+  refreshKey,
+  dutyStartDate,
+  dutyStartType,
+}: Props) {
   const [schedules, setSchedules] = useState<ScheduleData[]>([]);
 
   const formatDate = (date: Date) =>
     date.toLocaleDateString("ko-KR").replaceAll(". ", "-").replace(".", "");
 
-  const dutyStart = new Date("2025-01-01");
-  const dutyLabels = ["당번", "비번", "비번"];
-
-  const getDutyLabel = (date: Date) => {
-    const diff = Math.floor((date.getTime() - dutyStart.getTime()) / (1000 * 60 * 60 * 24));
+  const getDutyLabel = (date: Date): "당번" | "비번" => {
+    const diff = Math.floor((date.getTime() - dutyStartDate.getTime()) / (1000 * 60 * 60 * 24));
     const index = (diff % 3 + 3) % 3;
-    return dutyLabels[index];
+  
+    const pattern: ("당번" | "비번")[] =
+      dutyStartType === "당번"
+        ? ["당번", "비번", "비번"]
+        : ["비번", "비번", "당번"];
+  
+    return pattern[index];
   };
 
   const fetchSchedules = async () => {
@@ -46,9 +57,8 @@ export default function CalendarView({ selectedDate, onDateChange, refreshKey }:
     fetchSchedules();
   }, [refreshKey]);
 
-  const tileClassName = ({ date }: { date: Date }) => {
-    return getDutyLabel(date) === "당번" ? "duty-tile" : "";
-  };
+  const tileClassName = ({ date }: { date: Date }) =>
+    getDutyLabel(date) === "당번" ? "duty-tile" : "";
 
   const tileContent = ({ date }: { date: Date }) => {
     const dateStr = formatDate(date);
@@ -90,7 +100,7 @@ export default function CalendarView({ selectedDate, onDateChange, refreshKey }:
         calendarType="gregory"
         locale="ko-KR"
         selectRange={false}
-        tileClassName={tileClassName} // ✅ 당번 날짜에 클래스 적용
+        tileClassName={tileClassName}
         tileContent={tileContent}
       />
     </div>
