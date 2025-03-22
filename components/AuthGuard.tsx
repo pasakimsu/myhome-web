@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   if (typeof window !== "undefined") {
     const user = localStorage.getItem("userId");
