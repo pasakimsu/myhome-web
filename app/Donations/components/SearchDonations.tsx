@@ -206,17 +206,7 @@ export default function SearchDonations() {
             ))}
           </ul>
 
-          <div className="flex justify-end mt-4 text-sm text-white">
-            <p>
-              총합:{" "}
-              <strong>
-                {searchResults
-                  .reduce((sum, r) => sum + (r.amount || 0), 0)
-                  .toLocaleString()}
-                원
-              </strong>
-            </p>
-          </div>
+          
         </div>
       )}
     </div>
