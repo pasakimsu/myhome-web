@@ -19,6 +19,12 @@ export default function StockPage() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
+    const savedInputs = localStorage.getItem("stockInputs");
+    if (savedInputs) {
+      setInputs(JSON.parse(savedInputs));
+      setSubmitted(true);
+    }
+
     const fetchStocks = async () => {
       try {
         const res = await fetch("/api/stocks");
@@ -50,6 +56,11 @@ export default function StockPage() {
   const getProfit = (price: string, input: InputData) => {
     const marketPrice = parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
     return (marketPrice - input.averagePrice) * input.quantity;
+  };
+
+  const handleSave = () => {
+    localStorage.setItem("stockInputs", JSON.stringify(inputs));
+    setSubmitted(true);
   };
 
   return (
@@ -95,7 +106,7 @@ export default function StockPage() {
           })}
         </ul>
         <button
-          onClick={() => setSubmitted(true)}
+          onClick={handleSave}
           className="mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 rounded"
         >
           등록 / 수정
