@@ -32,6 +32,12 @@ export default function BudgetHomePage() {
     return new Date(`${y}-${mm}-${dd}`);
   };
 
+  const getKoreanDay = (dateStr: string) => {
+    const days = ["일", "월", "화", "수", "목", "금", "토"];
+    const date = toISODate(dateStr);
+    return days[date.getDay()];
+  };
+
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "schedules"), (snapshot) => {
       const all = snapshot.docs.map((doc) => ({
@@ -76,7 +82,7 @@ export default function BudgetHomePage() {
     const referenceDate = new Date(referenceDateStr);
     const today = new Date();
     const diffTime = today.getTime() - referenceDate.getTime();
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   };
 
   return (
@@ -97,8 +103,8 @@ export default function BudgetHomePage() {
                 <p className="mt-4 font-semibold">🗓 이번주 일정</p>
                 <ul className="list-disc list-inside space-y-1">
                   {weeklySchedules.map((item) => (
-                    <li key={item.id} className="font-bold">
-                      {item.date} – {item.content}
+                    <li key={item.id} className="font-bold text-[#FFC90E]">
+                      {item.date}({getKoreanDay(item.date)}) – {item.content}
                     </li>
                   ))}
                 </ul>
@@ -111,7 +117,7 @@ export default function BudgetHomePage() {
                 <ul className="list-disc list-inside space-y-1">
                   {monthlySchedules.map((item) => (
                     <li key={item.id}>
-                      {item.date} – {item.content}
+                      {item.date}({getKoreanDay(item.date)}) – {item.content}
                     </li>
                   ))}
                 </ul>
