@@ -5,9 +5,10 @@ import { db, collection, addDoc } from "@/lib/firebase";
 
 interface Props {
   selectedDate: Date;
+  onRegister: () => void;
 }
 
-export default function ScheduleInput({ selectedDate }: Props) {
+export default function ScheduleInput({ selectedDate, onRegister }: Props) {
   const [userId, setUserId] = useState<string | null>(null);
   const [content, setContent] = useState<string>("");
 
@@ -17,16 +18,15 @@ export default function ScheduleInput({ selectedDate }: Props) {
   }, []);
 
   const handleSubmit = async () => {
-    if (!content.trim()) {
+    if (!content.trim() || !userId) {
       alert("내용을 입력하세요.");
       return;
     }
-    if (!userId) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
 
-    const dateStr = selectedDate.toLocaleDateString("ko-KR").replaceAll(". ", "-").replace(".", "");
+    const dateStr = selectedDate
+      .toLocaleDateString("ko-KR")
+      .replaceAll(". ", "-")
+      .replace(".", "");
 
     try {
       await addDoc(collection(db, "schedules"), {
@@ -37,13 +37,17 @@ export default function ScheduleInput({ selectedDate }: Props) {
       });
       alert("✅ 등록 완료!");
       setContent("");
+      onRegister(); // ✅ 새로고침 트리거
     } catch (err) {
       console.error("❌ 등록 오류:", err);
       alert("❌ 등록 중 문제가 발생했습니다.");
     }
   };
 
-  const formattedDate = selectedDate.toLocaleDateString("ko-KR").replaceAll(". ", "-").replace(".", "");
+  const formattedDate = selectedDate
+    .toLocaleDateString("ko-KR")
+    .replaceAll(". ", "-")
+    .replace(".", "");
 
   return (
     <div className="mt-6 w-full max-w-md">

@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { db, collection, getDocs } from "@/lib/firebase";
-import "./calendarStyle.css"; // 커스텀 스타일 분리 (아래 설명 참고)
+
+interface Props {
+  selectedDate: Date;
+  onDateChange: (date: Date) => void;
+  refreshKey: number; // ✅ 새로고침 트리거
+}
 
 interface ScheduleData {
   id: string;
@@ -12,29 +17,24 @@ interface ScheduleData {
   content: string;
 }
 
-interface Props {
-  selectedDate: Date;
-  onDateChange: (date: Date) => void;
-}
-
-export default function CalendarView({ selectedDate, onDateChange }: Props) {
+export default function CalendarView({ selectedDate, onDateChange, refreshKey }: Props) {
   const [schedules, setSchedules] = useState<ScheduleData[]>([]);
 
   const formatDate = (date: Date) =>
     date.toLocaleDateString("ko-KR").replaceAll(". ", "-").replace(".", "");
 
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      const snapshot = await getDocs(collection(db, "schedules"));
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<ScheduleData, "id">),
-      }));
-      setSchedules(data);
-    };
+  const fetchSchedules = async () => {
+    const snapshot = await getDocs(collection(db, "schedules"));
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as Omit<ScheduleData, "id">),
+    }));
+    setSchedules(data);
+  };
 
+  useEffect(() => {
     fetchSchedules();
-  }, []);
+  }, [refreshKey]); // ✅ refreshKey 변경 시 다시 불러옴
 
   const tileContent = ({ date }: { date: Date }) => {
     const dateStr = formatDate(date);
