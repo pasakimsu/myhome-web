@@ -7,7 +7,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
+    const user = localStorage.getItem("userId"); // ✅ 수정된 부분
     if (!user) {
       router.replace("/login");
     }
