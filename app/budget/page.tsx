@@ -16,8 +16,8 @@ export default function BudgetHomePage() {
   const router = useRouter();
   const [userId, setUserId] = useState("");
   const [monthlySchedules, setMonthlySchedules] = useState<ScheduleItem[]>([]);
+  const [weeklySchedules, setWeeklySchedules] = useState<ScheduleItem[]>([]);
 
-  // ✅ 사용자 ID 로드만 (검사는 AuthGuard가 수행)
   useEffect(() => {
     const storedUser = localStorage.getItem("userId");
     if (storedUser) {
@@ -25,7 +25,6 @@ export default function BudgetHomePage() {
     }
   }, []);
 
-  // ✅ 안정적인 날짜 정렬 함수
   const toISODate = (dateStr: string) => {
     const [y, m, d] = dateStr.split("-");
     const mm = m.padStart(2, "0");
@@ -33,7 +32,6 @@ export default function BudgetHomePage() {
     return new Date(`${y}-${mm}-${dd}`);
   };
 
-  // ✅ Firestore 실시간 구독 + 월 필터 + 안정적 정렬
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "schedules"), (snapshot) => {
       const all = snapshot.docs.map((doc) => ({
@@ -44,19 +42,38 @@ export default function BudgetHomePage() {
       const today = new Date();
       const currentYear = today.getFullYear();
       const currentMonth = today.getMonth() + 1;
+      const currentWeekStart = new Date(today);
+      currentWeekStart.setDate(today.getDate() - today.getDay());
+      const currentWeekEnd = new Date(today);
+      currentWeekEnd.setDate(today.getDate() + (6 - today.getDay()));
 
-      const filtered = all
+      const filteredMonth = all
         .filter((item) => {
           const [y, m] = item.date.split("-");
           return Number(y) === currentYear && Number(m) === currentMonth;
         })
         .sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime());
 
-      setMonthlySchedules(filtered);
+      const filteredWeek = all
+        .filter((item) => {
+          const date = toISODate(item.date);
+          return date >= currentWeekStart && date <= currentWeekEnd;
+        })
+        .sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime());
+
+      setMonthlySchedules(filteredMonth);
+      setWeeklySchedules(filteredWeek);
     });
 
     return () => unsubscribe();
   }, []);
+
+  const getDaysSinceReference = (referenceDateStr: string) => {
+    const referenceDate = new Date(referenceDateStr);
+    const today = new Date();
+    const diffTime = today.getTime() - referenceDate.getTime();
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  };
 
   return (
     <AuthGuard>
@@ -67,17 +84,34 @@ export default function BudgetHomePage() {
           </h2>
 
           <div className="bg-[#3e352c] text-white p-4 rounded-md my-6 text-sm leading-relaxed shadow-inner text-left">
-            <p className="mb-2 font-semibold">✍ 이번 달 일정</p>
-            {monthlySchedules.length === 0 ? (
-              <p className="text-gray-400 text-sm">이번 달 일정이 없습니다.</p>
-            ) : (
-              <ul className="list-disc list-inside space-y-1">
-                {monthlySchedules.map((item) => (
-                  <li key={item.id}>
-                    <span className="text-amber-300 font-medium">{item.date}</span> – {item.content}
-                  </li>
-                ))}
-              </ul>
+            <p className="mb-2 font-bold text-lg border-b border-brownBorder pb-1">
+              서한이-{getDaysSinceReference("2025-01-13")}일째 (기준일: 2025.1.13)
+            </p>
+
+            {weeklySchedules.length > 0 && (
+              <>
+                <p className="mt-4 font-semibold">🗓 이번주 일정</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {weeklySchedules.map((item) => (
+                    <li key={item.id} className="font-bold">
+                      {item.date} – {item.content}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {monthlySchedules.length > 0 && (
+              <>
+                <p className="mt-4 font-semibold">🗓 이번달 일정</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {monthlySchedules.map((item) => (
+                    <li key={item.id}>
+                      {item.date} – {item.content}
+                    </li>
+                  ))}
+                </ul>
+              </>
             )}
           </div>
 
