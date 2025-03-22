@@ -81,24 +81,24 @@ export default function StockPage() {
                   <span className="font-semibold">{stock.name}</span> ({stock.code})<br />
                   현재가: <span className="text-white">{stock.price}원</span>
                 </div>
-                <div className="flex flex-col gap-2 mb-2">
+                <div className="flex flex-wrap gap-2 items-center mb-2">
                   <input
                     type="number"
-                    placeholder="보유 수량"
+                    placeholder="수량"
                     value={input.quantity || ""}
                     onChange={(e) => handleChange(stock.code, "quantity", e.target.value)}
-                    className="p-2 w-full bg-gray-700 text-white rounded"
+                    className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
                   />
                   <input
                     type="number"
-                    placeholder="평균 단가"
+                    placeholder="평단"
                     value={input.averagePrice || ""}
                     onChange={(e) => handleChange(stock.code, "averagePrice", e.target.value)}
-                    className="p-2 w-full bg-gray-700 text-white rounded"
+                    className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
                   />
                   <button
                     onClick={handleSingleSave}
-                    className="self-end px-3 py-1 text-sm bg-yellow-600 hover:bg-yellow-700 rounded"
+                    className="px-2 py-1 text-xs bg-yellow-600 hover:bg-yellow-700 rounded"
                   >
                     등록
                   </button>
