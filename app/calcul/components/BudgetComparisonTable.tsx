@@ -15,7 +15,8 @@ export default function BudgetComparisonTable({ userBudgets }: { userBudgets: Bu
   if (userBudgets.length === 0) return null; // 데이터가 없으면 표시하지 않음
 
   return (
-    <div className="mt-6 bg-gray-800 p-4 rounded-lg w-full">
+    <div className="mt-6 bg-[#2f2a25] text-white p-4 rounded-lg w-full">
+
       <h3 className="text-white text-lg font-semibold mb-3">사용자별 입력된 금액</h3>
       <table className="w-full text-white border-collapse border border-gray-600">
         <thead>
