@@ -9,4 +9,17 @@
     min-height: 80px !important;
     padding: 4px !important;
   }
+  /* calendarStyle.css */
+
+.duty-tile abbr::after {
+    content: " 당";
+    font-size: 10px;
+    background-color: #16a34a; /* Tailwind green-600 */
+    color: white;
+    padding: 1px 4px;
+    border-radius: 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  
   
