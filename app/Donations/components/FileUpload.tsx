@@ -112,7 +112,7 @@ export default function FileUpload() {
       <button
         onClick={handleFileUpload}
         className={`p-3 rounded-lg w-40 mb-4 ${
-          selectedFile ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-500 cursor-not-allowed"
+          selectedFile ? "bg-blue-500 hover:bg-[#2f2a25]" : "bg-[#2f2a25] cursor-not-allowed"
         }`}
         disabled={!selectedFile}
       >

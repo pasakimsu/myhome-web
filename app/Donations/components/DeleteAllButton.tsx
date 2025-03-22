@@ -34,12 +34,16 @@ export default function DeleteAllButton() {
   };
 
   return (
-    <button
-      onClick={handleDeleteAll}
-      className={`p-3 rounded-lg w-40 mb-6 ${deleting ? "bg-red-700 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"}`}
-      disabled={deleting}
-    >
-      {deleting ? "삭제 중..." : "🗑️ 전체 삭제"}
-    </button>
+    <div className="flex justify-center">
+      <button
+        onClick={handleDeleteAll}
+        className={`p-3 rounded-lg w-40 mb-6 ${
+          deleting ? "bg-[#2f2a25] cursor-not-allowed" : "bg-[#2f2a25] hover:bg-[#2f2a25]"
+        }`}
+        disabled={deleting}
+      >
+        {deleting ? "삭제 중..." : "🗑️ 전체 삭제"}
+      </button>
+    </div>
   );
 }
