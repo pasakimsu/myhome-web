@@ -1,11 +1,11 @@
+// ✅ app/api/stocks/route.ts
 import { NextResponse } from "next/server";
 import axios from "axios";
 import * as cheerio from "cheerio";
 
 const stockCodes = [
   { code: "005930", name: "삼성전자" },
-  { code: "035720", name: "카카오" },
-  { code: "005380", name: "현대차" },
+  { code: "017670", name: "SK텔레콤" },
 ];
 
 export async function GET() {
