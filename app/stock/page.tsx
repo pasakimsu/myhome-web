@@ -1,3 +1,5 @@
+"use client";
+
 // app/api/stocks/route.ts
 import { NextResponse } from "next/server";
 import axios from "axios";
@@ -31,8 +33,6 @@ export async function GET() {
     return NextResponse.json({ error: "스크래핑 실패" }, { status: 500 });
   }
 }
-
-"use client";
 
 // app/stock/page.tsx
 
