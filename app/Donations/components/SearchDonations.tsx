@@ -10,7 +10,6 @@ import {
   doc,
   updateDoc,
 } from "@/lib/firebase";
-import DeleteAllButton from "./DeleteAllButton";
 
 interface DonationData {
   id: string;
@@ -151,8 +150,6 @@ export default function SearchDonations() {
       >
         {loading ? "검색 중..." : "🔍 검색"}
       </button>
-
-      <DeleteAllButton onAfterDelete={() => setSearchResults([])} />
 
       {searchResults.length > 0 && (
         <div className="w-full max-w-md bg-[#3a312a] p-4 rounded-lg shadow-md">
