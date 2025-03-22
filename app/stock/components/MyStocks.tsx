@@ -8,6 +8,11 @@ interface Stock {
   name: string;
 }
 
+interface QuoteResult {
+  symbol: string;
+  regularMarketPrice: number;
+}
+
 const stockList: Stock[] = [
   { symbol: "005930.KQ", name: "삼성전자" },
   { symbol: "035720.KQ", name: "카카오" },
@@ -22,13 +27,16 @@ export default function MyStocks() {
     const fetchPrices = async () => {
       try {
         const symbols = stockList.map((s) => s.symbol).join(",");
-        const response = await axios.get(
-          `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`
-        );
-        const data = response.data.quoteResponse.result;
-
+        const response = await axios.get<{
+            quoteResponse: { result: QuoteResult[] };
+          }>(
+            `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`
+          );
+          
+          const data = response.data.quoteResponse.result;
+          
         const priceMap: { [symbol: string]: number } = {};
-        data.forEach((item: any) => {
+        data.forEach((item) => {
           priceMap[item.symbol] = item.regularMarketPrice;
         });
 
@@ -69,7 +77,9 @@ export default function MyStocks() {
             <tr key={symbol}>
               <td className="p-2 border border-gray-600">{name}</td>
               <td className="p-2 border border-gray-600">
-                {prices[symbol] !== undefined ? `${prices[symbol].toLocaleString()} 원` : "로딩 중..."}
+                {prices[symbol] !== undefined
+                  ? `${prices[symbol].toLocaleString()} 원`
+                  : "로딩 중..."}
               </td>
               <td className="p-2 border border-gray-600">
                 <input
