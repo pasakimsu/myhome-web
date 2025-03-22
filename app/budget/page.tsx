@@ -26,32 +26,39 @@ export default function BudgetHomePage() {
     }
   }, [router]);
 
-  // ✅ Firestore 실시간 구독
+  // ✅ 안정적인 날짜 정렬 함수
+  const toISODate = (dateStr: string) => {
+    const [y, m, d] = dateStr.split("-");
+    const mm = m.padStart(2, "0");
+    const dd = d.padStart(2, "0");
+    return new Date(`${y}-${mm}-${dd}`);
+  };
+
+  // ✅ Firestore 실시간 구독 + 월 필터 + 안정적 정렬
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "schedules"), (snapshot) => {
       const all = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<ScheduleItem, "id">),
       }));
-  
+
       const today = new Date();
       const currentYear = today.getFullYear();
       const currentMonth = today.getMonth() + 1;
-  
-      const filtered = all
-  .filter((item) => {
-    const [y, m] = item.date.split("-");
-    return Number(y) === currentYear && Number(m) === currentMonth;
-  })
-  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // ✅ 날짜 오름차순 정렬
 
-  
+      const filtered = all
+        .filter((item) => {
+          const [y, m] = item.date.split("-");
+          return Number(y) === currentYear && Number(m) === currentMonth;
+        })
+        .sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime()); // ✅ 안정적인 오름차순 정렬
+
       setMonthlySchedules(filtered);
     });
-  
-    return () => unsubscribe();
+
+    return () => unsubscribe(); // 메모리 누수 방지
   }, []);
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-beigeDark px-4 transition-colors">
       <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
