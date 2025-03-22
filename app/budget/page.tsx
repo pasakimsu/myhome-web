@@ -100,7 +100,7 @@ export default function BudgetHomePage() {
 
             {weeklySchedules.length > 0 && (
               <>
-                <p className="mt-4 font-semibold">🗓 이번주 일정</p>
+                <p className="mt-4 font-semibold"> 이번주 일정</p>
                 <ul className="list-disc list-inside space-y-1">
                   {weeklySchedules.map((item) => (
                     <li key={item.id} className="font-bold text-[#FFC90E]">
@@ -113,7 +113,7 @@ export default function BudgetHomePage() {
 
             {monthlySchedules.length > 0 && (
               <>
-                <p className="mt-4 font-semibold">🗓 이번달 일정</p>
+                <p className="mt-4 font-semibold"> 이번달 일정</p>
                 <ul className="list-disc list-inside space-y-1">
                   {monthlySchedules.map((item) => (
                     <li key={item.id}>
