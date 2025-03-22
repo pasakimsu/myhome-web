@@ -20,7 +20,7 @@ export default function SchedulePage() {
 
       {/* ✅ 기준일자 설정 */}
       <div className="mb-6 w-full max-w-md">
-        <label className="block mb-1 text-sm font-semibold">📅 당번 기준일자</label>
+        <label className="block mb-1 text-sm font-semibold">📅 당번1 기준일자</label>
         <input
           type="date"
           value={dutyStartDate.toISOString().split("T")[0]}
