@@ -20,7 +20,7 @@ export default function BudgetComparisonTable({ userBudgets }: { userBudgets: Bu
       <h3 className="text-white text-lg font-semibold mb-3">사용자별 입력된 금액</h3>
       <table className="w-full text-white border-collapse border border-gray-600">
         <thead>
-          <tr className="bg-gray-700">
+          <tr className="bg-[#2f2a25]">
             <th className="border border-gray-600 p-2">사용자</th>
             <th className="border border-gray-600 p-2">생활비</th>
             <th className="border border-gray-600 p-2">적금</th>
