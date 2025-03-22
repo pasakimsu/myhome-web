@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { db, collection, getDocs, query, where } from "@/lib/firebase";
+import { db, collection, getDocs, query, where, doc, updateDoc } from "@/lib/firebase";
 
 interface DonationData {
   id: string;
@@ -9,12 +9,15 @@ interface DonationData {
   name: string;
   reason: string;
   amount: number;
+  sentAmount?: number;
 }
 
 export default function SearchDonations() {
   const [searchName, setSearchName] = useState<string>("");
   const [searchResults, setSearchResults] = useState<DonationData[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const [activeInputs, setActiveInputs] = useState<Record<string, boolean>>({});
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
 
   const handleSearch = async () => {
     if (!searchName.trim()) {
@@ -49,14 +52,78 @@ export default function SearchDonations() {
     }
   };
 
+  const handleToggleInput = (id: string) => {
+    setActiveInputs((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const handleInputChange = (id: string, value: string) => {
+    // 숫자만 남기고, 천 단위 쉼표 적용
+    const numeric = value.replace(/[^\d]/g, "");
+    const formatted = Number(numeric).toLocaleString();
+    setInputValues((prev) => ({
+      ...prev,
+      [id]: formatted,
+    }));
+  };
+  
+  const handleRegister = async (id: string) => {
+    const value = inputValues[id];
+    const amount = Number(value.replace(/,/g, ""));
+    if (isNaN(amount) || amount <= 0) {
+      alert("올바른 금액을 입력하세요.");
+      return;
+    }
+
+    try {
+      const ref = doc(db, "donations", id);
+      await updateDoc(ref, {
+        sentAmount: amount,
+      });
+
+      setSearchResults((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, sentAmount: amount } : item
+        )
+      );
+    } catch (err) {
+      console.error("❌ 등록 오류:", err);
+      alert("❌ 등록 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const ref = doc(db, "donations", id);
+      await updateDoc(ref, {
+        sentAmount: null,
+      });
+
+      setSearchResults((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, sentAmount: undefined } : item
+        )
+      );
+      setInputValues((prev) => ({
+        ...prev,
+        [id]: "",
+      }));
+    } catch (err) {
+      console.error("❌ 삭제 오류:", err);
+      alert("❌ 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center mt-6">
+    <div className="flex flex-col items-center mt-6 w-full">
       <h2 className="text-2xl font-bold mb-4">부조금 검색</h2>
 
       <input
         type="text"
         placeholder="이름을 입력하세요"
-        className="p-3 mb-3 border-brownBorder rounded bg-[#2f2a25] text-white placeholder-gray-400"
+        className="p-3 mb-3 border border-gray-600 rounded bg-gray-700 text-white placeholder-gray-400 w-full max-w-md"
         value={searchName}
         onChange={(e) => setSearchName(e.target.value)}
       />
@@ -64,7 +131,7 @@ export default function SearchDonations() {
       <button
         onClick={handleSearch}
         className={`p-3 rounded-lg w-40 mb-4 ${
-          searchName ? "bg-[#2f2a25] hover:bg-[#2f2a25]" : "bg-[#2f2a25] cursor-not-allowed"
+          searchName ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-500 cursor-not-allowed"
         }`}
         disabled={!searchName}
       >
@@ -72,22 +139,77 @@ export default function SearchDonations() {
       </button>
 
       {searchResults.length > 0 && (
-        <div className="w-full max-w-md bg-[#2f2a25] p-4 rounded-lg shadow-lg">
+        <div className="w-full max-w-md bg-[#3a312a] p-4 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold mb-2">검색 결과</h3>
-          <ul>
+          <ul className="space-y-4">
             {searchResults.map((result) => (
-              <li key={result.id} className="border-b border-brownBorder py-2">
-                📅 <strong>{result.date}</strong> | 👤 <strong>{result.name}</strong> | 💰 <strong>{result.amount.toLocaleString()}원</strong> | 📝 <strong>{result.reason}</strong>
+              <li key={result.id} className="border-b border-gray-600 pb-2">
+                <div className="flex flex-col text-sm">
+                  <div className="mb-1">
+                    📅 <strong>{result.date}</strong> | 👤{" "}
+                    <strong>{result.name}</strong> | 💰{" "}
+                    <strong>{result.amount.toLocaleString()}원</strong> | 📝{" "}
+                    <strong>{result.reason}</strong>{" "}
+                    <input
+                      type="checkbox"
+                      className="ml-2 align-middle"
+                      checked={!!activeInputs[result.id]}
+                      onChange={() => handleToggleInput(result.id)}
+                      title="송금 여부 체크"
+                    />
+                  </div>
+
+                  {activeInputs[result.id] && (
+                    <div className="flex items-center gap-2 mt-1">
+                      💸
+                      <input
+                        type="text"
+                        placeholder="보낸 금액"
+                        value={inputValues[result.id] || ""}
+                        onChange={(e) =>
+                          handleInputChange(result.id, e.target.value)
+                        }
+                        className="flex-1 p-1 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
+                      />
+                      <button
+                        onClick={() => handleRegister(result.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs rounded"
+                      >
+                        등록
+                      </button>
+                      <button
+                        onClick={() => handleDelete(result.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs rounded"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
+
+                  {result.sentAmount !== undefined && (
+                    <p className="text-xs text-right text-green-400 mt-1">
+                      📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원
+                    </p>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
-          {/* 🔹 합계 출력 */}
-          <p className="text-right text-sm text-gray-300 mt-2">
-            총합:{" "}
-            <strong>
-              {searchResults.reduce((sum, r) => sum + Number(r.amount), 0).toLocaleString()}원
-            </strong>
-          </p>
+
+          <div className="flex justify-between items-center mt-4 text-sm text-white">
+            <div className="flex gap-2 items-center">
+              {/* 등록/삭제 버튼들이 여기로 올 수도 있음 */}
+            </div>
+            <p>
+              총합:{" "}
+              <strong>
+                {searchResults
+                  .reduce((sum, r) => sum + (r.amount || 0), 0)
+                  .toLocaleString()}
+                원
+              </strong>
+            </p>
+          </div>
         </div>
       )}
     </div>

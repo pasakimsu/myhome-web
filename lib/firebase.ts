@@ -8,7 +8,8 @@ import {
   doc,
   setDoc,
   deleteDoc,
-  addDoc
+  addDoc,
+  updateDoc
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -32,5 +33,6 @@ export {
   doc,
   setDoc,
   deleteDoc,
-  addDoc
+  addDoc,
+  updateDoc
 };
