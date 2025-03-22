@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { db, collection, getDocs, query, where, doc, updateDoc } from "@/lib/firebase";
+import {
+  db,
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from "@/lib/firebase";
 
 interface DonationData {
   id: string;
@@ -60,19 +68,19 @@ export default function SearchDonations() {
   };
 
   const handleInputChange = (id: string, value: string) => {
-    // 숫자만 남기고, 천 단위 쉼표 적용
-    const numeric = value.replace(/[^\d]/g, "");
-    const formatted = Number(numeric).toLocaleString();
+    const numeric = value.replace(/[^\d]/g, ""); // 숫자만 남김
+    const formatted = numeric ? Number(numeric).toLocaleString() : "";
     setInputValues((prev) => ({
       ...prev,
       [id]: formatted,
     }));
   };
-  
+
   const handleRegister = async (id: string) => {
-    const value = inputValues[id];
-    const amount = Number(value.replace(/,/g, ""));
-    if (isNaN(amount) || amount <= 0) {
+    const raw = inputValues[id];
+    const number = Number(raw.replace(/,/g, ""));
+
+    if (!number || isNaN(number) || number <= 0) {
       alert("올바른 금액을 입력하세요.");
       return;
     }
@@ -80,12 +88,12 @@ export default function SearchDonations() {
     try {
       const ref = doc(db, "donations", id);
       await updateDoc(ref, {
-        sentAmount: amount,
+        sentAmount: number,
       });
 
       setSearchResults((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, sentAmount: amount } : item
+          item.id === id ? { ...item, sentAmount: number } : item
         )
       );
     } catch (err) {
@@ -123,7 +131,7 @@ export default function SearchDonations() {
       <input
         type="text"
         placeholder="이름을 입력하세요"
-        className="p-3 mb-3 border border-gray-600 rounded bg-gray-700 text-white placeholder-gray-400 w-full max-w-md"
+        className="p-3 mb-3 border border-brownBorder rounded bg-gray-700 text-white placeholder-gray-400 w-full max-w-md"
         value={searchName}
         onChange={(e) => setSearchName(e.target.value)}
       />
@@ -131,7 +139,9 @@ export default function SearchDonations() {
       <button
         onClick={handleSearch}
         className={`p-3 rounded-lg w-40 mb-4 ${
-          searchName ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-500 cursor-not-allowed"
+          searchName
+            ? "bg-blue-500 hover:bg-blue-600"
+            : "bg-gray-500 cursor-not-allowed"
         }`}
         disabled={!searchName}
       >
@@ -143,7 +153,7 @@ export default function SearchDonations() {
           <h3 className="text-lg font-semibold mb-2">검색 결과</h3>
           <ul className="space-y-4">
             {searchResults.map((result) => (
-              <li key={result.id} className="border-b border-gray-600 pb-2">
+              <li key={result.id} className="border-b brownBorder pb-2">
                 <div className="flex flex-col text-sm">
                   <div className="mb-1">
                     📅 <strong>{result.date}</strong> | 👤{" "}
@@ -186,7 +196,7 @@ export default function SearchDonations() {
                     </div>
                   )}
 
-                  {result.sentAmount !== undefined && (
+                  {typeof result.sentAmount === "number" && (
                     <p className="text-xs text-right text-green-400 mt-1">
                       📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원
                     </p>
@@ -196,10 +206,7 @@ export default function SearchDonations() {
             ))}
           </ul>
 
-          <div className="flex justify-between items-center mt-4 text-sm text-white">
-            <div className="flex gap-2 items-center">
-              {/* 등록/삭제 버튼들이 여기로 올 수도 있음 */}
-            </div>
+          <div className="flex justify-end mt-4 text-sm text-white">
             <p>
               총합:{" "}
               <strong>
