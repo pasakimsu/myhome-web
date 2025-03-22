@@ -9,7 +9,8 @@ import SearchDonations from "./components/SearchDonations"; // 🔍 검색 기�
 
 export default function DonationsPage() {
   const router = useRouter();
-  const [userId, setUserId] = useState<string | null>(null);
+  const [_userId, setUserId] = useState<string | null>(null);
+
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");

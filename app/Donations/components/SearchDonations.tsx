@@ -3,6 +3,17 @@
 import { useState } from "react";
 import { db, collection, getDocs, query, where } from "@/lib/firebase";
 
+interface DonationData {
+  id: string;
+  date: string;
+  name: string;
+  reason: string;
+  amount: number;
+}
+
+const [searchResults, setSearchResults] = useState<DonationData[]>([]);
+
+
 export default function SearchDonations() {
   const [searchName, setSearchName] = useState(""); // 🔍 검색할 이름
   const [searchResults, setSearchResults] = useState<any[]>([]); // 🔍 검색 결과
@@ -28,10 +39,11 @@ export default function SearchDonations() {
         setSearchResults([]);
         alert("❌ 해당 이름으로 등록된 부조금 내역이 없습니다.");
       } else {
-        const results = querySnapshot.docs.map((doc) => ({
+        const results: DonationData[] = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...(doc.data() as Omit<DonationData, "id">),
         }));
+        
         setSearchResults(results);
       }
     } catch (error) {

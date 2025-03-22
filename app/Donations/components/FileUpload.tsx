@@ -3,6 +3,14 @@
 import { useState } from "react";
 import { db, collection, addDoc } from "@/lib/firebase";
 
+interface DonationData {
+  date: string;
+  name: string;
+  nameKeywords: string[];
+  reason: string;
+  amount: number;
+}
+
 export default function FileUpload() {
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -39,18 +47,19 @@ export default function FileUpload() {
           const rows = csvData.split("\n").map((row) => row.split(","));
           rows.shift(); // 첫 번째 줄(헤더) 제거
 
-          const jsonData: any[] = rows.map((row) => {
+          const jsonData: DonationData[] = rows.map((row): DonationData => {
             const name = row[1]?.trim() || "이름 없음";
             return {
               date: row[0]?.trim() || "날짜 없음",
-              name: name,
-              nameKeywords: generateNameKeywords(name), // 🔹 부분 검색을 위한 키워드 배열 추가
+              name,
+              nameKeywords: generateNameKeywords(name),
               reason: row[2]?.trim() || "사유 없음",
               amount: isNaN(Number(row[3]?.replace(/,/g, "").trim()))
                 ? 0
                 : Number(row[3]?.replace(/,/g, "").trim()),
             };
           });
+          
 
           if (jsonData.length === 0) {
             alert("📢 CSV 파일이 비어 있습니다! ❌");
