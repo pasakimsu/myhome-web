@@ -32,9 +32,9 @@ export async function GET() {
   }
 }
 
-// app/stock/page.tsx
-
 "use client";
+
+// app/stock/page.tsx
 
 import { useEffect, useState } from "react";
 
