@@ -1,27 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DonationsHeader from "./components/DonationsHeader";
 import FileUpload from "./components/FileUpload";
 import DeleteAllButton from "./components/DeleteAllButton";
-import SearchDonations from "./components/SearchDonations"; // 🔍 검색 기능 추가!
+import SearchDonations from "./components/SearchDonations";
 
 export default function DonationsPage() {
   const router = useRouter();
-  const [_userId, setUserId] = useState<string | null>(null);
-
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
 
-    // 🔹 로그인한 사용자 확인
     if (!storedUserId) {
       router.push("/login");
     } else {
-      setUserId(storedUserId);
-
-      // 🔹 bak이 아닌 경우 접근 차단
+      // 🔐 관리자(bak)만 접근 가능
       if (storedUserId !== "bak") {
         alert("🚨 접근 권한이 없습니다.");
         router.push("/budget");
@@ -30,11 +25,13 @@ export default function DonationsPage() {
   }, [router]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen justify-center bg-[#2f2a25] p-6 text-white">
-      <DonationsHeader />
-      <FileUpload />
-      <DeleteAllButton />
-      <SearchDonations /> {/* 🔍 부분 검색 UI 추가 */}
+    <div className="flex flex-col items-center min-h-screen justify-center bg-[#2f2a25] text-white px-6 py-10 transition-colors">
+      <div className="w-full max-w-xl bg-[#3a312a] p-6 rounded-lg shadow-lg">
+        <DonationsHeader />
+        <FileUpload />
+        <DeleteAllButton />
+        <SearchDonations />
+      </div>
     </div>
   );
 }

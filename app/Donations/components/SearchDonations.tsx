@@ -11,15 +11,11 @@ interface DonationData {
   amount: number;
 }
 
-const [searchResults, setSearchResults] = useState<DonationData[]>([]);
-
-
 export default function SearchDonations() {
-  const [searchName, setSearchName] = useState(""); // 🔍 검색할 이름
-  const [searchResults, setSearchResults] = useState<any[]>([]); // 🔍 검색 결과
-  const [loading, setLoading] = useState(false); // 검색 로딩 상태
+  const [searchName, setSearchName] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<DonationData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  // 🔹 Firestore에서 해당 이름이 포함된 부조금 내역 검색
   const handleSearch = async () => {
     if (!searchName.trim()) {
       alert("검색할 이름을 입력하세요.");
@@ -30,7 +26,7 @@ export default function SearchDonations() {
     try {
       const q = query(
         collection(db, "donations"),
-        where("nameKeywords", "array-contains", searchName.trim()) // 🔍 부분 검색 적용
+        where("nameKeywords", "array-contains", searchName.trim())
       );
 
       const querySnapshot = await getDocs(q);
@@ -43,7 +39,6 @@ export default function SearchDonations() {
           id: doc.id,
           ...(doc.data() as Omit<DonationData, "id">),
         }));
-        
         setSearchResults(results);
       }
     } catch (error) {
@@ -76,7 +71,6 @@ export default function SearchDonations() {
         {loading ? "검색 중..." : "🔍 검색"}
       </button>
 
-      {/* 🔹 검색 결과 출력 */}
       {searchResults.length > 0 && (
         <div className="w-full max-w-md bg-gray-800 p-4 rounded-lg shadow-lg">
           <h3 className="text-lg font-semibold mb-2">검색 결과</h3>
@@ -87,6 +81,13 @@ export default function SearchDonations() {
               </li>
             ))}
           </ul>
+          {/* 🔹 합계 출력 */}
+          <p className="text-right text-sm text-gray-300 mt-2">
+            총합:{" "}
+            <strong>
+              {searchResults.reduce((sum, r) => sum + Number(r.amount), 0).toLocaleString()}원
+            </strong>
+          </p>
         </div>
       )}
     </div>
