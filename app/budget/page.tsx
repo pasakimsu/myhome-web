@@ -42,10 +42,14 @@ export default function BudgetHomePage() {
       const today = new Date();
       const currentYear = today.getFullYear();
       const currentMonth = today.getMonth() + 1;
+
       const currentWeekStart = new Date(today);
       currentWeekStart.setDate(today.getDate() - today.getDay());
+      currentWeekStart.setHours(0, 0, 0, 0);
+
       const currentWeekEnd = new Date(today);
       currentWeekEnd.setDate(today.getDate() + (6 - today.getDay()));
+      currentWeekEnd.setHours(23, 59, 59, 999);
 
       const filteredMonth = all
         .filter((item) => {
@@ -72,7 +76,7 @@ export default function BudgetHomePage() {
     const referenceDate = new Date(referenceDateStr);
     const today = new Date();
     const diffTime = today.getTime() - referenceDate.getTime();
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
 
   return (
@@ -85,7 +89,7 @@ export default function BudgetHomePage() {
 
           <div className="bg-[#3e352c] text-white p-4 rounded-md my-6 text-sm leading-relaxed shadow-inner text-left">
             <p className="mb-2 font-bold text-lg border-b border-brownBorder pb-1">
-              서한이-{getDaysSinceReference("2025-01-13")}일째 (기준일: 2025.1.13)
+              서한이-{getDaysSinceReference("2025-01-13")}일째
             </p>
 
             {weeklySchedules.length > 0 && (
