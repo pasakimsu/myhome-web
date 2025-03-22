@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import AuthGuard from "@/components/AuthGuard";
 import BudgetHeader from "./components/BudgetHeader";
 import BudgetInput from "./components/BudgetInput";
 import BudgetDateSelector from "./components/BudgetDateSelector";
@@ -165,12 +165,9 @@ export default function CalculPage() {
   };
 
   return (
-    <ProtectedRoute>
+    <AuthGuard>
       <div className="min-h-screen flex flex-col items-center justify-center bg-beige dark:bg-beigeDark text-white transition-colors px-4">
-  <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
-    
-    {/* 여기에 내부 컨텐츠를 추가 */}
-          
+        <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
           <BudgetHeader userId={userId} />
           <BudgetDateSelector
             year={year}
@@ -190,17 +187,11 @@ export default function CalculPage() {
             </p>
           )}
 
-         
-
           <BudgetSummary allocated={allocated} accountNumbers={accountNumbers} />
-          <BudgetSaveButton
-  onSave={handleSave}
-  onCalculate={handleCalculate}
-/>
-
+          <BudgetSaveButton onSave={handleSave} onCalculate={handleCalculate} />
           <BudgetComparisonTable userBudgets={userBudgets} />
         </div>
       </div>
-    </ProtectedRoute>
+    </AuthGuard>
   );
 }

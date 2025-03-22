@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AppStyleButton from "@/components/AppStyleButton";
 import { db, collection, onSnapshot } from "@/lib/firebase";
+import AuthGuard from "@/components/AuthGuard";
 
 interface ScheduleItem {
   id: string;
@@ -16,15 +17,13 @@ export default function BudgetHomePage() {
   const [userId, setUserId] = useState("");
   const [monthlySchedules, setMonthlySchedules] = useState<ScheduleItem[]>([]);
 
-  // 🔐 로그인 확인
+  // ✅ 사용자 ID 로드만 (검사는 AuthGuard가 수행)
   useEffect(() => {
     const storedUser = localStorage.getItem("userId");
-    if (!storedUser) {
-      router.push("/login");
-    } else {
+    if (storedUser) {
       setUserId(storedUser);
     }
-  }, [router]);
+  }, []);
 
   // ✅ 안정적인 날짜 정렬 함수
   const toISODate = (dateStr: string) => {
@@ -51,48 +50,45 @@ export default function BudgetHomePage() {
           const [y, m] = item.date.split("-");
           return Number(y) === currentYear && Number(m) === currentMonth;
         })
-        .sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime()); // ✅ 안정적인 오름차순 정렬
+        .sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime());
 
       setMonthlySchedules(filtered);
     });
 
-    return () => unsubscribe(); // 메모리 누수 방지
+    return () => unsubscribe();
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-beigeDark px-4 transition-colors">
-      <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
+    <AuthGuard>
+      <div className="min-h-screen flex items-center justify-center bg-beigeDark px-4 transition-colors">
+        <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">
+            {userId}님 로그인했습니다 🎉
+          </h2>
 
-        {/* 상단 인사말 */}
-        <h2 className="text-2xl font-bold text-white mb-2">
-          {userId}님 로그인했습니다 🎉
-        </h2>
+          <div className="bg-[#3e352c] text-white p-4 rounded-md my-6 text-sm leading-relaxed shadow-inner text-left">
+            <p className="mb-2 font-semibold">✍ 이번 달 일정</p>
+            {monthlySchedules.length === 0 ? (
+              <p className="text-gray-400 text-sm">이번 달 일정이 없습니다.</p>
+            ) : (
+              <ul className="list-disc list-inside space-y-1">
+                {monthlySchedules.map((item) => (
+                  <li key={item.id}>
+                    <span className="text-amber-300 font-medium">{item.date}</span> – {item.content}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-        {/* ✅ 공지 + 월간 일정 */}
-        <div className="bg-[#3e352c] text-white p-4 rounded-md my-6 text-sm leading-relaxed shadow-inner text-left">
-          <p className="mb-2 font-semibold">✍ 이번 달 일정</p>
-          {monthlySchedules.length === 0 ? (
-            <p className="text-gray-400 text-sm">이번 달 일정이 없습니다.</p>
-          ) : (
-            <ul className="list-disc list-inside space-y-1">
-              {monthlySchedules.map((item) => (
-                <li key={item.id}>
-                  <span className="text-amber-300 font-medium">{item.date}</span> – {item.content}
-                </li>
-              ))}
-            </ul>
-          )}
+          <div className="flex justify-center gap-6">
+            <AppStyleButton icon="📅" label="일정" onClick={() => router.push("/schedule")} />
+            <AppStyleButton icon="💰" label="계산기" onClick={() => router.push("/calcul")} />
+            <AppStyleButton icon="📁" label="부조금" onClick={() => router.push("/Donations")} />
+            <AppStyleButton icon="📈" label="주식" onClick={() => router.push("/stock")} />
+          </div>
         </div>
-
-        {/* 버튼 */}
-        <div className="flex justify-center gap-6">
-          <AppStyleButton icon="📅" label="일정" onClick={() => router.push("/schedule")} />
-          <AppStyleButton icon="💰" label="계산기" onClick={() => router.push("/calcul")} />
-          <AppStyleButton icon="📁" label="부조금" onClick={() => router.push("/Donations")} />
-          <AppStyleButton icon="📈" label="주식" onClick={() => router.push("/stock")} />
-        </div>
-
       </div>
-    </div>
+    </AuthGuard>
   );
 }
