@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AppStyleButton from "@/components/AppStyleButton";
-import { db, collection, getDocs } from "@/lib/firebase";
+import { db, collection, onSnapshot } from "@/lib/firebase";
 
 interface ScheduleItem {
   id: string;
@@ -16,6 +16,7 @@ export default function BudgetHomePage() {
   const [userId, setUserId] = useState("");
   const [monthlySchedules, setMonthlySchedules] = useState<ScheduleItem[]>([]);
 
+  // 🔐 로그인 확인
   useEffect(() => {
     const storedUser = localStorage.getItem("userId");
     if (!storedUser) {
@@ -25,10 +26,9 @@ export default function BudgetHomePage() {
     }
   }, [router]);
 
-  // ✅ 현재 월 일정 불러오기
+  // ✅ Firestore 실시간 구독
   useEffect(() => {
-    const fetchMonthlySchedules = async () => {
-      const snapshot = await getDocs(collection(db, "schedules"));
+    const unsubscribe = onSnapshot(collection(db, "schedules"), (snapshot) => {
       const all = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<ScheduleItem, "id">),
@@ -37,16 +37,16 @@ export default function BudgetHomePage() {
       const today = new Date();
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, "0");
-      const monthStr = `${year}-${month}`; // e.g., "2025-04"
+      const monthStr = `${year}-${month}`; // ex: "2025-04"
 
       const filtered = all
         .filter((item) => item.date.startsWith(monthStr))
         .sort((a, b) => a.date.localeCompare(b.date));
 
       setMonthlySchedules(filtered);
-    };
+    });
 
-    fetchMonthlySchedules();
+    return () => unsubscribe(); // 🔁 정리
   }, []);
 
   return (
@@ -58,7 +58,7 @@ export default function BudgetHomePage() {
           {userId}님 로그인했습니다 🎉
         </h2>
 
-        {/* ✅ 공지 + 월간 일정 공간 */}
+        {/* ✅ 공지 + 월간 일정 */}
         <div className="bg-[#3e352c] text-white p-4 rounded-md my-6 text-sm leading-relaxed shadow-inner text-left">
           <p className="mb-2 font-semibold">✍ 이번 달 일정</p>
           {monthlySchedules.length === 0 ? (
