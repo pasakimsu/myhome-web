@@ -10,7 +10,8 @@ interface Stock {
 
 interface QuoteResult {
   symbol: string;
-  regularMarketPrice: number;
+  regularMarketPrice?: number;
+  previousClose?: number;
 }
 
 const stockList: Stock[] = [
@@ -28,16 +29,17 @@ export default function MyStocks() {
       try {
         const symbols = stockList.map((s) => s.symbol).join(",");
         const response = await axios.get<{
-            quoteResponse: { result: QuoteResult[] };
-          }>(
-            `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`
-          );
-          
-          const data = response.data.quoteResponse.result;
-          
+          quoteResponse: { result: QuoteResult[] };
+        }>(
+          `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`
+        );
+
+        const data = response.data.quoteResponse.result;
+
         const priceMap: { [symbol: string]: number } = {};
         data.forEach((item) => {
-          priceMap[item.symbol] = item.regularMarketPrice;
+          const price = item.regularMarketPrice ?? item.previousClose ?? 0;
+          priceMap[item.symbol] = price;
         });
 
         setPrices(priceMap);
@@ -79,7 +81,7 @@ export default function MyStocks() {
               <td className="p-2 border border-gray-600">
                 {prices[symbol] !== undefined
                   ? `${prices[symbol].toLocaleString()} 원`
-                  : "로딩 중..."}
+                  : "데이터 없음"}
               </td>
               <td className="p-2 border border-gray-600">
                 <input
