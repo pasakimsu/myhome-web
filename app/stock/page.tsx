@@ -19,6 +19,7 @@ export default function StockPage() {
   const [inputs, setInputs] = useState<{ [code: string]: InputData }>({});
   const [submitted, setSubmitted] = useState(false);
 
+  // 주가 가져오기
   const fetchStocks = async () => {
     try {
       const res = await fetch("/api/stocks");
@@ -29,6 +30,7 @@ export default function StockPage() {
     }
   };
 
+  // 초기 데이터 로딩
   useEffect(() => {
     const savedInputs = localStorage.getItem("stockInputs");
     if (savedInputs) {
@@ -37,10 +39,11 @@ export default function StockPage() {
     }
 
     fetchStocks();
-    const interval = setInterval(fetchStocks, 30000);
+    const interval = setInterval(fetchStocks, 30000); // 30초마다 주가 갱신
     return () => clearInterval(interval);
   }, []);
 
+  // 입력 핸들링
   const handleChange = (code: string, field: keyof InputData, value: string) => {
     const num = parseInt(value.replace(/[^0-9]/g, ""), 10) || 0;
     setInputs((prev) => ({
@@ -49,11 +52,21 @@ export default function StockPage() {
     }));
   };
 
-  const handleSingleSave = () => {
-    localStorage.setItem("stockInputs", JSON.stringify(inputs));
+  // 🔧 특정 종목만 localStorage에 저장
+  const handleSingleSave = (code: string) => {
+    const saved = localStorage.getItem("stockInputs");
+    const prev = saved ? JSON.parse(saved) : {};
+
+    const updated = {
+      ...prev,
+      [code]: inputs[code],
+    };
+
+    localStorage.setItem("stockInputs", JSON.stringify(updated));
     setSubmitted(true);
   };
 
+  // 숫자 포맷
   const formatNumber = (num: number) => num.toLocaleString();
 
   const getEvaluation = (price: string, quantity: number) => {
@@ -83,6 +96,7 @@ export default function StockPage() {
                     <span className="font-semibold">{stock.name}</span> ({stock.code})<br />
                     현재가: <span className="text-white">{stock.price}원</span>
                   </div>
+
                   <div className="flex flex-col gap-2 mb-2">
                     <div className="flex items-center gap-2">
                       <input
@@ -93,12 +107,13 @@ export default function StockPage() {
                         className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
                       />
                       <button
-                        onClick={handleSingleSave}
+                        onClick={() => handleSingleSave(stock.code)}
                         className="px-2 py-1 text-xs bg-yellow-600 hover:bg-yellow-700 rounded"
                       >
                         등록
                       </button>
                     </div>
+
                     <div className="flex items-center gap-2">
                       <input
                         type="number"
@@ -108,13 +123,14 @@ export default function StockPage() {
                         className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
                       />
                       <button
-                        onClick={handleSingleSave}
+                        onClick={() => handleSingleSave(stock.code)}
                         className="px-2 py-1 text-xs bg-yellow-600 hover:bg-yellow-700 rounded"
                       >
                         등록
                       </button>
                     </div>
                   </div>
+
                   {submitted && (
                     <div className="text-sm text-gray-300">
                       📌 평가 금액: <span className="text-white font-semibold">{formatNumber(evalAmount)} 원</span><br />
