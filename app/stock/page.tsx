@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { db, collection, getDocs, query, where, setDoc, doc } from "@/lib/firebase";
 import AuthGuard from "@/components/AuthGuard";
 
 interface Stock {
@@ -18,8 +19,40 @@ export default function StockPage() {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [inputs, setInputs] = useState<{ [code: string]: InputData }>({});
   const [submitted, setSubmitted] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // 주가 가져오기
+  // 🔹 로그인된 사용자 가져오기
+  useEffect(() => {
+    const uid = localStorage.getItem("userId");
+    if (uid) {
+      setUserId(uid);
+      fetchInputsFromFirestore(uid);
+    }
+  }, []);
+
+  // 🔹 Firestore에서 사용자 입력값 불러오기
+  const fetchInputsFromFirestore = async (uid: string) => {
+    try {
+      const q = query(collection(db, "stockInputs"), where("userId", "==", uid));
+      const querySnapshot = await getDocs(q);
+      const newInputs: { [code: string]: InputData } = {};
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        newInputs[data.code] = {
+          quantity: data.quantity,
+          averagePrice: data.averagePrice,
+        };
+      });
+
+      setInputs(newInputs);
+      setSubmitted(true);
+    } catch (error) {
+      console.error("❌ Firestore에서 데이터 불러오기 실패:", error);
+    }
+  };
+
+  // 🔹 주가 불러오기
   const fetchStocks = async () => {
     try {
       const res = await fetch("/api/stocks");
@@ -30,20 +63,13 @@ export default function StockPage() {
     }
   };
 
-  // 초기 데이터 로딩
   useEffect(() => {
-    const savedInputs = localStorage.getItem("stockInputs");
-    if (savedInputs) {
-      setInputs(JSON.parse(savedInputs));
-      setSubmitted(true);
-    }
-
     fetchStocks();
-    const interval = setInterval(fetchStocks, 30000); // 30초마다 주가 갱신
+    const interval = setInterval(fetchStocks, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // 입력 핸들링
+  // 🔹 입력 변경 처리
   const handleChange = (code: string, field: keyof InputData, value: string) => {
     const num = parseInt(value.replace(/[^0-9]/g, ""), 10) || 0;
     setInputs((prev) => ({
@@ -52,21 +78,33 @@ export default function StockPage() {
     }));
   };
 
-  // 🔧 특정 종목만 localStorage에 저장
-  const handleSingleSave = (code: string) => {
-    const saved = localStorage.getItem("stockInputs");
-    const prev = saved ? JSON.parse(saved) : {};
+  // 🔹 Firestore에 저장
+  const handleSingleSave = async (code: string) => {
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
 
-    const updated = {
-      ...prev,
-      [code]: inputs[code],
-    };
+    const input = inputs[code];
+    if (!input) return;
 
-    localStorage.setItem("stockInputs", JSON.stringify(updated));
-    setSubmitted(true);
+    try {
+      await setDoc(doc(db, "stockInputs", `${userId}_${code}`), {
+        userId,
+        code,
+        quantity: input.quantity,
+        averagePrice: input.averagePrice,
+        updatedAt: new Date(),
+      });
+
+      alert("✅ 저장되었습니다!");
+      setSubmitted(true);
+    } catch (err) {
+      console.error("❌ 저장 실패:", err);
+      alert("❌ 저장 중 오류 발생");
+    }
   };
 
-  // 숫자 포맷
   const formatNumber = (num: number) => num.toLocaleString();
 
   const getEvaluation = (price: string, quantity: number) => {
