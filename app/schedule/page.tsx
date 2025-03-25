@@ -1,4 +1,5 @@
-// 상단 import 유지
+"use client"; 
+
 import { useEffect, useState } from "react";
 import CalendarView from "./components/CalendarView";
 import ScheduleInput from "./components/ScheduleInput";
