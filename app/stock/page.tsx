@@ -1,187 +1,214 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { db, collection, getDocs, query, where, setDoc, doc } from "@/lib/firebase";
-import AuthGuard from "@/components/AuthGuard";
+import { useState } from "react";
+import {
+  db,
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from "@/lib/firebase";
 
-interface Stock {
-  code: string;
+interface DonationData {
+  id: string;
+  date: string;
   name: string;
-  price: string;
+  reason: string;
+  amount: number;
+  sentAmount?: number;
 }
 
-interface InputData {
-  quantity: number;
-  averagePrice: number;
-}
+export default function SearchDonations() {
+  const [searchName, setSearchName] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<DonationData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activeInputs, setActiveInputs] = useState<Record<string, boolean>>({});
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
 
-export default function StockPage() {
-  const [stocks, setStocks] = useState<Stock[]>([]);
-  const [inputs, setInputs] = useState<{ [code: string]: InputData }>({});
-  const [submitted, setSubmitted] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  // 🔹 로그인된 사용자 가져오기
-  useEffect(() => {
-    const uid = localStorage.getItem("userId");
-    if (uid) {
-      setUserId(uid);
-      fetchInputsFromFirestore(uid);
+  const handleSearch = async () => {
+    if (!searchName.trim()) {
+      alert("검색할 이름을 입력하세요.");
+      return;
     }
-  }, []);
 
-  // 🔹 Firestore에서 사용자 입력값 불러오기
-  const fetchInputsFromFirestore = async (uid: string) => {
+    setLoading(true);
     try {
-      const q = query(collection(db, "stockInputs"), where("userId", "==", uid));
+      const userId = localStorage.getItem("userId") || "donations";
+      const q = query(
+        collection(db, userId),
+        where("nameKeywords", "array-contains", searchName.trim())
+      );
+
       const querySnapshot = await getDocs(q);
-      const newInputs: { [code: string]: InputData } = {};
 
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        newInputs[data.code] = {
-          quantity: data.quantity,
-          averagePrice: data.averagePrice,
-        };
-      });
-
-      setInputs(newInputs);
-      setSubmitted(true);
+      if (querySnapshot.empty) {
+        setSearchResults([]);
+        alert("❌ 해당 이름으로 등록된 부조금 내역이 없습니다.");
+      } else {
+        const results: DonationData[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Omit<DonationData, "id">),
+        }));
+        setSearchResults(results);
+      }
     } catch (error) {
-      console.error("❌ Firestore에서 데이터 불러오기 실패:", error);
+      console.error("❌ 검색 오류:", error);
+      alert("❌ 검색 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🔹 주가 불러오기
-  const fetchStocks = async () => {
-    try {
-      const res = await fetch("/api/stocks");
-      const data = await res.json();
-      setStocks(data.stocks);
-    } catch (err) {
-      console.error("📉 주가 불러오기 실패:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchStocks();
-    const interval = setInterval(fetchStocks, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // 🔹 입력 변경 처리
-  const handleChange = (code: string, field: keyof InputData, value: string) => {
-    const num = parseInt(value.replace(/[^0-9]/g, ""), 10) || 0;
-    setInputs((prev) => ({
+  const handleToggleInput = (id: string) => {
+    setActiveInputs((prev) => ({
       ...prev,
-      [code]: { ...prev[code], [field]: num },
+      [id]: !prev[id],
     }));
   };
 
-  // 🔹 Firestore에 저장
-  const handleSingleSave = async (code: string) => {
-    if (!userId) {
-      alert("로그인이 필요합니다.");
+  const handleInputChange = (id: string, value: string) => {
+    const numeric = value.replace(/[^\d]/g, "");
+    const formatted = numeric ? Number(numeric).toLocaleString() : "";
+    setInputValues((prev) => ({
+      ...prev,
+      [id]: formatted,
+    }));
+  };
+
+  const handleRegister = async (id: string) => {
+    const raw = inputValues[id];
+    const number = Number(raw.replace(/,/g, ""));
+
+    if (!number || isNaN(number) || number <= 0) {
+      alert("올바른 금액을 입력하세요.");
       return;
     }
-  
-    const input = inputs[code];
-    if (
-      !input ||
-      input.quantity === undefined ||
-      input.averagePrice === undefined ||
-      input.quantity <= 0 ||
-      input.averagePrice <= 0
-    ) {
-      alert("수량과 평단가를 모두 입력해주세요.");
-      return;
-    }
-  
+
     try {
-      await setDoc(doc(db, "stockInputs", `${userId}_${code}`), {
-        userId,
-        code,
-        quantity: input.quantity,
-        averagePrice: input.averagePrice,
-        updatedAt: new Date(),
+      const userId = localStorage.getItem("userId") || "donations";
+      const ref = doc(db, userId, id);
+      await updateDoc(ref, {
+        sentAmount: number,
       });
-  
-      alert("✅ 저장되었습니다!");
-      setSubmitted(true);
+
+      setSearchResults((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, sentAmount: number } : item
+        )
+      );
     } catch (err) {
-      console.error("❌ 저장 실패:", err);
-      alert("❌ 저장 중 오류 발생");
+      console.error("❌ 등록 오류:", err);
+      alert("❌ 등록 중 오류가 발생했습니다.");
     }
   };
-  
 
-  const formatNumber = (num: number) => num.toLocaleString();
+  const handleDelete = async (id: string) => {
+    try {
+      const userId = localStorage.getItem("userId") || "donations";
+      const ref = doc(db, userId, id);
+      await updateDoc(ref, {
+        sentAmount: null,
+      });
 
-  const getEvaluation = (price: string, quantity: number) => {
-    const numericPrice = parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
-    return numericPrice * quantity;
-  };
-
-  const getProfit = (price: string, input: InputData) => {
-    const marketPrice = parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
-    return (marketPrice - input.averagePrice) * input.quantity;
+      setSearchResults((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, sentAmount: undefined } : item
+        )
+      );
+      setInputValues((prev) => ({
+        ...prev,
+        [id]: "",
+      }));
+    } catch (err) {
+      console.error("❌ 삭제 오류:", err);
+      alert("❌ 삭제 중 오류가 발생했습니다.");
+    }
   };
 
   return (
-    <AuthGuard>
-      <div className="min-h-screen bg-[#2f2a25] flex flex-col items-center justify-start p-4 text-white">
-        <h1 className="text-xl font-bold mb-4">📈 내 보유 주식 평가</h1>
-        <div className="bg-[#2f2a25] border border-brownBorder p-4 rounded-lg w-full max-w-md">
-          <ul className="space-y-6">
-            {stocks.map((stock) => {
-              const input = inputs[stock.code] || { quantity: 0, averagePrice: 0 };
-              const evalAmount = getEvaluation(stock.price, input.quantity);
-              const profit = getProfit(stock.price, input);
+    <div className="flex flex-col items-center mt-6 w-full">
+      <h2 className="text-2xl font-bold mb-4">부조금 검색</h2>
 
-              return (
-                <li key={stock.code} className="border-b border-brownBorder pb-4">
-                <div className="text-base mb-2">
-                  <span className="font-semibold">{stock.name}</span> ({stock.code})<br />
-                  현재가: <span className="text-white">{stock.price}원</span>
-                </div>
-              
-                {/* 👉 수량 + 평단 + 등록 버튼을 한 줄에 */}
-                <div className="flex items-center gap-2 mb-2">
+      <input
+        type="text"
+        placeholder="이름을 입력하세요"
+        className="p-3 mb-3 border border-brownBorder rounded bg-gray-700 text-white placeholder-gray-400 w-full max-w-md"
+        value={searchName}
+        onChange={(e) => setSearchName(e.target.value)}
+      />
+
+      <button
+        onClick={handleSearch}
+        className={`p-3 rounded-lg w-40 mb-4 ${
+          searchName
+            ? "bg-blue-500 hover:bg-blue-600"
+            : "bg-gray-500 cursor-not-allowed"
+        }`}
+        disabled={!searchName}
+      >
+        {loading ? "검색 중..." : "🔍 검색"}
+      </button>
+
+      {searchResults.length > 0 && (
+        <div className="w-full flex flex-col items-center gap-4">
+          {searchResults.map((result) => (
+            <div
+              key={result.id}
+              className="bg-[#3a312a] w-full max-w-md p-4 rounded-lg shadow-md text-sm"
+            >
+              <div className="mb-1">
+                <p>📅 {result.date}</p>
+                <p>👤 {result.name}</p>
+                <p>📝 {result.reason}</p>
+                <p>💰 {result.amount.toLocaleString()}원</p>
+              </div>
+
+              <div className="mt-2">
+                <label className="flex items-center gap-2">
                   <input
-                    type="number"
-                    placeholder="수량"
-                    value={input.quantity || ""}
-                    onChange={(e) => handleChange(stock.code, "quantity", e.target.value)}
-                    className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
+                    type="checkbox"
+                    checked={!!activeInputs[result.id]}
+                    onChange={() => handleToggleInput(result.id)}
                   />
-                  <input
-                    type="number"
-                    placeholder="평단가"
-                    value={input.averagePrice || ""}
-                    onChange={(e) => handleChange(stock.code, "averagePrice", e.target.value)}
-                    className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
-                  />
-                  <button
-                    onClick={() => handleSingleSave(stock.code)}
-                    className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 rounded"
-                  >
-                    등록
-                  </button>
-                </div>
-              
-                {submitted && (
-                  <div className="text-sm text-gray-300">
-                    📌 평가 금액: <span className="text-white font-semibold">{formatNumber(evalAmount)} 원</span><br />
-                    📈 수익률: <span className="text-white font-semibold">{formatNumber(profit)} 원</span>
+                  송금 여부 표시
+                </label>
+
+                {activeInputs[result.id] && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <input
+                      type="text"
+                      placeholder="보낸 금액"
+                      value={inputValues[result.id] || ""}
+                      onChange={(e) => handleInputChange(result.id, e.target.value)}
+                      className="flex-1 p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
+                    />
+                    <button
+                      onClick={() => handleRegister(result.id)}
+                      className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs rounded"
+                    >
+                      등록
+                    </button>
+                    <button
+                      onClick={() => handleDelete(result.id)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs rounded"
+                    >
+                      삭제
+                    </button>
                   </div>
                 )}
-              </li>
-              
-              );
-            })}
-          </ul>
+
+                {typeof result.sentAmount === "number" && (
+                  <p className="text-xs text-right text-green-400 mt-2">
+                    📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    </AuthGuard>
+      )}
+    </div>
   );
 }
