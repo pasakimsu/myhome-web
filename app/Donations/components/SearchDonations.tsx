@@ -18,6 +18,7 @@ interface DonationData {
   reason: string;
   amount: number;
   sentAmount?: number;
+  sentDate?: string;
 }
 
 export default function SearchDonations() {
@@ -26,6 +27,7 @@ export default function SearchDonations() {
   const [loading, setLoading] = useState(false);
   const [activeInputs, setActiveInputs] = useState<Record<string, boolean>>({});
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
+  const [inputDates, setInputDates] = useState<Record<string, string>>({});
 
   const handleSearch = async () => {
     if (!searchName.trim()) {
@@ -77,12 +79,24 @@ export default function SearchDonations() {
     }));
   };
 
+  const handleDateChange = (id: string, value: string) => {
+    setInputDates((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
   const handleRegister = async (id: string) => {
     const raw = inputValues[id];
     const number = Number(raw.replace(/,/g, ""));
+    const date = inputDates[id];
 
     if (!number || isNaN(number) || number <= 0) {
       alert("올바른 금액을 입력하세요.");
+      return;
+    }
+    if (!date) {
+      alert("날짜를 입력하세요.");
       return;
     }
 
@@ -91,11 +105,12 @@ export default function SearchDonations() {
       const ref = doc(db, userId, id);
       await updateDoc(ref, {
         sentAmount: number,
+        sentDate: date,
       });
 
       setSearchResults((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, sentAmount: number } : item
+          item.id === id ? { ...item, sentAmount: number, sentDate: date } : item
         )
       );
     } catch (err) {
@@ -110,14 +125,19 @@ export default function SearchDonations() {
       const ref = doc(db, userId, id);
       await updateDoc(ref, {
         sentAmount: null,
+        sentDate: null,
       });
 
       setSearchResults((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, sentAmount: undefined } : item
+          item.id === id ? { ...item, sentAmount: undefined, sentDate: undefined } : item
         )
       );
       setInputValues((prev) => ({
+        ...prev,
+        [id]: "",
+      }));
+      setInputDates((prev) => ({
         ...prev,
         [id]: "",
       }));
@@ -176,32 +196,41 @@ export default function SearchDonations() {
                 </label>
 
                 {activeInputs[result.id] && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="text"
-                      placeholder="보낸 금액"
-                      value={inputValues[result.id] || ""}
-                      onChange={(e) => handleInputChange(result.id, e.target.value)}
-                      className="flex-1 p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
-                    />
-                    <button
-                      onClick={() => handleRegister(result.id)}
-                      className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs rounded"
-                    >
-                      등록
-                    </button>
-                    <button
-                      onClick={() => handleDelete(result.id)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs rounded"
-                    >
-                      삭제
-                    </button>
+                  <div className="flex flex-col gap-2 mt-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="보낸 금액"
+                        value={inputValues[result.id] || ""}
+                        onChange={(e) => handleInputChange(result.id, e.target.value)}
+                        className="flex-1 p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
+                      />
+                      <input
+                        type="date"
+                        value={inputDates[result.id] || ""}
+                        onChange={(e) => handleDateChange(result.id, e.target.value)}
+                        className="p-2 rounded bg-gray-700 text-white text-sm"
+                      />
+                      <button
+                        onClick={() => handleRegister(result.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs rounded"
+                      >
+                        등록
+                      </button>
+                      <button
+                        onClick={() => handleDelete(result.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs rounded"
+                      >
+                        삭제
+                      </button>
+                    </div>
                   </div>
                 )}
 
                 {typeof result.sentAmount === "number" && (
                   <p className="text-xs text-right text-green-400 mt-2">
-                    📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원
+                    📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원<br />
+                    📅 보낸 날짜: {result.sentDate || "-"}
                   </p>
                 )}
               </div>
