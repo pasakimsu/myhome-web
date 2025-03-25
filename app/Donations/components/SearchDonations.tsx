@@ -197,29 +197,29 @@ export default function SearchDonations() {
 
                 {activeInputs[result.id] && (
                   <div className="flex flex-col gap-2 mt-2">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder="보낸 금액"
-                        value={inputValues[result.id] || ""}
-                        onChange={(e) => handleInputChange(result.id, e.target.value)}
-                        className="flex-1 p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
-                      />
-                      <input
-                        type="date"
-                        value={inputDates[result.id] || ""}
-                        onChange={(e) => handleDateChange(result.id, e.target.value)}
-                        className="p-2 rounded bg-gray-700 text-white text-sm"
-                      />
+                    <input
+                      type="text"
+                      placeholder="보낸 금액"
+                      value={inputValues[result.id] || ""}
+                      onChange={(e) => handleInputChange(result.id, e.target.value)}
+                      className="w-full p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
+                    />
+                    <input
+                      type="date"
+                      value={inputDates[result.id] || ""}
+                      onChange={(e) => handleDateChange(result.id, e.target.value)}
+                      className="w-full p-2 rounded bg-gray-700 text-white text-sm"
+                    />
+                    <div className="flex gap-2">
                       <button
                         onClick={() => handleRegister(result.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs rounded"
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-2 text-sm rounded"
                       >
                         등록
                       </button>
                       <button
                         onClick={() => handleDelete(result.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs rounded"
+                        className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-2 text-sm rounded"
                       >
                         삭제
                       </button>
