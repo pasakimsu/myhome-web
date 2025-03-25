@@ -152,57 +152,61 @@ export default function SearchDonations() {
       </button>
 
       {searchResults.length > 0 && (
-        <div className="w-full max-w-md bg-[#3a312a] p-4 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold mb-2">검색 결과</h3>
-          <ul className="space-y-4">
-            {searchResults.map((result) => (
-              <li key={result.id} className="border-b brownBorder pb-2">
-                <div className="flex flex-col text-sm">
-                  <div className="mb-1">
-                    📅 <strong>{result.date}</strong> | 👤 <strong>{result.name}</strong> | 💰 <strong>{result.amount.toLocaleString()}원</strong> | 📝 <strong>{result.reason}</strong>
+        <div className="w-full flex flex-col items-center gap-4">
+          {searchResults.map((result) => (
+            <div
+              key={result.id}
+              className="bg-[#3a312a] w-full max-w-md p-4 rounded-lg shadow-md text-sm"
+            >
+              <div className="mb-1">
+                <p>📅 {result.date}</p>
+                <p>👤 {result.name}</p>
+                <p>📝 {result.reason}</p>
+                <p>💰 {result.amount.toLocaleString()}원</p>
+              </div>
+
+              <div className="mt-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={!!activeInputs[result.id]}
+                    onChange={() => handleToggleInput(result.id)}
+                  />
+                  송금 여부 표시
+                </label>
+
+                {activeInputs[result.id] && (
+                  <div className="flex items-center gap-2 mt-2">
                     <input
-                      type="checkbox"
-                      className="ml-2 align-middle"
-                      checked={!!activeInputs[result.id]}
-                      onChange={() => handleToggleInput(result.id)}
-                      title="송금 여부 체크"
+                      type="text"
+                      placeholder="보낸 금액"
+                      value={inputValues[result.id] || ""}
+                      onChange={(e) => handleInputChange(result.id, e.target.value)}
+                      className="flex-1 p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
                     />
+                    <button
+                      onClick={() => handleRegister(result.id)}
+                      className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs rounded"
+                    >
+                      등록
+                    </button>
+                    <button
+                      onClick={() => handleDelete(result.id)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs rounded"
+                    >
+                      삭제
+                    </button>
                   </div>
+                )}
 
-                  {activeInputs[result.id] && (
-                    <div className="flex items-center gap-2 mt-1">
-                      💸
-                      <input
-                        type="text"
-                        placeholder="보낸 금액"
-                        value={inputValues[result.id] || ""}
-                        onChange={(e) => handleInputChange(result.id, e.target.value)}
-                        className="flex-1 p-1 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
-                      />
-                      <button
-                        onClick={() => handleRegister(result.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs rounded"
-                      >
-                        등록
-                      </button>
-                      <button
-                        onClick={() => handleDelete(result.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs rounded"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  )}
-
-                  {typeof result.sentAmount === "number" && (
-                    <p className="text-xs text-right text-green-400 mt-1">
-                      📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+                {typeof result.sentAmount === "number" && (
+                  <p className="text-xs text-right text-green-400 mt-2">
+                    📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
