@@ -35,10 +35,8 @@ export default function DonationsPage() {
         <div className="w-full max-w-xl bg-[#3a312a] p-6 rounded-lg shadow-lg">
           <DonationsHeader />
           <FileUpload />
-          {/* ✅ 수동 등록 시, 검색 새로고침 콜백 전달 */}
-          <ManualDonationInput onAfterRegister={handleAfterRegister} />
           <DeleteAllButton />
-          {/* ✅ ref 연결 */}
+          <ManualDonationInput onAfterRegister={handleAfterRegister} />
           <SearchDonations ref={searchRef} />
         </div>
       </div>

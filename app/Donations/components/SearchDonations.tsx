@@ -13,9 +13,9 @@ import {
   where,
   doc,
   updateDoc,
+  deleteDoc,
 } from "@/lib/firebase";
 
-// 🔁 외부에서 새로고침 가능하게 하는 타입 정의
 export interface SearchDonationsRef {
   refreshSearch: () => void;
 }
@@ -38,7 +38,6 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const [inputDates, setInputDates] = useState<Record<string, string>>({});
 
-  // ✅ 외부에서 호출 가능한 검색 함수
   const refreshSearch = async () => {
     if (!searchName.trim()) return;
 
@@ -157,6 +156,23 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
     }
   };
 
+  const handleFullDelete = async (id: string) => {
+    const confirmDelete = confirm("정말로 이 부조금 항목을 완전히 삭제할까요?");
+    if (!confirmDelete) return;
+
+    try {
+      const userId = localStorage.getItem("userId") || "donations";
+      const ref = doc(db, userId, id);
+      await deleteDoc(ref); // 완전 삭제
+
+      setSearchResults((prev) => prev.filter((item) => item.id !== id));
+      alert("✅ 항목이 삭제되었습니다.");
+    } catch (error) {
+      console.error("❌ 삭제 실패:", error);
+      alert("❌ 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <div className="flex flex-col items-center mt-6 w-full">
       <h2 className="text-2xl font-bold mb-4">부조금 검색</h2>
@@ -235,7 +251,13 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
                         onClick={() => handleDelete(result.id)}
                         className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-2 text-sm rounded"
                       >
-                        삭제
+                        송금 삭제
+                      </button>
+                      <button
+                        onClick={() => handleFullDelete(result.id)}
+                        className="flex-1 bg-red-800 hover:bg-red-900 text-white px-2 py-2 text-sm rounded"
+                      >
+                        항목 삭제
                       </button>
                     </div>
                   </div>
