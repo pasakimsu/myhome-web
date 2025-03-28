@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import {
   db,
   collection,
@@ -10,6 +14,11 @@ import {
   doc,
   updateDoc,
 } from "@/lib/firebase";
+
+// 🔁 외부에서 새로고침 가능하게 하는 타입 정의
+export interface SearchDonationsRef {
+  refreshSearch: () => void;
+}
 
 interface DonationData {
   id: string;
@@ -21,7 +30,7 @@ interface DonationData {
   sentDate?: string;
 }
 
-export default function SearchDonations() {
+const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
   const [searchName, setSearchName] = useState<string>("");
   const [searchResults, setSearchResults] = useState<DonationData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -29,11 +38,9 @@ export default function SearchDonations() {
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const [inputDates, setInputDates] = useState<Record<string, string>>({});
 
-  const handleSearch = async () => {
-    if (!searchName.trim()) {
-      alert("검색할 이름을 입력하세요.");
-      return;
-    }
+  // ✅ 외부에서 호출 가능한 검색 함수
+  const refreshSearch = async () => {
+    if (!searchName.trim()) return;
 
     setLoading(true);
     try {
@@ -45,22 +52,25 @@ export default function SearchDonations() {
 
       const querySnapshot = await getDocs(q);
 
-      if (querySnapshot.empty) {
-        setSearchResults([]);
-        alert("❌ 해당 이름으로 등록된 부조금 내역이 없습니다.");
-      } else {
-        const results: DonationData[] = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as Omit<DonationData, "id">),
-        }));
-        setSearchResults(results);
-      }
+      const results: DonationData[] = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<DonationData, "id">),
+      }));
+      setSearchResults(results);
     } catch (error) {
       console.error("❌ 검색 오류:", error);
       alert("❌ 검색 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
+  };
+
+  useImperativeHandle(ref, () => ({
+    refreshSearch,
+  }));
+
+  const handleSearch = () => {
+    refreshSearch();
   };
 
   const handleToggleInput = (id: string) => {
@@ -201,13 +211,17 @@ export default function SearchDonations() {
                       type="text"
                       placeholder="보낸 금액"
                       value={inputValues[result.id] || ""}
-                      onChange={(e) => handleInputChange(result.id, e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(result.id, e.target.value)
+                      }
                       className="w-full p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
                     />
                     <input
                       type="date"
                       value={inputDates[result.id] || ""}
-                      onChange={(e) => handleDateChange(result.id, e.target.value)}
+                      onChange={(e) =>
+                        handleDateChange(result.id, e.target.value)
+                      }
                       className="w-full p-2 rounded bg-gray-700 text-white text-sm"
                     />
                     <div className="flex gap-2">
@@ -240,4 +254,6 @@ export default function SearchDonations() {
       )}
     </div>
   );
-}
+});
+
+export default SearchDonations;
