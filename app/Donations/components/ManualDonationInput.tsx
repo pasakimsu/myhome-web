@@ -72,7 +72,7 @@ export default function ManualDonationInput({ onAfterRegister }: ManualDonationI
 
   return (
     <div className="w-full max-w-md mt-8 bg-[#3a312a] p-4 rounded-lg shadow-md text-sm">
-      <h3 className="text-white font-semibold mb-3">📝 부조금 수동 등록</h3>
+      <h3 className="text-white font-semibold mb-3">📝 부조금 추가 등록</h3>
       <input
         name="date"
         type="date"
