@@ -257,3 +257,4 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
 });
 
 export default SearchDonations;
+SearchDonations.displayName = "SearchDonations";
