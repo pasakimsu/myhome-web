@@ -65,6 +65,11 @@ export default function SchedulePage() {
 
     loadDutyStartDateFromFirestore(); // 기준일자 로드
   }, []);
+  useEffect(() => {
+    const today = new Date();
+    setSelectedDate(today);
+  }, []);
+  
 
   if (!dutyStartDate) return null;
 

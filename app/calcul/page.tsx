@@ -72,6 +72,11 @@ export default function CalculPage() {
       fetchUserBudgets(year, month);
     }
   }, [router, year, month]);
+  useEffect(() => {
+    const now = new Date();
+    const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
+    setMonth(currentMonth);
+  }, []);
 
   const handleAllowanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const numValue = parseInt(e.target.value.replace(/,/g, ""), 10) || 0;
