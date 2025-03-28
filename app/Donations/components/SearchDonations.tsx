@@ -200,78 +200,83 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
       {searchResults.length > 0 && (
         <div className="w-full flex flex-col items-center gap-4">
           {searchResults.map((result) => (
-            <div
-              key={result.id}
-              className="bg-[#3a312a] w-full max-w-md p-4 rounded-lg shadow-md text-sm"
+  <div
+    key={result.id}
+    className="bg-[#3a312a] w-full max-w-md p-4 rounded-lg shadow-md text-sm"
+  >
+    {/* ✅ 상단 정보 + 삭제 버튼을 양쪽 정렬 */}
+    <div className="mb-1 flex justify-between items-start">
+      <div>
+        <p>📅 {result.date}</p>
+        <p>👤 {result.name}</p>
+        <p>📝 {result.reason}</p>
+        <p>💰 {result.amount.toLocaleString()}원</p>
+      </div>
+
+      <button
+        onClick={() => handleFullDelete(result.id)}
+        className="bg-red-800 hover:bg-red-900 text-white px-2 py-1 text-xs rounded"
+      >
+        항목 삭제
+      </button>
+    </div>
+
+    <div className="mt-2">
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={!!activeInputs[result.id]}
+          onChange={() => handleToggleInput(result.id)}
+        />
+        송금 여부 표시
+      </label>
+
+      {activeInputs[result.id] && (
+        <div className="flex flex-col gap-2 mt-2">
+          <input
+            type="text"
+            placeholder="보낸 금액"
+            value={inputValues[result.id] || ""}
+            onChange={(e) =>
+              handleInputChange(result.id, e.target.value)
+            }
+            className="w-full p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
+          />
+          <input
+            type="date"
+            value={inputDates[result.id] || ""}
+            onChange={(e) =>
+              handleDateChange(result.id, e.target.value)
+            }
+            className="w-full p-2 rounded bg-gray-700 text-white text-sm"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleRegister(result.id)}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-2 text-sm rounded"
             >
-              <div className="mb-1">
-                <p>📅 {result.date}</p>
-                <p>👤 {result.name}</p>
-                <p>📝 {result.reason}</p>
-                <p>💰 {result.amount.toLocaleString()}원</p>
-              </div>
+              등록
+            </button>
+            <button
+              onClick={() => handleDelete(result.id)}
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-2 text-sm rounded"
+            >
+              송금 삭제
+            </button>
+          </div>
+        </div>
+      )}
 
-              <div className="mt-2">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={!!activeInputs[result.id]}
-                    onChange={() => handleToggleInput(result.id)}
-                  />
-                  송금 여부 표시
-                </label>
+      {typeof result.sentAmount === "number" && (
+        <p className="text-xs text-right text-green-400 mt-2">
+          📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원<br />
+          📅 보낸 날짜: {result.sentDate || "-"}
+        </p>
+      )}
+    </div>
+  </div>
+))}
 
-                {activeInputs[result.id] && (
-                  <div className="flex flex-col gap-2 mt-2">
-                    <input
-                      type="text"
-                      placeholder="보낸 금액"
-                      value={inputValues[result.id] || ""}
-                      onChange={(e) =>
-                        handleInputChange(result.id, e.target.value)
-                      }
-                      className="w-full p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
-                    />
-                    <input
-                      type="date"
-                      value={inputDates[result.id] || ""}
-                      onChange={(e) =>
-                        handleDateChange(result.id, e.target.value)
-                      }
-                      className="w-full p-2 rounded bg-gray-700 text-white text-sm"
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleRegister(result.id)}
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-2 text-sm rounded"
-                      >
-                        등록
-                      </button>
-                      <button
-                        onClick={() => handleDelete(result.id)}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-2 text-sm rounded"
-                      >
-                        송금 삭제
-                      </button>
-                      <button
-                        onClick={() => handleFullDelete(result.id)}
-                        className="flex-1 bg-red-800 hover:bg-red-900 text-white px-2 py-2 text-sm rounded"
-                      >
-                        항목 삭제
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {typeof result.sentAmount === "number" && (
-                  <p className="text-xs text-right text-green-400 mt-2">
-                    📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원<br />
-                    📅 보낸 날짜: {result.sentDate || "-"}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
         </div>
       )}
     </div>
