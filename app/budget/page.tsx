@@ -20,13 +20,12 @@ export default function BudgetHomePage() {
   const [weeklySchedules, setWeeklySchedules] = useState<ScheduleItem[]>([]);
 
   useEffect(() => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    
-    if (user) {
-      setUserId(user.uid); // Firebase Authentication을 통해 로그인한 사용자의 UID를 가져옵니다.
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      setUserId(storedUserId);
     }
   }, []);
+
 
   const toISODate = (dateStr: string) => {
     const [y, m, d] = dateStr.split("-");
