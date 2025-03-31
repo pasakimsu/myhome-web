@@ -212,7 +212,7 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
                   onClick={() => handleFullDelete(result.id)}
                   className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 text-sm font-semibold rounded shadow-md"
                 >
-                  🗑 항목 삭제
+                  삭제
                 </button>
               </div>
 
