@@ -1,15 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import DonationsHeader from "./components/DonationsHeader";
 import FileUpload from "./components/FileUpload";
 import DeleteAllButton from "./components/DeleteAllButton";
-import SearchDonations from "./components/SearchDonations";
+import ManualDonationInput from "./components/ManualDonationInput";
+import SearchDonations, { SearchDonationsRef } from "./components/SearchDonations";
 import AuthGuard from "@/components/AuthGuard";
 
 export default function DonationsPage() {
   const router = useRouter();
+  const searchRef = useRef<SearchDonationsRef>(null);
+  const handleAfterRegister = () => {
+    searchRef.current?.refreshSearch();
+  };
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -28,6 +33,7 @@ export default function DonationsPage() {
           <DonationsHeader />
           <FileUpload />
           <DeleteAllButton />
+          <ManualDonationInput onAfterRegister={handleAfterRegister} />
           <SearchDonations />
         </div>
       </div>
