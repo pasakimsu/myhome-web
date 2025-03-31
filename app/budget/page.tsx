@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AppStyleButton from "@/components/AppStyleButton";
 import { db, collection, onSnapshot } from "@/lib/firebase";
-import { getAuth } from "firebase/auth";
 import AuthGuard from "@/components/AuthGuard";
 
 interface ScheduleItem {
