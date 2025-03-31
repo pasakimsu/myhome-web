@@ -6,27 +6,14 @@ interface BudgetSummaryProps {
 }
 
 export default function BudgetSummary({ allocated, accountNumbers }: BudgetSummaryProps) {
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert(`📋 복사 완료: ${text}`);
-    });
-  };
-
   return (
-    <div className="mt-4 p-4 bg-[#2f2a25] rounded-lg text-white space-y-2 text-sm">
-      {["생활비", "적금", "투자", "가족"].map((key) => (
-        <div key={key} className="flex items-center justify-between">
-          <div>
-            {key}: <strong>{allocated[key]?.toLocaleString() || 0}원</strong> ({accountNumbers[key]})
-          </div>
-          <button
-            onClick={() => handleCopy(accountNumbers[key])}
-            className="text-xs bg-[#8d7864] hover:bg-[#a48d77] px-2 py-1 rounded"
-          >
-            복사
-          </button>
-        </div>
-      ))}
-    </div>
+    allocated.생활비 > 0 && (
+      <div className="mt-4 p-4 bg-[#2f2a25] rounded-lg">
+        <p>생활비: <strong>{allocated.생활비.toLocaleString()}원</strong> ({accountNumbers.생활비})</p>
+        <p>적금: <strong>{allocated.적금.toLocaleString()}원</strong> ({accountNumbers.적금})</p>
+        <p>투자: <strong>{allocated.투자.toLocaleString()}원</strong> ({accountNumbers.투자})</p>
+        <p>가족: <strong>{allocated.가족.toLocaleString()}원</strong> ({accountNumbers.가족})</p>
+      </div>
+    )
   );
 }

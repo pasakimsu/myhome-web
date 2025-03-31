@@ -5,13 +5,11 @@ import { useRouter } from "next/navigation";
 import AppStyleButton from "@/components/AppStyleButton";
 import { db, collection, onSnapshot } from "@/lib/firebase";
 import AuthGuard from "@/components/AuthGuard";
-import { getUserId } from "@/lib/getUserId";
 
 interface ScheduleItem {
   id: string;
   date: string;
   content: string;
-  userId: string;
 }
 
 export default function BudgetHomePage() {
@@ -21,12 +19,11 @@ export default function BudgetHomePage() {
   const [weeklySchedules, setWeeklySchedules] = useState<ScheduleItem[]>([]);
 
   useEffect(() => {
-    const storedUser = getUserId();
+    const storedUser = localStorage.getItem("userId");
     if (storedUser) {
       setUserId(storedUser);
     }
   }, []);
-
 
   const toISODate = (dateStr: string) => {
     const [y, m, d] = dateStr.split("-");
@@ -46,8 +43,7 @@ export default function BudgetHomePage() {
       const all = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<ScheduleItem, "id">),
-      }))
-      .filter((item) => item.userId === userId); 
+      }));
 
       const today = new Date();
       const currentYear = today.getFullYear();
@@ -80,7 +76,7 @@ export default function BudgetHomePage() {
     });
 
     return () => unsubscribe();
-  }, [userId]);
+  }, []);
 
   const getDaysSinceReference = (referenceDateStr: string) => {
     const referenceDate = new Date(referenceDateStr);

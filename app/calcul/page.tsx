@@ -10,7 +10,6 @@ import BudgetSummary from "./components/BudgetSummary";
 import BudgetSaveButton from "./components/BudgetSaveButton";
 import BudgetComparisonTable from "./components/BudgetComparisonTable";
 import { db, doc, setDoc, collection, getDocs } from "@/lib/firebase";
-import { getUserId } from "@/lib/getUserId"; // ✅ 추가
 
 const accountNumbers = {
   생활비: "1000-8998-1075(토스)",
@@ -65,7 +64,7 @@ export default function CalculPage() {
   const [userBudgets, setUserBudgets] = useState<Budget[]>([]);
 
   useEffect(() => {
-    const storedUserId = getUserId(); // ✅ 변경
+    const storedUserId = localStorage.getItem("userId");
     if (!storedUserId) {
       router.push("/login");
     } else {
@@ -73,12 +72,6 @@ export default function CalculPage() {
       fetchUserBudgets(year, month);
     }
   }, [router, year, month]);
-
-  useEffect(() => {
-    const now = new Date();
-    const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
-    setMonth(currentMonth);
-  }, []);
 
   const handleAllowanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const numValue = parseInt(e.target.value.replace(/,/g, ""), 10) || 0;
@@ -132,7 +125,7 @@ export default function CalculPage() {
     try {
       const docRef = doc(db, "budgets", `${userId}_${year}-${month}`);
       await setDoc(docRef, {
-        userId, // ✅ 반드시 포함!
+        userId,
         year,
         month,
         allowance: Number(allowance.replace(/,/g, "")),

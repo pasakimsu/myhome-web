@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { db, collection, addDoc } from "@/lib/firebase";
-import { getUserId } from "@/lib/getUserId"; // ✅ 추가
 
 interface Props {
   selectedDate: Date;
@@ -14,7 +13,7 @@ export default function ScheduleInput({ selectedDate, onRegister }: Props) {
   const [content, setContent] = useState<string>("");
 
   useEffect(() => {
-    const id = getUserId(); // ✅ 수정
+    const id = localStorage.getItem("userId");
     if (id) setUserId(id);
   }, []);
 
@@ -33,12 +32,12 @@ export default function ScheduleInput({ selectedDate, onRegister }: Props) {
       await addDoc(collection(db, "schedules"), {
         date: dateStr,
         content: `${content.trim()} (${userId})`,
-        userId, // ✅ Firestore 보안 규칙 통과용 필수!
+        userId,
         createdAt: new Date(),
       });
       alert("✅ 등록 완료!");
       setContent("");
-      onRegister();
+      onRegister(); // ✅ 새로고침 트리거
     } catch (err) {
       console.error("❌ 등록 오류:", err);
       alert("❌ 등록 중 문제가 발생했습니다.");
@@ -52,9 +51,7 @@ export default function ScheduleInput({ selectedDate, onRegister }: Props) {
 
   return (
     <div className="mt-6 w-full max-w-md">
-      <p className="mb-2">
-        선택한 날짜: <strong>{formattedDate}</strong>
-      </p>
+      <p className="mb-2">선택한 날짜: <strong>{formattedDate}</strong></p>
       <input
         type="text"
         placeholder="일정 내용을 입력하세요"

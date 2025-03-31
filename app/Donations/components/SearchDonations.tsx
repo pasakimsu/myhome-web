@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useState,
-  useImperativeHandle,
-  forwardRef,
-} from "react";
+import { useState } from "react";
 import {
   db,
   collection,
@@ -13,12 +9,7 @@ import {
   where,
   doc,
   updateDoc,
-  deleteDoc,
 } from "@/lib/firebase";
-
-export interface SearchDonationsRef {
-  refreshSearch: () => void;
-}
 
 interface DonationData {
   id: string;
@@ -27,19 +18,20 @@ interface DonationData {
   reason: string;
   amount: number;
   sentAmount?: number;
-  sentDate?: string;
 }
 
-const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
+export default function SearchDonations() {
   const [searchName, setSearchName] = useState<string>("");
   const [searchResults, setSearchResults] = useState<DonationData[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeInputs, setActiveInputs] = useState<Record<string, boolean>>({});
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
-  const [inputDates, setInputDates] = useState<Record<string, string>>({});
 
-  const refreshSearch = async () => {
-    if (!searchName.trim()) return;
+  const handleSearch = async () => {
+    if (!searchName.trim()) {
+      alert("검색할 이름을 입력하세요.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -51,25 +43,22 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
 
       const querySnapshot = await getDocs(q);
 
-      const results: DonationData[] = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<DonationData, "id">),
-      }));
-      setSearchResults(results);
+      if (querySnapshot.empty) {
+        setSearchResults([]);
+        alert("❌ 해당 이름으로 등록된 부조금 내역이 없습니다.");
+      } else {
+        const results: DonationData[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Omit<DonationData, "id">),
+        }));
+        setSearchResults(results);
+      }
     } catch (error) {
       console.error("❌ 검색 오류:", error);
       alert("❌ 검색 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
-  };
-
-  useImperativeHandle(ref, () => ({
-    refreshSearch,
-  }));
-
-  const handleSearch = () => {
-    refreshSearch();
   };
 
   const handleToggleInput = (id: string) => {
@@ -88,24 +77,12 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
     }));
   };
 
-  const handleDateChange = (id: string, value: string) => {
-    setInputDates((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
-  };
-
   const handleRegister = async (id: string) => {
     const raw = inputValues[id];
     const number = Number(raw.replace(/,/g, ""));
-    const date = inputDates[id];
 
     if (!number || isNaN(number) || number <= 0) {
       alert("올바른 금액을 입력하세요.");
-      return;
-    }
-    if (!date) {
-      alert("날짜를 입력하세요.");
       return;
     }
 
@@ -114,12 +91,11 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
       const ref = doc(db, userId, id);
       await updateDoc(ref, {
         sentAmount: number,
-        sentDate: date,
       });
 
       setSearchResults((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, sentAmount: number, sentDate: date } : item
+          item.id === id ? { ...item, sentAmount: number } : item
         )
       );
     } catch (err) {
@@ -134,41 +110,19 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
       const ref = doc(db, userId, id);
       await updateDoc(ref, {
         sentAmount: null,
-        sentDate: null,
       });
 
       setSearchResults((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, sentAmount: undefined, sentDate: undefined } : item
+          item.id === id ? { ...item, sentAmount: undefined } : item
         )
       );
       setInputValues((prev) => ({
         ...prev,
         [id]: "",
       }));
-      setInputDates((prev) => ({
-        ...prev,
-        [id]: "",
-      }));
     } catch (err) {
       console.error("❌ 삭제 오류:", err);
-      alert("❌ 삭제 중 오류가 발생했습니다.");
-    }
-  };
-
-  const handleFullDelete = async (id: string) => {
-    const confirmDelete = confirm("정말로 이 부조금 항목을 완전히 삭제할까요?");
-    if (!confirmDelete) return;
-
-    try {
-      const userId = localStorage.getItem("userId") || "donations";
-      const ref = doc(db, userId, id);
-      await deleteDoc(ref); // 완전 삭제
-
-      setSearchResults((prev) => prev.filter((item) => item.id !== id));
-      alert("✅ 항목이 삭제되었습니다.");
-    } catch (error) {
-      console.error("❌ 삭제 실패:", error);
       alert("❌ 삭제 중 오류가 발생했습니다.");
     }
   };
@@ -198,91 +152,59 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
       </button>
 
       {searchResults.length > 0 && (
-        <div className="w-full flex flex-col items-center gap-4">
-          {searchResults.map((result) => (
-  <div
-    key={result.id}
-    className="bg-[#3a312a] w-full max-w-md p-4 rounded-lg shadow-md text-sm"
-  >
-    {/* ✅ 상단 정보 + 삭제 버튼을 양쪽 정렬 */}
-    <div className="mb-1 flex justify-between items-start">
-      <div>
-        <p>📅 {result.date}</p>
-        <p>👤 {result.name}</p>
-        <p>📝 {result.reason}</p>
-        <p>💰 {result.amount.toLocaleString()}원</p>
-      </div>
+        <div className="w-full max-w-md bg-[#3a312a] p-4 rounded-lg shadow-md">
+          <h3 className="text-lg font-semibold mb-2">검색 결과</h3>
+          <ul className="space-y-4">
+            {searchResults.map((result) => (
+              <li key={result.id} className="border-b brownBorder pb-2">
+                <div className="flex flex-col text-sm">
+                  <div className="mb-1">
+                    📅 <strong>{result.date}</strong> | 👤 <strong>{result.name}</strong> | 💰 <strong>{result.amount.toLocaleString()}원</strong> | 📝 <strong>{result.reason}</strong>
+                    <input
+                      type="checkbox"
+                      className="ml-2 align-middle"
+                      checked={!!activeInputs[result.id]}
+                      onChange={() => handleToggleInput(result.id)}
+                      title="송금 여부 체크"
+                    />
+                  </div>
 
-      <button
-  onClick={() => handleFullDelete(result.id)}
-  className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 text-sm font-semibold rounded shadow-md"
->
-  삭제
-</button>
+                  {activeInputs[result.id] && (
+                    <div className="flex items-center gap-2 mt-1">
+                      💸
+                      <input
+                        type="text"
+                        placeholder="보낸 금액"
+                        value={inputValues[result.id] || ""}
+                        onChange={(e) => handleInputChange(result.id, e.target.value)}
+                        className="flex-1 p-1 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
+                      />
+                      <button
+                        onClick={() => handleRegister(result.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 text-xs rounded"
+                      >
+                        등록
+                      </button>
+                      <button
+                        onClick={() => handleDelete(result.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 text-xs rounded"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
 
-    </div>
-
-    <div className="mt-2">
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={!!activeInputs[result.id]}
-          onChange={() => handleToggleInput(result.id)}
-        />
-        송금 여부 표시
-      </label>
-
-      {activeInputs[result.id] && (
-        <div className="flex flex-col gap-2 mt-2">
-          <input
-            type="text"
-            placeholder="보낸 금액"
-            value={inputValues[result.id] || ""}
-            onChange={(e) =>
-              handleInputChange(result.id, e.target.value)
-            }
-            className="w-full p-2 rounded bg-gray-700 text-white placeholder-gray-400 text-sm"
-          />
-          <input
-            type="date"
-            value={inputDates[result.id] || ""}
-            onChange={(e) =>
-              handleDateChange(result.id, e.target.value)
-            }
-            className="w-full p-2 rounded bg-gray-700 text-white text-sm"
-          />
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleRegister(result.id)}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-2 text-sm rounded"
-            >
-              등록
-            </button>
-            <button
-              onClick={() => handleDelete(result.id)}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white px-2 py-2 text-sm rounded"
-            >
-              송금 삭제
-            </button>
-          </div>
-        </div>
-      )}
-
-      {typeof result.sentAmount === "number" && (
-        <p className="text-xs text-right text-green-400 mt-2">
-          📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원<br />
-          📅 보낸 날짜: {result.sentDate || "-"}
-        </p>
-      )}
-    </div>
-  </div>
-))}
-
+                  {typeof result.sentAmount === "number" && (
+                    <p className="text-xs text-right text-green-400 mt-1">
+                      📤 내가 보낸 금액: {result.sentAmount.toLocaleString()}원
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
   );
-});
-
-export default SearchDonations;
-SearchDonations.displayName = "SearchDonations";
+}

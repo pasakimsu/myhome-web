@@ -1,33 +1,25 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DonationsHeader from "./components/DonationsHeader";
 import FileUpload from "./components/FileUpload";
 import DeleteAllButton from "./components/DeleteAllButton";
-import SearchDonations, { SearchDonationsRef } from "./components/SearchDonations";
-import ManualDonationInput from "./components/ManualDonationInput";
+import SearchDonations from "./components/SearchDonations";
 import AuthGuard from "@/components/AuthGuard";
 
 export default function DonationsPage() {
   const router = useRouter();
 
-  // ✅ SearchDonations 컴포넌트를 제어할 ref
-  const searchRef = useRef<SearchDonationsRef>(null);
-
-  // ✅ 수동 등록 후 검색 결과 새로고침
-  const handleAfterRegister = () => {
-    searchRef.current?.refreshSearch();
-  };
-
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
-    const allowedUsers = ["bak", "yong"];
+    const allowedUsers = ["bak", "yong"]; // ✅ 접근 허용할 사용자 목록
     if (storedUserId && !allowedUsers.includes(storedUserId)) {
       alert("🚨 접근 권한이 없습니다.");
       router.push("/budget");
     }
   }, [router]);
+  
 
   return (
     <AuthGuard>
@@ -36,8 +28,7 @@ export default function DonationsPage() {
           <DonationsHeader />
           <FileUpload />
           <DeleteAllButton />
-          <ManualDonationInput onAfterRegister={handleAfterRegister} />
-          <SearchDonations ref={searchRef} />
+          <SearchDonations />
         </div>
       </div>
     </AuthGuard>
