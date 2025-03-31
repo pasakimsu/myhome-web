@@ -11,6 +11,7 @@ interface ScheduleItem {
   id: string;
   date: string;
   content: string;
+  userId: string;
 }
 
 export default function BudgetHomePage() {
@@ -44,7 +45,7 @@ export default function BudgetHomePage() {
     const unsubscribe = onSnapshot(collection(db, "schedules"), (snapshot) => {
       const all = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...(doc.data() as any),
+        ...(doc.data() as Omit<ScheduleItem, "id">),
       }))
       .filter((item) => item.userId === userId); 
 
