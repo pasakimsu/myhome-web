@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AppStyleButton from "@/components/AppStyleButton";
 import { db, collection, onSnapshot } from "@/lib/firebase";
+import { getAuth } from "firebase/auth";
 import AuthGuard from "@/components/AuthGuard";
 
 interface ScheduleItem {
@@ -19,9 +20,11 @@ export default function BudgetHomePage() {
   const [weeklySchedules, setWeeklySchedules] = useState<ScheduleItem[]>([]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("userId");
-    if (storedUser) {
-      setUserId(storedUser);
+    const auth = getAuth();
+    const user = auth.currentUser;
+    
+    if (user) {
+      setUserId(user.uid); // Firebase Authentication을 통해 로그인한 사용자의 UID를 가져옵니다.
     }
   }, []);
 
