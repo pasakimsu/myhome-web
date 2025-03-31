@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AppStyleButton from "@/components/AppStyleButton";
 import { db, collection, onSnapshot } from "@/lib/firebase";
 import AuthGuard from "@/components/AuthGuard";
+import { getUserId } from "@/lib/getUserId";
 
 interface ScheduleItem {
   id: string;
@@ -19,11 +20,12 @@ export default function BudgetHomePage() {
   const [weeklySchedules, setWeeklySchedules] = useState<ScheduleItem[]>([]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("userId");
+    const storedUser = getUserId();
     if (storedUser) {
       setUserId(storedUser);
     }
   }, []);
+
 
   const toISODate = (dateStr: string) => {
     const [y, m, d] = dateStr.split("-");

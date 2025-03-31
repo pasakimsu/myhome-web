@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { db, collection, addDoc } from "@/lib/firebase";
+import { getUserId } from "@/lib/getUserId"; // ✅ 추가
 
 interface DonationData {
   date: string;
@@ -9,6 +10,7 @@ interface DonationData {
   nameKeywords: string[];
   reason: string;
   amount: number;
+  userId: string; // ✅ 추가
 }
 
 export default function FileUpload() {
@@ -30,7 +32,12 @@ export default function FileUpload() {
       return;
     }
 
-    const userId = localStorage.getItem("userId") || "donations";
+    const userId = getUserId(); // ✅ 변경
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     setUploading(true);
     try {
       const reader = new FileReader();
@@ -43,11 +50,12 @@ export default function FileUpload() {
           }
 
           const rows = csvData.split("\n").map((row) => row.split(","));
-          rows.shift();
+          rows.shift(); // 헤더 제거
 
           const jsonData: DonationData[] = rows.map((row): DonationData => {
             const name = row[1]?.trim() || "이름 없음";
             return {
+              userId, // ✅ 반드시 포함
               date: row[0]?.trim() || "날짜 없음",
               name,
               nameKeywords: generateNameKeywords(name),
@@ -64,7 +72,7 @@ export default function FileUpload() {
           }
 
           for (let i = 0; i < jsonData.length; i++) {
-            await addDoc(collection(db, userId), jsonData[i]);
+            await addDoc(collection(db, userId), jsonData[i]); // ✅ 컬렉션은 여전히 userId 기준
             await new Promise((resolve) => setTimeout(resolve, 50));
           }
 

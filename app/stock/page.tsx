@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { db, collection, getDocs, query, where, setDoc, doc } from "@/lib/firebase";
 import AuthGuard from "@/components/AuthGuard";
+import { getUserId } from "@/lib/getUserId"; // ✅ 추가
 
 interface Stock {
   code: string;
@@ -23,7 +24,7 @@ export default function StockPage() {
 
   // 🔹 로그인된 사용자 가져오기
   useEffect(() => {
-    const uid = localStorage.getItem("userId");
+    const uid = getUserId(); // ✅ 변경
     if (uid) {
       setUserId(uid);
       fetchInputsFromFirestore(uid);
@@ -52,7 +53,6 @@ export default function StockPage() {
     }
   };
 
-  // 🔹 주가 불러오기
   const fetchStocks = async () => {
     try {
       const res = await fetch("/api/stocks");
@@ -69,7 +69,6 @@ export default function StockPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🔹 입력 변경 처리
   const handleChange = (code: string, field: keyof InputData, value: string) => {
     const num = parseInt(value.replace(/[^0-9]/g, ""), 10) || 0;
     setInputs((prev) => ({
@@ -78,13 +77,12 @@ export default function StockPage() {
     }));
   };
 
-  // 🔹 Firestore에 저장
   const handleSingleSave = async (code: string) => {
     if (!userId) {
       alert("로그인이 필요합니다.");
       return;
     }
-  
+
     const input = inputs[code];
     if (
       !input ||
@@ -96,16 +94,16 @@ export default function StockPage() {
       alert("수량과 평단가를 모두 입력해주세요.");
       return;
     }
-  
+
     try {
       await setDoc(doc(db, "stockInputs", `${userId}_${code}`), {
-        userId,
+        userId, // ✅ 보안 규칙 통과용 필수
         code,
         quantity: input.quantity,
         averagePrice: input.averagePrice,
         updatedAt: new Date(),
       });
-  
+
       alert("✅ 저장되었습니다!");
       setSubmitted(true);
     } catch (err) {
@@ -113,7 +111,6 @@ export default function StockPage() {
       alert("❌ 저장 중 오류 발생");
     }
   };
-  
 
   const formatNumber = (num: number) => num.toLocaleString();
 
@@ -140,43 +137,41 @@ export default function StockPage() {
 
               return (
                 <li key={stock.code} className="border-b border-brownBorder pb-4">
-                <div className="text-base mb-2">
-                  <span className="font-semibold">{stock.name}</span> ({stock.code})<br />
-                  현재가: <span className="text-white">{stock.price}원</span>
-                </div>
-              
-                {/* 👉 수량 + 평단 + 등록 버튼을 한 줄에 */}
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="number"
-                    placeholder="수량"
-                    value={input.quantity || ""}
-                    onChange={(e) => handleChange(stock.code, "quantity", e.target.value)}
-                    className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
-                  />
-                  <input
-                    type="number"
-                    placeholder="평단가"
-                    value={input.averagePrice || ""}
-                    onChange={(e) => handleChange(stock.code, "averagePrice", e.target.value)}
-                    className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
-                  />
-                  <button
-                    onClick={() => handleSingleSave(stock.code)}
-                    className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 rounded"
-                  >
-                    등록
-                  </button>
-                </div>
-              
-                {submitted && (
-                  <div className="text-sm text-gray-300">
-                    📌 평가 금액: <span className="text-white font-semibold">{formatNumber(evalAmount)} 원</span><br />
-                    📈 수익률: <span className="text-white font-semibold">{formatNumber(profit)} 원</span>
+                  <div className="text-base mb-2">
+                    <span className="font-semibold">{stock.name}</span> ({stock.code})<br />
+                    현재가: <span className="text-white">{stock.price}원</span>
                   </div>
-                )}
-              </li>
-              
+
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="number"
+                      placeholder="수량"
+                      value={input.quantity || ""}
+                      onChange={(e) => handleChange(stock.code, "quantity", e.target.value)}
+                      className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
+                    />
+                    <input
+                      type="number"
+                      placeholder="평단가"
+                      value={input.averagePrice || ""}
+                      onChange={(e) => handleChange(stock.code, "averagePrice", e.target.value)}
+                      className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
+                    />
+                    <button
+                      onClick={() => handleSingleSave(stock.code)}
+                      className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 rounded"
+                    >
+                      등록
+                    </button>
+                  </div>
+
+                  {submitted && (
+                    <div className="text-sm text-gray-300">
+                      📌 평가 금액: <span className="text-white font-semibold">{formatNumber(evalAmount)} 원</span><br />
+                      📈 수익률: <span className="text-white font-semibold">{formatNumber(profit)} 원</span>
+                    </div>
+                  )}
+                </li>
               );
             })}
           </ul>
