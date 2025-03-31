@@ -44,8 +44,9 @@ export default function BudgetHomePage() {
     const unsubscribe = onSnapshot(collection(db, "schedules"), (snapshot) => {
       const all = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...(doc.data() as Omit<ScheduleItem, "id">),
-      }));
+        ...(doc.data() as any),
+      }))
+      .filter((item) => item.userId === userId); 
 
       const today = new Date();
       const currentYear = today.getFullYear();
@@ -78,7 +79,7 @@ export default function BudgetHomePage() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [userId]);
 
   const getDaysSinceReference = (referenceDateStr: string) => {
     const referenceDate = new Date(referenceDateStr);
