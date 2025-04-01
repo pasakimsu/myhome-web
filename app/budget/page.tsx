@@ -25,13 +25,14 @@ export default function BudgetHomePage() {
     }
   }, []);
 
-
   const toISODate = (dateStr: string) => {
     const [y, m, d] = dateStr.split("-");
     const mm = m.padStart(2, "0");
     const dd = d.padStart(2, "0");
     return new Date(`${y}-${mm}-${dd}`);
   };
+
+  const toKoreaDate = (date: Date) => new Date(date.getTime() + 9 * 60 * 60 * 1000);
 
   const getKoreanDay = (dateStr: string) => {
     const days = ["일", "월", "화", "수", "목", "금", "토"];
@@ -46,7 +47,7 @@ export default function BudgetHomePage() {
         ...(doc.data() as Omit<ScheduleItem, "id">),
       }));
 
-      const today = new Date();
+      const today = toKoreaDate(new Date());
       const currentYear = today.getFullYear();
       const currentMonth = today.getMonth() + 1;
 
@@ -81,9 +82,9 @@ export default function BudgetHomePage() {
 
   const getDaysSinceReference = (referenceDateStr: string) => {
     const referenceDate = new Date(referenceDateStr);
-    const today = new Date();
+    const today = toKoreaDate(new Date());
     const diffTime = today.getTime() - referenceDate.getTime();
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
 
   return (

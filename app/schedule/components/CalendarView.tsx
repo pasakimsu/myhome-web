@@ -10,7 +10,7 @@ interface Props {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   refreshKey: number;
-  dutyStartDate: Date; // ✅ 기준일자만
+  dutyStartDate: Date;
 }
 
 interface ScheduleData {
@@ -30,23 +30,26 @@ export default function CalendarView({
   const formatDate = (date: Date) =>
     date.toLocaleDateString("ko-KR").replaceAll(". ", "-").replace(".", "");
 
+  const toKoreanDate = (date: Date) => {
+    const kstOffset = 9 * 60 * 60 * 1000;
+    return new Date(date.getTime() + kstOffset);
+  };
+
   const getDutyLabel = (date: Date): "당번" | "비번" => {
-    // 날짜만 비교할 수 있도록 시간 제거
-    const start = new Date(dutyStartDate);
-    const target = new Date(date);
-  
+    const start = toKoreanDate(new Date(dutyStartDate));
+    const target = toKoreanDate(new Date(date));
+
     start.setHours(0, 0, 0, 0);
     target.setHours(0, 0, 0, 0);
-  
+
     const diff = Math.floor(
       (target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
     );
-  
+
     const index = (diff % 3 + 3) % 3;
     const pattern: ("당번" | "비번")[] = ["당번", "비번", "비번"];
     return pattern[index];
   };
-  
 
   const fetchSchedules = async () => {
     const snapshot = await getDocs(collection(db, "schedules"));
