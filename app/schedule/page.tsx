@@ -18,12 +18,12 @@ export default function SchedulePage() {
     setRefreshKey((prev) => prev + 1);
   };
 
-  // ✅ Firestore에서 기준일자 실시간 구독
   useEffect(() => {
     const stored = localStorage.getItem("userId");
     if (stored) setUserId(stored);
 
     const dutyDocRef = doc(db, "settings", "dutyConfig");
+
     const unsubscribe = onSnapshot(dutyDocRef, (snapshot) => {
       const data = snapshot.data();
       if (data?.dutyStartDate) {
@@ -38,7 +38,6 @@ export default function SchedulePage() {
     return () => unsubscribe();
   }, []);
 
-  // ✅ 기준일자 저장
   const handleConfirmDutyDate = async () => {
     if (!tempStartDate || isNaN(tempStartDate.getTime())) {
       alert("❌ 올바른 날짜를 선택하세요.");
@@ -47,17 +46,19 @@ export default function SchedulePage() {
 
     try {
       const dutyDocRef = doc(db, "settings", "dutyConfig");
+
+      // ✅ 컬렉션/문서/필드 모두 없으면 자동 생성됨
       await setDoc(dutyDocRef, {
         dutyStartDate: tempStartDate.toISOString(),
       });
-      alert("✅ 기준일자가 저장되었습니다!");
+
+      alert("✅ 기준일자가 Firestore에 저장되었습니다!");
     } catch (err) {
-      console.error("❌ Firestore 저장 오류:", err);
+      console.error("❌ 기준일자 저장 실패:", err);
       alert("❌ 저장 중 오류가 발생했습니다.");
     }
   };
 
-  // ✅ 로딩 대기 처리
   if (!dutyStartDate || isNaN(dutyStartDate.getTime())) {
     return (
       <div className="text-white text-center mt-10">

@@ -10,7 +10,7 @@ interface Props {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   refreshKey: number;
-  dutyStartDate: Date;
+  dutyStartDate: Date; // ✅ 기준일자만
 }
 
 interface ScheduleData {
@@ -27,33 +27,26 @@ export default function CalendarView({
 }: Props) {
   const [schedules, setSchedules] = useState<ScheduleData[]>([]);
 
-  // ✅ 콘솔 로그로 디버깅
-  console.log("📅 기준일자:", dutyStartDate?.toISOString?.());
-
-  const formatDate = (date: Date) => date.toISOString().split("T")[0]; // ✅ 형식 통일
-
-  const toKoreanDate = (date: Date) => {
-    const kstOffset = 9 * 60 * 60 * 1000;
-    return new Date(date.getTime() + kstOffset);
-  };
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("ko-KR").replaceAll(". ", "-").replace(".", "");
 
   const getDutyLabel = (date: Date): "당번" | "비번" => {
-    if (!dutyStartDate || isNaN(dutyStartDate.getTime())) return "비번"; // ✅ 보호 처리
-
-    const start = toKoreanDate(new Date(dutyStartDate));
-    const target = toKoreanDate(new Date(date));
-
+    // 날짜만 비교할 수 있도록 시간 제거
+    const start = new Date(dutyStartDate);
+    const target = new Date(date);
+  
     start.setHours(0, 0, 0, 0);
     target.setHours(0, 0, 0, 0);
-
+  
     const diff = Math.floor(
       (target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
     );
-
+  
     const index = (diff % 3 + 3) % 3;
     const pattern: ("당번" | "비번")[] = ["당번", "비번", "비번"];
     return pattern[index];
   };
+  
 
   const fetchSchedules = async () => {
     const snapshot = await getDocs(collection(db, "schedules"));
