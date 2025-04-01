@@ -61,7 +61,6 @@ export default function StockPage() {
 
     const updated = { ...inputs };
     localStorage.setItem("stockInputs", JSON.stringify(updated));
-    setSubmitted(true);
     alert("✅ 저장되었습니다!");
   };
 
