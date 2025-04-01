@@ -23,10 +23,7 @@ export default function ScheduleInput({ selectedDate, onRegister }: Props) {
       return;
     }
 
-    const dateStr = selectedDate
-      .toLocaleDateString("ko-KR")
-      .replaceAll(". ", "-")
-      .replace(".", "");
+    const dateStr = selectedDate.toISOString().split("T")[0]; //;
 
     try {
       await addDoc(collection(db, "schedules"), {
