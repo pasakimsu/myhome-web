@@ -84,50 +84,52 @@ export default function StockPage() {
         <h1 className="text-xl font-bold mb-4">📈 내 보유 주식 평가</h1>
         <div className="bg-[#2f2a25] border border-brownBorder p-4 rounded-lg w-full max-w-md">
           <ul className="space-y-6">
-            {stocks.map((stock) => {
-              const input = inputs[stock.code] || { quantity: 0, averagePrice: 0 };
-              const evalAmount = getEvaluation(stock.price, input.quantity);
-              const profit = getProfit(stock.price, input);
+          {stocks.map((stock) => {
+  const input = inputs[stock.code] || { quantity: 0, averagePrice: 0 };
+  const evalAmount = getEvaluation(stock.price, input.quantity);
+  const profit = getProfit(stock.price, input);
 
-              return (
-                <li key={stock.code} className="border-b border-brownBorder pb-4">
-                  <div className="text-base mb-2">
-                    <span className="font-semibold">{stock.name}</span> ({stock.code})<br />
-                    현재가: <span className="text-white">{stock.price}원</span>
-                  </div>
+  return (
+    <li key={stock.code} className="border-b border-brownBorder pb-4">
+      <div className="text-base mb-2">
+        <span className="font-semibold">{stock.name}</span> ({stock.code})<br />
+        현재가: <span className="text-white">{stock.price}원</span>
+      </div>
 
-                  <div className="flex items-center gap-2 mb-2">
-                    <input
-                      type="number"
-                      placeholder="수량"
-                      value={input.quantity || ""}
-                      onChange={(e) => handleChange(stock.code, "quantity", e.target.value)}
-                      className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
-                    />
-                    <input
-                      type="number"
-                      placeholder="평단가"
-                      value={input.averagePrice || ""}
-                      onChange={(e) => handleChange(stock.code, "averagePrice", e.target.value)}
-                      className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
-                    />
-                    <button
-                      onClick={() => handleSingleSave(stock.code)}
-                      className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 rounded"
-                    >
-                      등록
-                    </button>
-                  </div>
+      <div className="flex items-center gap-2 mb-2">
+        <input
+          type="number"
+          placeholder="수량"
+          value={input.quantity ?? ""}
+          onChange={(e) => handleChange(stock.code, "quantity", e.target.value)}
+          className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
+        />
+        <input
+          type="number"
+          placeholder="평단가"
+          value={input.averagePrice ?? ""}
+          onChange={(e) => handleChange(stock.code, "averagePrice", e.target.value)}
+          className="p-1 w-24 bg-gray-700 text-white rounded text-sm"
+        />
+        <button
+          onClick={() => handleSingleSave(stock.code)}
+          className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 rounded"
+        >
+          등록
+        </button>
+      </div>
 
-                  {submitted && (
-                    <div className="text-sm text-gray-300">
-                      📌 평가 금액: <span className="text-white font-semibold">{formatNumber(evalAmount)} 원</span><br />
-                      📈 수익률: <span className="text-white font-semibold">{formatNumber(profit)} 원</span>
-                    </div>
-                  )}
-                </li>
-              );
-            })}
+      {/* ✅ 조건 수정: 항상 보여지도록 변경 */}
+      {input.quantity > 0 && input.averagePrice > 0 && (
+        <div className="text-sm text-gray-300">
+          📌 평가 금액: <span className="text-white font-semibold">{formatNumber(evalAmount)} 원</span><br />
+          📈 수익률: <span className="text-white font-semibold">{formatNumber(profit)} 원</span>
+        </div>
+      )}
+    </li>
+  );
+})}
+
           </ul>
         </div>
       </div>
