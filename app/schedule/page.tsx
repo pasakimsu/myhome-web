@@ -28,7 +28,7 @@ export default function SchedulePage() {
       setUserId(stored);
     }
 
-    // ✅ 모든 사용자에게 동일하게 적용될 공통 키로 변경
+    // ✅ 모든 사용자에게 공유되는 기준일자
     const saved = localStorage.getItem("sharedDutyStartDate");
     if (saved) {
       const parsed = toKoreaDate(saved);
@@ -44,10 +44,12 @@ export default function SchedulePage() {
     setTempStartDate(defaultDate);
   }, []);
 
-  // ✅ 기준일자 저장도 공통 키로 변경
+  // ✅ 기준일자 확정: 저장 + 알림 + 달력 강제 갱신
   const handleConfirmDutyDate = () => {
     setDutyStartDate(tempStartDate);
     localStorage.setItem("sharedDutyStartDate", tempStartDate.toISOString());
+    alert("✅ 기준일자가 확정되었습니다!");
+    setRefreshKey((prev) => prev + 1);
   };
 
   if (!dutyStartDate) return null;
@@ -57,6 +59,7 @@ export default function SchedulePage() {
       <div className="flex flex-col items-center min-h-screen justify-center bg-[#2f2a25] text-white p-6">
         <h2 className="text-2xl font-bold mb-4">📅 일정 공유 캘린더</h2>
 
+        {/* ✅ bak 사용자만 설정 가능 */}
         {userId === "bak" && (
           <div className="mb-6 w-full max-w-md">
             <label className="block mb-1 text-sm font-semibold">📅 당번 기준일자</label>
