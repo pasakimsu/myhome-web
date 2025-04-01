@@ -11,14 +11,14 @@ export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshKey, setRefreshKey] = useState(0);
   const [dutyStartDate, setDutyStartDate] = useState<Date | null>(null);
-  const [tempStartDate, setTempStartDate] = useState(new Date("2025-03-01"));
+  const [tempStartDate, setTempStartDate] = useState<Date | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
   };
 
-  // ✅ Firestore 기준일자 실시간 불러오기
+  // ✅ Firestore에서 기준일자 실시간 구독
   useEffect(() => {
     const stored = localStorage.getItem("userId");
     if (stored) setUserId(stored);
@@ -28,30 +28,43 @@ export default function SchedulePage() {
       const data = snapshot.data();
       if (data?.dutyStartDate) {
         const parsed = new Date(data.dutyStartDate);
-        setDutyStartDate(parsed);
-        setTempStartDate(parsed);
+        if (!isNaN(parsed.getTime())) {
+          setDutyStartDate(parsed);
+          setTempStartDate(parsed);
+        }
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  // ✅ 기준일자 Firestore에 저장
+  // ✅ 기준일자 저장
   const handleConfirmDutyDate = async () => {
+    if (!tempStartDate || isNaN(tempStartDate.getTime())) {
+      alert("❌ 올바른 날짜를 선택하세요.");
+      return;
+    }
+
     try {
       const dutyDocRef = doc(db, "settings", "dutyConfig");
       await setDoc(dutyDocRef, {
         dutyStartDate: tempStartDate.toISOString(),
       });
-
-      alert("✅ 기준일자가 Firestore에 저장되었습니다!");
+      alert("✅ 기준일자가 저장되었습니다!");
     } catch (err) {
-      console.error("❌ 기준일자 저장 실패:", err);
+      console.error("❌ Firestore 저장 오류:", err);
       alert("❌ 저장 중 오류가 발생했습니다.");
     }
   };
 
-  if (!dutyStartDate) return null;
+  // ✅ 로딩 대기 처리
+  if (!dutyStartDate || isNaN(dutyStartDate.getTime())) {
+    return (
+      <div className="text-white text-center mt-10">
+        📡 기준일자를 불러오는 중입니다...
+      </div>
+    );
+  }
 
   return (
     <AuthGuard>
@@ -63,7 +76,11 @@ export default function SchedulePage() {
             <label className="block mb-1 text-sm font-semibold">📅 당번 기준일자</label>
             <input
               type="date"
-              value={tempStartDate.toISOString().split("T")[0]}
+              value={
+                tempStartDate && !isNaN(tempStartDate.getTime())
+                  ? tempStartDate.toISOString().split("T")[0]
+                  : ""
+              }
               onChange={(e) => {
                 const newDate = new Date(e.target.value);
                 if (!isNaN(newDate.getTime())) {
