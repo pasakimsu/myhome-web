@@ -17,7 +17,7 @@ interface InputData {
 export default function StockPage() {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [inputs, setInputs] = useState<{ [code: string]: InputData }>({});
-  const [submitted, setSubmitted] = useState(false);
+  
 
   const fetchStocks = async () => {
     try {
@@ -33,7 +33,6 @@ export default function StockPage() {
     const savedInputs = localStorage.getItem("stockInputs");
     if (savedInputs) {
       setInputs(JSON.parse(savedInputs));
-      setSubmitted(true);
     }
 
     fetchStocks();

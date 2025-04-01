@@ -28,7 +28,8 @@ export default function SchedulePage() {
       setUserId(stored);
     }
 
-    const saved = localStorage.getItem("dutyStartDate");
+    // ✅ 모든 사용자에게 동일하게 적용될 공통 키로 변경
+    const saved = localStorage.getItem("sharedDutyStartDate");
     if (saved) {
       const parsed = toKoreaDate(saved);
       if (!isNaN(parsed.getTime())) {
@@ -43,9 +44,10 @@ export default function SchedulePage() {
     setTempStartDate(defaultDate);
   }, []);
 
+  // ✅ 기준일자 저장도 공통 키로 변경
   const handleConfirmDutyDate = () => {
     setDutyStartDate(tempStartDate);
-    localStorage.setItem("dutyStartDate", tempStartDate.toISOString());
+    localStorage.setItem("sharedDutyStartDate", tempStartDate.toISOString());
   };
 
   if (!dutyStartDate) return null;
