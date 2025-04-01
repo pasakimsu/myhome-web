@@ -18,7 +18,7 @@ export default function SchedulePage() {
     setRefreshKey((prev) => prev + 1);
   };
 
-  // ✅ 유저 정보 가져오기 + Firestore 기준일자 실시간 구독
+  // ✅ Firestore 기준일자 실시간 불러오기
   useEffect(() => {
     const stored = localStorage.getItem("userId");
     if (stored) setUserId(stored);

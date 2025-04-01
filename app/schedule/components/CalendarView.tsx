@@ -27,6 +27,9 @@ export default function CalendarView({
 }: Props) {
   const [schedules, setSchedules] = useState<ScheduleData[]>([]);
 
+  // ✅ 디버깅용 로그 추가
+  console.log("📅 받은 기준일자:", dutyStartDate?.toISOString?.());
+
   const formatDate = (date: Date) =>
     date.toLocaleDateString("ko-KR").replaceAll(". ", "-").replace(".", "");
 
@@ -35,7 +38,10 @@ export default function CalendarView({
     return new Date(date.getTime() + kstOffset);
   };
 
+  // ✅ 기준일자 보호 처리 추가
   const getDutyLabel = (date: Date): "당번" | "비번" => {
+    if (!dutyStartDate || isNaN(dutyStartDate.getTime())) return "비번";
+
     const start = toKoreanDate(new Date(dutyStartDate));
     const target = toKoreanDate(new Date(date));
 
