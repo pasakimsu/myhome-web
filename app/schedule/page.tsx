@@ -5,7 +5,7 @@ import CalendarView from "./components/CalendarView";
 import ScheduleInput from "./components/ScheduleInput";
 import ScheduleList from "./components/ScheduleList";
 import AuthGuard from "@/components/AuthGuard";
-import { db, doc, onSnapshot, setDoc } from "@/lib/firebase";
+import { db, doc, getDoc, onSnapshot, setDoc } from "@/lib/firebase";
 
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -18,26 +18,39 @@ export default function SchedulePage() {
     setRefreshKey((prev) => prev + 1);
   };
 
+  // ✅ Firestore에서 실시간 구독 및 기본값 자동 생성
   useEffect(() => {
     const stored = localStorage.getItem("userId");
     if (stored) setUserId(stored);
 
     const dutyDocRef = doc(db, "settings", "dutyConfig");
 
-    const unsubscribe = onSnapshot(dutyDocRef, (snapshot) => {
-      const data = snapshot.data();
-      if (data?.dutyStartDate) {
-        const parsed = new Date(data.dutyStartDate);
-        if (!isNaN(parsed.getTime())) {
-          setDutyStartDate(parsed);
-          setTempStartDate(parsed);
-        }
+    const initOrSubscribe = async () => {
+      const snapshot = await getDoc(dutyDocRef);
+      if (!snapshot.exists()) {
+        const defaultDate = new Date("2025-03-01");
+        await setDoc(dutyDocRef, {
+          dutyStartDate: defaultDate.toISOString(),
+        });
       }
-    });
 
-    return () => unsubscribe();
+      // 실시간 반영
+      onSnapshot(dutyDocRef, (snap) => {
+        const data = snap.data();
+        if (data?.dutyStartDate) {
+          const parsed = new Date(data.dutyStartDate);
+          if (!isNaN(parsed.getTime())) {
+            setDutyStartDate(parsed);
+            setTempStartDate(parsed);
+          }
+        }
+      });
+    };
+
+    initOrSubscribe();
   }, []);
 
+  // ✅ 기준일자 저장
   const handleConfirmDutyDate = async () => {
     if (!tempStartDate || isNaN(tempStartDate.getTime())) {
       alert("❌ 올바른 날짜를 선택하세요.");
@@ -45,16 +58,13 @@ export default function SchedulePage() {
     }
 
     try {
-      const dutyDocRef = doc(db, "settings", "dutyConfig");
-
-      // ✅ 컬렉션/문서/필드 모두 없으면 자동 생성됨
-      await setDoc(dutyDocRef, {
+      await setDoc(doc(db, "settings", "dutyConfig"), {
         dutyStartDate: tempStartDate.toISOString(),
       });
 
-      alert("✅ 기준일자가 Firestore에 저장되었습니다!");
+      alert("✅ 기준일자가 저장되었습니다!");
     } catch (err) {
-      console.error("❌ 기준일자 저장 실패:", err);
+      console.error("❌ Firestore 저장 오류:", err);
       alert("❌ 저장 중 오류가 발생했습니다.");
     }
   };
