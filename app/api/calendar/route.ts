@@ -22,11 +22,13 @@ DESCRIPTION:등록자 - ${data.userId}
 END:VEVENT`;
   });
 
+  // ✅ Firestore에서 당번 기준일 가져오기
   const dutyDoc = await getDoc(doc(db, "dutySettings", "dutyStartDate"));
   const dutyStartDate = dutyDoc.exists()
     ? new Date(dutyDoc.data().date)
     : new Date("2025-03-01");
 
+  // ✅ 날짜 비교를 위해 시간 초기화
   dutyStartDate.setHours(0, 0, 0, 0);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -35,11 +37,11 @@ END:VEVENT`;
   for (let i = 0; i < 60; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
-    date.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0); // 날짜 초기화
 
     const diff = Math.floor((date.getTime() - dutyStartDate.getTime()) / (1000 * 60 * 60 * 24));
     const pattern = ["당번", "비번", "비번"];
-    const label = pattern[(diff % 3 + 3) % 3];
+    const label = pattern[((diff - 1 + 3) % 3)]; // ✅ 하루 보정된 패턴 인덱싱
 
     if (label === "당번") {
       const start = new Date(date);
