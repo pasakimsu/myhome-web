@@ -22,11 +22,11 @@ DESCRIPTION:등록자 - ${data.userId}
 END:VEVENT`;
   });
 
-  // ✅ Firestore에서 당번 기준일 가져오기
+  // ✅ Firestore에서 당번 기준일 가져오기 (타임존 보정 포함)
   const dutyDoc = await getDoc(doc(db, "dutySettings", "dutyStartDate"));
   const dutyStartDate = dutyDoc.exists()
-    ? new Date(dutyDoc.data().date)
-    : new Date("2025-03-01");
+    ? new Date(`${dutyDoc.data().date}T00:00:00+09:00`) // ← 타임존 확정
+    : new Date("2025-03-01T00:00:00+09:00");
 
   // ✅ 기준일과 오늘 날짜 시간 초기화
   dutyStartDate.setHours(0, 0, 0, 0);
@@ -37,18 +37,15 @@ END:VEVENT`;
   for (let i = 0; i < 60; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
-    date.setHours(0, 0, 0, 0); // 날짜 시간 초기화
+    date.setHours(0, 0, 0, 0);
 
-    const base = new Date(dutyStartDate);
-    base.setHours(0, 0, 0, 0);
-
-    const diff = Math.floor((date.getTime() - base.getTime()) / (1000 * 60 * 60 * 24));
+    const diff = Math.floor((date.getTime() - dutyStartDate.getTime()) / (1000 * 60 * 60 * 24));
     const pattern = ["당번", "비번", "비번"];
-    const label = pattern[(diff % 3 + 3) % 3]; // ✅ 정석 인덱스 계산
+    const label = pattern[(diff % 3 + 3) % 3];
 
     if (label === "당번") {
       const start = new Date(date);
-      start.setHours(9, 0, 0); // 일정 시작시간
+      start.setHours(9, 0, 0);
       const end = new Date(start);
       end.setHours(start.getHours() + 1);
 
