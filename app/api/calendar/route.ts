@@ -28,7 +28,7 @@ END:VEVENT`;
     ? new Date(dutyDoc.data().date)
     : new Date("2025-03-01");
 
-  // ✅ 날짜 비교를 위해 시간 초기화
+  // ✅ 기준일과 오늘 날짜 시간 초기화
   dutyStartDate.setHours(0, 0, 0, 0);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -37,15 +37,18 @@ END:VEVENT`;
   for (let i = 0; i < 60; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
-    date.setHours(0, 0, 0, 0); // 날짜 초기화
+    date.setHours(0, 0, 0, 0); // 날짜 시간 초기화
 
-    const diff = Math.floor((date.getTime() - dutyStartDate.getTime()) / (1000 * 60 * 60 * 24));
+    const base = new Date(dutyStartDate);
+    base.setHours(0, 0, 0, 0);
+
+    const diff = Math.floor((date.getTime() - base.getTime()) / (1000 * 60 * 60 * 24));
     const pattern = ["당번", "비번", "비번"];
-    const label = pattern[((diff - 1 + 3) % 3)]; // ✅ 하루 보정된 패턴 인덱싱
+    const label = pattern[(diff % 3 + 3) % 3]; // ✅ 정석 인덱스 계산
 
     if (label === "당번") {
       const start = new Date(date);
-      start.setHours(9, 0, 0);
+      start.setHours(9, 0, 0); // 일정 시작시간
       const end = new Date(start);
       end.setHours(start.getHours() + 1);
 
