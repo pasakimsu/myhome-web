@@ -7,10 +7,10 @@ import "./calendarStyle.css";
 import { db, collection, getDocs } from "@/lib/firebase";
 
 interface Props {
-  selectedDate: Date;
-  onDateChange: (date: Date) => void;
+  selectedRange: [Date, Date];
+  onRangeChange: (range: [Date, Date]) => void;
   refreshKey: number;
-  dutyStartDate: Date; // ✅ 기준일자만
+  dutyStartDate: Date;
 }
 
 interface ScheduleData {
@@ -20,8 +20,8 @@ interface ScheduleData {
 }
 
 export default function CalendarView({
-  selectedDate,
-  onDateChange,
+  selectedRange,
+  onRangeChange,
   refreshKey,
   dutyStartDate,
 }: Props) {
@@ -31,22 +31,17 @@ export default function CalendarView({
     date.toLocaleDateString("ko-KR").replaceAll(". ", "-").replace(".", "");
 
   const getDutyLabel = (date: Date): "당번" | "비번" => {
-    // 날짜만 비교할 수 있도록 시간 제거
     const start = new Date(dutyStartDate);
     const target = new Date(date);
-  
+
     start.setHours(0, 0, 0, 0);
     target.setHours(0, 0, 0, 0);
-  
-    const diff = Math.floor(
-      (target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
-    );
-  
+
+    const diff = Math.floor((target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     const index = (diff % 3 + 3) % 3;
     const pattern: ("당번" | "비번")[] = ["당번", "비번", "비번"];
     return pattern[index];
   };
-  
 
   const fetchSchedules = async () => {
     const snapshot = await getDocs(collection(db, "schedules"));
@@ -91,19 +86,24 @@ export default function CalendarView({
     );
   };
 
-  const handleChange = (value: unknown) => {
-    if (value instanceof Date) onDateChange(value);
-    else if (Array.isArray(value) && value[0] instanceof Date) onDateChange(value[0]);
+  const handleChange = (
+    value: Date | [Date | null, Date | null] | null
+  ) => {
+    if (Array.isArray(value) && value[0] instanceof Date && value[1] instanceof Date) {
+      onRangeChange([value[0], value[1]]);
+    }
   };
+  
+  
 
   return (
     <div className="bg-white rounded-lg p-4 text-black shadow-md w-full max-w-[430px]">
       <Calendar
         onChange={handleChange}
-        value={selectedDate}
+        value={selectedRange}
+        selectRange={true} // ✅ 드래그 범위 선택 허용
         calendarType="gregory"
         locale="ko-KR"
-        selectRange={false}
         tileClassName={tileClassName}
         tileContent={tileContent}
       />

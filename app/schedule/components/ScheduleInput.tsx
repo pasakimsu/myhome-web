@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { db, collection, addDoc } from "@/lib/firebase";
 
 interface Props {
-  selectedDate: Date;
+  selectedRange: [Date, Date];
   onRegister: () => void;
 }
 
-export default function ScheduleInput({ selectedDate, onRegister }: Props) {
+export default function ScheduleInput({ selectedRange, onRegister }: Props) {
   const [userId, setUserId] = useState<string | null>(null);
   const [content, setContent] = useState<string>("");
 
@@ -17,13 +17,21 @@ export default function ScheduleInput({ selectedDate, onRegister }: Props) {
     if (id) setUserId(id);
   }, []);
 
+  const formatRange = (start: Date, end: Date) => {
+    const format = (d: Date) =>
+      `${d.getMonth() + 1}.${d.getDate().toString().padStart(2, "0")}`;
+    return `${format(start)}~${format(end)}`;
+  };
+
   const handleSubmit = async () => {
     if (!content.trim() || !userId) {
       alert("내용을 입력하세요.");
       return;
     }
 
-    const dateStr = selectedDate
+    const [startDate, endDate] = selectedRange;
+
+    const dateStr = startDate
       .toLocaleDateString("ko-KR")
       .replaceAll(". ", "-")
       .replace(".", "");
@@ -31,27 +39,25 @@ export default function ScheduleInput({ selectedDate, onRegister }: Props) {
     try {
       await addDoc(collection(db, "schedules"), {
         date: dateStr,
-        content: `${content.trim()} (${userId})`,
+        content: `${formatRange(startDate, endDate)} ${content.trim()} (${userId})`,
         userId,
         createdAt: new Date(),
       });
       alert("✅ 등록 완료!");
       setContent("");
-      onRegister(); // ✅ 새로고침 트리거
+      onRegister();
     } catch (err) {
       console.error("❌ 등록 오류:", err);
       alert("❌ 등록 중 문제가 발생했습니다.");
     }
   };
 
-  const formattedDate = selectedDate
-    .toLocaleDateString("ko-KR")
-    .replaceAll(". ", "-")
-    .replace(".", "");
+  const [startDate, endDate] = selectedRange;
+  const formattedRange = `${startDate.toLocaleDateString()} ~ ${endDate.toLocaleDateString()}`;
 
   return (
     <div className="mt-6 w-full max-w-md">
-      <p className="mb-2">선택한 날짜: <strong>{formattedDate}</strong></p>
+      <p className="mb-2">선택한 날짜 범위: <strong>{formattedRange}</strong></p>
       <input
         type="text"
         placeholder="일정 내용을 입력하세요"

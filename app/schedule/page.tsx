@@ -8,7 +8,10 @@ import AuthGuard from "@/components/AuthGuard";
 import { db, doc, getDoc, onSnapshot, setDoc } from "@/lib/firebase";
 
 export default function SchedulePage() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedRange, setSelectedRange] = useState<[Date, Date]>([
+    new Date(),
+    new Date(),
+  ]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [dutyStartDate, setDutyStartDate] = useState<Date | null>(null);
   const [tempStartDate, setTempStartDate] = useState<Date | null>(null);
@@ -18,7 +21,6 @@ export default function SchedulePage() {
     setRefreshKey((prev) => prev + 1);
   };
 
-  // ✅ Firestore에서 실시간 구독 및 기본값 자동 생성
   useEffect(() => {
     const stored = localStorage.getItem("userId");
     if (stored) setUserId(stored);
@@ -34,7 +36,6 @@ export default function SchedulePage() {
         });
       }
 
-      // 실시간 반영
       onSnapshot(dutyDocRef, (snap) => {
         const data = snap.data();
         if (data?.dutyStartDate) {
@@ -50,7 +51,6 @@ export default function SchedulePage() {
     initOrSubscribe();
   }, []);
 
-  // ✅ 기준일자 저장
   const handleConfirmDutyDate = async () => {
     if (!tempStartDate || isNaN(tempStartDate.getTime())) {
       alert("❌ 올바른 날짜를 선택하세요.");
@@ -110,15 +110,19 @@ export default function SchedulePage() {
         )}
 
         <CalendarView
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
+          selectedRange={selectedRange}
+          onRangeChange={setSelectedRange}
           refreshKey={refreshKey}
           dutyStartDate={dutyStartDate}
         />
 
-        <ScheduleInput selectedDate={selectedDate} onRegister={handleRefresh} />
+        <ScheduleInput
+          selectedRange={selectedRange}
+          onRegister={handleRefresh}
+        />
+
         <ScheduleList
-          selectedDate={selectedDate}
+          selectedDate={selectedRange[0]} // 시작 날짜 기준
           refreshKey={refreshKey}
           onRefresh={handleRefresh}
         />
