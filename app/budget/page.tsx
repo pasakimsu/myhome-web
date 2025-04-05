@@ -41,21 +41,29 @@ export default function BudgetHomePage() {
 
   const formatContentWithDay = (item: ScheduleItem) => {
     const match = item.content.match(/^(\d{1,2})\.(\d{1,2})(?:~(\d{1,2})\.(\d{1,2}))?/);
-    if (!match) return item.content;
-
     const year = new Date(item.date).getFullYear();
-    const m1 = Number(match[1]), d1 = Number(match[2]);
-    const m2 = match[3] ? Number(match[3]) : null;
-    const d2 = match[4] ? Number(match[4]) : null;
 
-    const start = new Date(`${year}-${m1}-${d1}`);
-    const end = m2 && d2 ? new Date(`${year}-${m2}-${d2}`) : null;
+    if (match) {
+      const m1 = Number(match[1]), d1 = Number(match[2]);
+      const m2 = match[3] ? Number(match[3]) : null;
+      const d2 = match[4] ? Number(match[4]) : null;
 
-    const s = `${m1}.${d1}(${getKoreanDay(start)})`;
-    const e = end ? `${m2}.${d2}(${getKoreanDay(end)})` : "";
+      const start = new Date(`${year}-${m1}-${d1}`);
+      const end = m2 && d2 ? new Date(`${year}-${m2}-${d2}`) : null;
 
-    const rest = item.content.replace(match[0], "").trim();
-    return end ? `${s}~${e} ${rest}` : `${s} ${rest}`;
+      const s = `${m1}.${d1}(${getKoreanDay(start)})`;
+      const e = end ? `${m2}.${d2}(${getKoreanDay(end)})` : "";
+
+      const rest = item.content.replace(match[0], "").trim();
+      return end ? `${s}~${e} ${rest}` : `${s} ${rest}`;
+    } else {
+      // 단기 일정일 경우 item.date에서 날짜 추출
+      const dateObj = toISODate(item.date);
+      const m = dateObj.getMonth() + 1;
+      const d = dateObj.getDate();
+      const formatted = `${m}.${d}(${getKoreanDay(dateObj)})`;
+      return `${formatted} ${item.content}`;
+    }
   };
 
   useEffect(() => {
