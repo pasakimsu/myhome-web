@@ -40,35 +40,24 @@ export default function BudgetHomePage() {
     return days[date.getDay()];
   };
 
-  const formatContentWithDay = (item: ScheduleItem) => {
-    const match = item.content.match(/^(\d{1,2})\.(\d{1,2})(?:~(\d{1,2})\.(\d{1,2}))?/);
-    const year = new Date(item.date).getFullYear();
+  const formatRangeContent = (items: ScheduleItem[]) => {
+    if (items.length === 0) return null;
+    const content = items[0].content;
+    const dates = items.map((item) => toISODate(item.date)).sort((a, b) => a.getTime() - b.getTime());
+    const start = dates[0];
+    const end = dates[dates.length - 1];
+    const startStr = `${start.getMonth() + 1}.${start.getDate()}(${getKoreanDay(start)})`;
+    const endStr = `${end.getMonth() + 1}.${end.getDate()}(${getKoreanDay(end)})`;
+    return `${startStr}~${endStr} ${content}`;
+  };
 
-    if (match) {
-      const m1 = Number(match[1]), d1 = Number(match[2]);
-      const m2 = match[3] ? Number(match[3]) : null;
-      const d2 = match[4] ? Number(match[4]) : null;
-
-      const mm1 = String(m1).padStart(2, "0");
-      const dd1 = String(d1).padStart(2, "0");
-      const mm2 = m2 ? String(m2).padStart(2, "0") : null;
-      const dd2 = d2 ? String(d2).padStart(2, "0") : null;
-
-      const start = new Date(`${year}-${mm1}-${dd1}`);
-      const end = mm2 && dd2 ? new Date(`${year}-${mm2}-${dd2}`) : null;
-
-      const s = `${m1}.${d1}(${getKoreanDay(start)})`;
-      const e = end ? `${m2}.${d2}(${getKoreanDay(end)})` : "";
-
-      const rest = item.content.replace(match[0], "").trim();
-      return end ? `${s}~${e} ${rest}` : `${s} ${rest}`;
-    } else {
-      const dateObj = toISODate(item.date);
-      const m = dateObj.getMonth() + 1;
-      const d = dateObj.getDate();
-      const formatted = `${m}.${d}(${getKoreanDay(dateObj)})`;
-      return `${formatted} ${item.content}`;
+  const groupSchedulesByContent = (schedules: ScheduleItem[]) => {
+    const grouped: Record<string, ScheduleItem[]> = {};
+    for (const item of schedules) {
+      if (!grouped[item.content]) grouped[item.content] = [];
+      grouped[item.content].push(item);
     }
+    return Object.values(grouped);
   };
 
   useEffect(() => {
@@ -135,9 +124,9 @@ export default function BudgetHomePage() {
               <>
                 <p className="mt-4 font-semibold">이번주 일정</p>
                 <ul className="list-disc list-inside space-y-1">
-                  {weeklySchedules.map((item) => (
-                    <li key={item.id} className="font-bold text-[#FFC90E]">
-                      {formatContentWithDay(item)}
+                  {groupSchedulesByContent(weeklySchedules).map((group, idx) => (
+                    <li key={idx} className="font-bold text-[#FFC90E]">
+                      {formatRangeContent(group)}
                     </li>
                   ))}
                 </ul>
@@ -148,8 +137,8 @@ export default function BudgetHomePage() {
               <>
                 <p className="mt-4 font-semibold">이번달 일정</p>
                 <ul className="list-disc list-inside space-y-1">
-                  {monthlySchedules.map((item) => (
-                    <li key={item.id}>{formatContentWithDay(item)}</li>
+                  {groupSchedulesByContent(monthlySchedules).map((group, idx) => (
+                    <li key={idx}>{formatRangeContent(group)}</li>
                   ))}
                 </ul>
               </>
