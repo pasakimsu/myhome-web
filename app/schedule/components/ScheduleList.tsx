@@ -6,7 +6,7 @@ import { db, collection, onSnapshot, deleteDoc, doc } from "@/lib/firebase";
 interface Props {
   selectedDate: Date;
   refreshKey: number;
-  onRefresh: () => void; // 유지 가능
+  onRefresh: () => void;
 }
 
 interface ScheduleData {
@@ -23,7 +23,6 @@ export default function ScheduleList({ selectedDate, refreshKey, onRefresh }: Pr
     .replaceAll(". ", "-")
     .replace(".", "");
 
-  // ✅ 실시간 구독으로 해당 날짜 일정 필터링
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "schedules"), (snapshot) => {
       const all = snapshot.docs.map((doc) => ({
@@ -39,13 +38,9 @@ export default function ScheduleList({ selectedDate, refreshKey, onRefresh }: Pr
   }, [formattedDate, refreshKey]);
 
   const handleDelete = async (id: string) => {
-    const confirmDelete = confirm("이 일정을 삭제하시겠습니까?");
-    if (!confirmDelete) return;
-
     try {
       await deleteDoc(doc(db, "schedules", id));
-      // ❌ fetchSchedules 필요 없음
-      onRefresh(); // 🔁 달력 타일 갱신용
+      onRefresh();
     } catch (error) {
       console.error("❌ 삭제 실패:", error);
       alert("❌ 삭제 중 오류가 발생했습니다.");

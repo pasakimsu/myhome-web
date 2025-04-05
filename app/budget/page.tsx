@@ -46,10 +46,15 @@ export default function BudgetHomePage() {
     const dates = items.map((item) => toISODate(item.date)).sort((a, b) => a.getTime() - b.getTime());
     const start = dates[0];
     const end = dates[dates.length - 1];
-    const startStr = `${start.getMonth() + 1}.${start.getDate()}(${getKoreanDay(start)})`;
-    const endStr = `${end.getMonth() + 1}.${end.getDate()}(${getKoreanDay(end)})`;
-    return `${startStr}~${endStr} ${content}`;
+  
+    const formatDate = (date: Date) =>
+      `${date.getMonth() + 1}.${date.getDate()}(${getKoreanDay(date)})`;
+  
+    return dates.length === 1
+      ? `${formatDate(start)} ${content}`
+      : `${formatDate(start)} ~ ${formatDate(end)} ${content}`;
   };
+  
 
   const groupSchedulesByContent = (schedules: ScheduleItem[]) => {
     const grouped: Record<string, ScheduleItem[]> = {};
