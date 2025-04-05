@@ -35,6 +35,7 @@ export default function BudgetHomePage() {
   const toKoreaDate = (date: Date) => new Date(date.getTime() + 9 * 60 * 60 * 1000);
 
   const getKoreanDay = (date: Date) => {
+    if (isNaN(date.getTime())) return "?";
     const days = ["일", "월", "화", "수", "목", "금", "토"];
     return days[date.getDay()];
   };
@@ -48,8 +49,13 @@ export default function BudgetHomePage() {
       const m2 = match[3] ? Number(match[3]) : null;
       const d2 = match[4] ? Number(match[4]) : null;
 
-      const start = new Date(`${year}-${m1}-${d1}`);
-      const end = m2 && d2 ? new Date(`${year}-${m2}-${d2}`) : null;
+      const mm1 = String(m1).padStart(2, "0");
+      const dd1 = String(d1).padStart(2, "0");
+      const mm2 = m2 ? String(m2).padStart(2, "0") : null;
+      const dd2 = d2 ? String(d2).padStart(2, "0") : null;
+
+      const start = new Date(`${year}-${mm1}-${dd1}`);
+      const end = mm2 && dd2 ? new Date(`${year}-${mm2}-${dd2}`) : null;
 
       const s = `${m1}.${d1}(${getKoreanDay(start)})`;
       const e = end ? `${m2}.${d2}(${getKoreanDay(end)})` : "";
@@ -57,7 +63,6 @@ export default function BudgetHomePage() {
       const rest = item.content.replace(match[0], "").trim();
       return end ? `${s}~${e} ${rest}` : `${s} ${rest}`;
     } else {
-      // 단기 일정일 경우 item.date에서 날짜 추출
       const dateObj = toISODate(item.date);
       const m = dateObj.getMonth() + 1;
       const d = dateObj.getDate();

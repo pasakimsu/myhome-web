@@ -17,12 +17,6 @@ export default function ScheduleInput({ selectedRange, onRegister }: Props) {
     if (id) setUserId(id);
   }, []);
 
-  const formatRange = (start: Date, end: Date) => {
-    const format = (d: Date) =>
-      `${d.getMonth() + 1}.${d.getDate().toString().padStart(2, "0")}`;
-    return `${format(start)}~${format(end)}`;
-  };
-
   const handleSubmit = async () => {
     if (!content.trim() || !userId) {
       alert("내용을 입력하세요.");
@@ -30,19 +24,29 @@ export default function ScheduleInput({ selectedRange, onRegister }: Props) {
     }
 
     const [startDate, endDate] = selectedRange;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const dates: string[] = [];
 
-    const dateStr = startDate
-      .toLocaleDateString("ko-KR")
-      .replaceAll(". ", "-")
-      .replace(".", "");
+    while (start <= end) {
+      const dateStr = start
+        .toLocaleDateString("ko-KR")
+        .replaceAll(". ", "-")
+        .replace(".", "");
+      dates.push(dateStr);
+      start.setDate(start.getDate() + 1);
+    }
 
     try {
-      await addDoc(collection(db, "schedules"), {
-        date: dateStr,
-        content: `${formatRange(startDate, endDate)} ${content.trim()} (${userId})`,
-        userId,
-        createdAt: new Date(),
-      });
+      for (const date of dates) {
+        await addDoc(collection(db, "schedules"), {
+          date,
+          content: `${content.trim()} (${userId})`, // ✅ 날짜 없는 내용만 저장
+          userId,
+          createdAt: new Date(),
+        });
+      }
+
       alert("✅ 등록 완료!");
       setContent("");
       onRegister();
