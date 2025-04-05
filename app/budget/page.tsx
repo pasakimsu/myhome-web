@@ -34,10 +34,28 @@ export default function BudgetHomePage() {
 
   const toKoreaDate = (date: Date) => new Date(date.getTime() + 9 * 60 * 60 * 1000);
 
-  const getKoreanDay = (dateStr: string) => {
+  const getKoreanDay = (date: Date) => {
     const days = ["일", "월", "화", "수", "목", "금", "토"];
-    const date = toISODate(dateStr);
     return days[date.getDay()];
+  };
+
+  const formatContentWithDay = (item: ScheduleItem) => {
+    const match = item.content.match(/^(\d{1,2})\.(\d{1,2})(?:~(\d{1,2})\.(\d{1,2}))?/);
+    if (!match) return item.content;
+
+    const year = new Date(item.date).getFullYear();
+    const m1 = Number(match[1]), d1 = Number(match[2]);
+    const m2 = match[3] ? Number(match[3]) : null;
+    const d2 = match[4] ? Number(match[4]) : null;
+
+    const start = new Date(`${year}-${m1}-${d1}`);
+    const end = m2 && d2 ? new Date(`${year}-${m2}-${d2}`) : null;
+
+    const s = `${m1}.${d1}(${getKoreanDay(start)})`;
+    const e = end ? `${m2}.${d2}(${getKoreanDay(end)})` : "";
+
+    const rest = item.content.replace(match[0], "").trim();
+    return end ? `${s}~${e} ${rest}` : `${s} ${rest}`;
   };
 
   useEffect(() => {
@@ -100,39 +118,36 @@ export default function BudgetHomePage() {
               서한이-{getDaysSinceReference("2025-01-13")}일째
             </p>
 
-           {/* 주간 일정 */}
-{weeklySchedules.length > 0 && (
-  <>
-    <p className="mt-4 font-semibold">이번주 일정</p>
-    <ul className="list-disc list-inside space-y-1">
-      {weeklySchedules.map((item) => (
-        <li key={item.id} className="font-bold text-[#FFC90E]">
-          {item.content}
-        </li>
-      ))}
-    </ul>
-  </>
-)}
+            {weeklySchedules.length > 0 && (
+              <>
+                <p className="mt-4 font-semibold">이번주 일정</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {weeklySchedules.map((item) => (
+                    <li key={item.id} className="font-bold text-[#FFC90E]">
+                      {formatContentWithDay(item)}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
 
-{/* 월간 일정 */}
-{monthlySchedules.length > 0 && (
-  <>
-    <p className="mt-4 font-semibold">이번달 일정</p>
-    <ul className="list-disc list-inside space-y-1">
-      {monthlySchedules.map((item) => (
-        <li key={item.id}>{item.content}</li>
-      ))}
-    </ul>
-  </>
-)}
-
+            {monthlySchedules.length > 0 && (
+              <>
+                <p className="mt-4 font-semibold">이번달 일정</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {monthlySchedules.map((item) => (
+                    <li key={item.id}>{formatContentWithDay(item)}</li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
 
           <div className="flex justify-center gap-6">
-            <AppStyleButton icon="📅" label="일정" onClick={() => router.push("/schedule")} />
-            <AppStyleButton icon="💰" label="계산기" onClick={() => router.push("/calcul")} />
-            <AppStyleButton icon="📁" label="부조금" onClick={() => router.push("/Donations")} />
-            <AppStyleButton icon="📈" label="주식" onClick={() => router.push("/stock")} />
+            <AppStyleButton icon="\ud83d\uddd3\ufe0f" label="일정" onClick={() => router.push("/schedule")} />
+            <AppStyleButton icon="\ud83d\udcb0" label="계산기" onClick={() => router.push("/calcul")} />
+            <AppStyleButton icon="\ud83d\udcc1" label="부조금" onClick={() => router.push("/Donations")} />
+            <AppStyleButton icon="\ud83d\udcc8" label="주식" onClick={() => router.push("/stock")} />
           </div>
         </div>
       </div>
