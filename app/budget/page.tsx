@@ -100,31 +100,32 @@ export default function BudgetHomePage() {
               서한이-{getDaysSinceReference("2025-01-13")}일째
             </p>
 
-            {weeklySchedules.length > 0 && (
-              <>
-                <p className="mt-4 font-semibold"> 이번주 일정</p>
-                <ul className="list-disc list-inside space-y-1">
-                  {weeklySchedules.map((item) => (
-                    <li key={item.id} className="font-bold text-[#FFC90E]">
-                      {item.date}({getKoreanDay(item.date)}) – {item.content}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+           {/* 주간 일정 */}
+{weeklySchedules.length > 0 && (
+  <>
+    <p className="mt-4 font-semibold">이번주 일정</p>
+    <ul className="list-disc list-inside space-y-1">
+      {weeklySchedules.map((item) => (
+        <li key={item.id} className="font-bold text-[#FFC90E]">
+          {item.content}
+        </li>
+      ))}
+    </ul>
+  </>
+)}
 
-            {monthlySchedules.length > 0 && (
-              <>
-                <p className="mt-4 font-semibold"> 이번달 일정</p>
-                <ul className="list-disc list-inside space-y-1">
-                  {monthlySchedules.map((item) => (
-                    <li key={item.id}>
-                      {item.date}({getKoreanDay(item.date)}) – {item.content}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+{/* 월간 일정 */}
+{monthlySchedules.length > 0 && (
+  <>
+    <p className="mt-4 font-semibold">이번달 일정</p>
+    <ul className="list-disc list-inside space-y-1">
+      {monthlySchedules.map((item) => (
+        <li key={item.id}>{item.content}</li>
+      ))}
+    </ul>
+  </>
+)}
+
           </div>
 
           <div className="flex justify-center gap-6">
