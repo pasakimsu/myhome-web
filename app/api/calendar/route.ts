@@ -23,17 +23,13 @@ END:VEVENT`;
   });
 
   // ✅ Firestore에서 당번 기준일 가져오기 (타임존 보정 포함)
-<<<<<<< HEAD
+
   const dutyDoc = await getDoc(doc(db, "settings", "dutyConfig"));
   const dutyStartDate = (dutyDoc.exists() && dutyDoc.data().dutyStartDate)
     ? new Date(dutyDoc.data().dutyStartDate)
     : new Date("2025-03-01T00:00:00+09:00")
-=======
-  const dutyDoc = await getDoc(doc(db, "dutySettings", "dutyStartDate"));
-  const dutyStartDate = dutyDoc.exists()
-    ? new Date(`${dutyDoc.data().date}T00:00:00+09:00`) // ← 타임존 확정
-    : new Date("2025-03-01T00:00:00+09:00");
->>>>>>> d5ddfbe4d29569280330810f1861dfec94e992e3
+
+
 
   // ✅ 기준일과 오늘 날짜 시간 초기화
   dutyStartDate.setHours(0, 0, 0, 0);
