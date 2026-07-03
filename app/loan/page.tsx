@@ -132,31 +132,31 @@ const LoanDashboard = ({ home, park, kim }: { home: LoanState, park: LoanState, 
   const totalMonthlyDebt = homeMonthly + parkMonthly + kimMonthly;
 
   const LoanSummaryCard = ({ title, amount, monthly, remainMonths, color }: any) => (
-    <div className="bg-[#3a312a] p-4 sm:p-5 rounded-xl border border-brownBorder shadow-md w-full">
-      <div className="flex justify-between items-start mb-3 sm:mb-4">
-        <h4 className={`text-base sm:text-lg font-bold ${color}`}>{title}</h4>
-        <span className="text-[10px] sm:text-xs text-gray-400 font-medium bg-black/20 px-2 py-1 rounded">잔여 {remainMonths}개월</span>
+    <div className="bg-[#3a312a] p-4 rounded-2xl border border-brownBorder shadow-md w-full box-border">
+      <div className="flex justify-between items-start mb-3">
+        <h4 className={`text-base font-bold ${color}`}>{title}</h4>
+        <span className="text-[10px] text-gray-400 font-medium bg-black/20 px-2 py-1 rounded">잔여 {remainMonths}개월</span>
       </div>
       <div className="space-y-2">
-        <div className="flex justify-between text-xs sm:text-sm">
+        <div className="flex justify-between text-xs">
           <span className="text-gray-400">대출 원금</span>
           <span className="text-white font-bold">{Number(amount.replace(/,/g, "")).toLocaleString()}원</span>
         </div>
         <div className="flex justify-between items-end">
-          <span className="text-gray-400 text-xs sm:text-sm">이번 달 상환액</span>
-          <span className={`text-lg sm:text-xl font-black ${color}`}>{monthly.toLocaleString()}원</span>
+          <span className="text-gray-400 text-[11px]">이번 달 상환액</span>
+          <span className={`text-lg font-black ${color}`}>{monthly.toLocaleString()}원</span>
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-4 sm:space-y-6">
-      <div className="bg-beigeLight p-5 sm:p-6 rounded-2xl shadow-lg text-darkText text-center w-full">
-        <p className="text-xs sm:text-sm font-bold opacity-70 mb-1">이번 달 총 상환액</p>
-        <h3 className="text-2xl sm:text-3xl font-black">{totalMonthlyDebt.toLocaleString()}원</h3>
+    <div className="w-full space-y-4">
+      <div className="bg-beigeLight p-5 rounded-3xl shadow-xl text-darkText text-center w-full box-border">
+        <p className="text-xs font-bold opacity-70 mb-1">이번 달 총 상환액</p>
+        <h3 className="text-2xl font-black">{totalMonthlyDebt.toLocaleString()}원</h3>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:gap-4 w-full">
+      <div className="flex flex-col gap-3 w-full">
         <LoanSummaryCard title="🏠 주택담보대출" amount={home.amount || "0"} monthly={homeMonthly} remainMonths={getRemainingMonths(home.startDate, home.period)} color="text-beigeLight" />
         <LoanSummaryCard title="💳 박재현 신용대출" amount={park.amount || "0"} monthly={parkMonthly} remainMonths={getRemainingMonths(park.startDate, park.period)} color="text-yellow-400" />
         <LoanSummaryCard title="💳 김용휘 신용대출" amount={kim.amount || "0"} monthly={kimMonthly} remainMonths={getRemainingMonths(kim.startDate, kim.period)} color="text-yellow-400" />
@@ -176,9 +176,9 @@ const LoanCalculator = ({
   const availableYears = state.schedule ? Array.from(new Set(state.schedule.map(s => s.year))).sort() : [];
   const filteredSchedule = state.schedule?.filter(s => s.year === viewYear) || [];
 
-  const inputClass = "w-full p-3 rounded bg-gray-700 text-white border border-brownBorder placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-beigeLight transition duration-150 text-sm sm:text-base text-right";
-  const mainBtnClass = "flex-1 bg-beigeLight text-darkText font-bold py-3 rounded-md shadow hover:brightness-105 active:scale-95 transition duration-150 text-sm sm:text-base";
-  const grayBtnClass = "flex-1 bg-gray-600 text-white font-bold py-3 rounded-md shadow hover:bg-gray-500 active:scale-95 transition duration-150 text-sm sm:text-base";
+  const inputClass = "w-full box-border p-3 rounded-lg bg-gray-700 text-white border border-brownBorder outline-none focus:ring-1 focus:ring-beigeLight text-base text-right";
+  const mainBtnClass = "flex-1 bg-beigeLight text-darkText font-bold py-4 rounded-xl shadow-md active:scale-95 transition text-base";
+  const grayBtnClass = "flex-1 bg-gray-600 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition text-base";
 
   const updatePartialRow = (idx: number, field: keyof PartialRepayment, val: string) => {
     const newList = [...(state.partialRepayments || [])];
@@ -186,25 +186,14 @@ const LoanCalculator = ({
     onStateChange({ ...state, partialRepayments: newList });
   };
 
-  const handlePartialSave = (partials: PartialRepayment[]) => {
-    const newState = { ...state, partialRepayments: partials };
-    onCalculate(newState);
-  };
-
-  const deletePartialRow = (idx: number) => {
-    if (!confirm("해당 중도상환 내역을 삭제하시겠습니까?")) return;
-    const newList = (state.partialRepayments || []).filter((_, i) => i !== idx);
-    handlePartialSave(newList);
-  };
-
   return (
-    <div className="w-full max-w-2xl mx-auto bg-[#3a312a] p-4 sm:p-8 rounded-xl shadow-lg border border-brownBorder">
-      <h3 className={`text-xl sm:text-2xl font-bold mb-2 text-center ${color}`}>{title}</h3>
-      {ownerName && <p className="text-gray-400 text-center mb-6 sm:mb-8 font-semibold text-base sm:text-lg">{ownerName}</p>}
+    <div className="w-full box-border bg-[#3a312a] p-4 sm:p-6 rounded-3xl border border-brownBorder shadow-2xl">
+      <h3 className={`text-xl font-bold mb-1 text-center ${color}`}>{title}</h3>
+      {ownerName && <p className="text-gray-400 text-center mb-6 font-semibold text-sm">{ownerName}</p>}
 
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-5">
         <div>
-          <div className="flex justify-between mb-1 px-1 text-[10px] sm:text-xs">
+          <div className="flex justify-between mb-1 px-1 text-[11px]">
             <label className="text-gray-300 font-semibold">대출금액 (원)</label>
             <span className="font-bold text-beigeLight">{numberToKorean(amountNum)}</span>
           </div>
@@ -212,113 +201,113 @@ const LoanCalculator = ({
         </div>
 
         {isHomeLoan ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 gap-5">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[10px] sm:text-xs text-left">대출 금리 (%)</label>
+                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출 금리 (%)</label>
                 <input type="text" value={state.rate} inputMode="decimal" onChange={(e) => onStateChange({ ...state, rate: e.target.value })} className={inputClass} placeholder="금리" />
               </div>
               <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[10px] sm:text-xs text-left">납입일 (매달 몇 일)</label>
+                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">납입일 (매달 몇 일)</label>
                 <input type="number" min="1" max="31" value={state.repaymentDay} onChange={(e) => onStateChange({ ...state, repaymentDay: e.target.value })} className={inputClass} placeholder="일" />
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-5">
               <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[10px] sm:text-xs text-left">대출 시작일</label>
+                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출 시작일</label>
                 <input type="date" value={state.startDate || ""} onChange={(e) => onStateChange({ ...state, startDate: e.target.value })} className={inputClass} />
               </div>
               <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[10px] sm:text-xs text-left">대출기간 (개월)</label>
+                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출기간 (개월)</label>
                 <input type="text" value={state.period} inputMode="numeric" onChange={(e) => onStateChange({ ...state, period: e.target.value.replace(/[^0-9]/g, "") })} className={inputClass} placeholder="개월" />
               </div>
             </div>
-          </>
+          </div>
         ) : (
-          <>
+          <div className="grid grid-cols-1 gap-5">
             <div>
-              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[10px] sm:text-xs text-left">대출 시작일</label>
+              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출 시작일</label>
               <input type="date" value={state.startDate || ""} onChange={(e) => onStateChange({ ...state, startDate: e.target.value })} className={inputClass} />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[10px] sm:text-xs text-left">대출기간 (개월)</label>
-                <input type="text" value={state.period} inputMode="numeric" onChange={(e) => onStateChange({ ...state, period: e.target.value.replace(/[^0-9]/g, "") })} className={inputClass} placeholder="개월 수 입력" />
-              </div>
-              <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[10px] sm:text-xs text-left">대출금리 (%)</label>
-                <input type="text" value={state.rate} inputMode="decimal" onChange={(e) => onStateChange({ ...state, rate: e.target.value })} className={inputClass} placeholder="이율 입력" />
-              </div>
+            <div>
+              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출기간 (개월)</label>
+              <input type="text" value={state.period} inputMode="numeric" onChange={(e) => onStateChange({ ...state, period: e.target.value.replace(/[^0-9]/g, "") })} className={inputClass} placeholder="개월 수" />
             </div>
-          </>
+            <div>
+              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출금리 (%)</label>
+              <input type="text" value={state.rate} inputMode="decimal" onChange={(e) => onStateChange({ ...state, rate: e.target.value })} className={inputClass} placeholder="이율" />
+            </div>
+          </div>
         )}
 
-        <div className="flex gap-3 sm:gap-4 pt-2">
+        <div className="flex gap-3 pt-2">
           <button onClick={() => onCalculate()} className={mainBtnClass}>저장</button>
           <button onClick={onReset} className={grayBtnClass}>초기화</button>
         </div>
 
+        {/* 중도상환 섹션 최적화 */}
         {isHomeLoan && (
           <div className="pt-2">
-            <button
-              onClick={() => setShowPartial(!showPartial)}
-              className="w-full py-3 rounded border border-dashed border-gray-500 text-gray-400 font-bold hover:bg-white/5 transition text-xs sm:text-sm"
-            >
+            <button onClick={() => setShowPartial(!showPartial)} className="w-full py-4 rounded-xl border border-dashed border-gray-500 text-gray-400 font-bold hover:bg-white/5 transition text-sm">
               {showPartial ? "🔼 중도상환 닫기" : "🔽 중도상환 내역 관리"}
             </button>
             {showPartial && (
-              <div className="mt-4 space-y-4 bg-black/20 p-3 sm:p-4 rounded-lg border border-gray-600">
+              <div className="mt-4 space-y-4 bg-black/20 p-3 rounded-2xl border border-gray-600 w-full box-border">
                 {state.partialRepayments?.map((p, idx) => (
                   <div key={idx} className="space-y-2 pb-4 border-b border-gray-700 last:border-0 last:pb-0">
                     <div className="flex justify-between items-center px-1">
-                      <span className="text-[9px] sm:text-[10px] text-gray-500 font-bold">상환 #{idx + 1}</span>
-                      <span className="text-[9px] sm:text-[10px] text-yellow-500 font-black">{numberToKorean(Number(p.amount.replace(/,/g, "")) || 0)}</span>
+                      <span className="text-[10px] text-gray-500 font-bold">상환 #{idx + 1}</span>
+                      <span className="text-[10px] text-yellow-500 font-black">{numberToKorean(Number(p.amount.replace(/,/g, "")) || 0)}</span>
                     </div>
-                    <div className="flex gap-1 sm:gap-2">
-                      <input type="date" value={p.date} onChange={(e) => updatePartialRow(idx, "date", e.target.value)} className={inputClass + " flex-[1.5] p-2"} />
-                      <input type="text" value={p.amount} inputMode="numeric" onChange={(e) => updatePartialRow(idx, "amount", e.target.value)} className={inputClass + " flex-1 p-2"} placeholder="상환액" />
+                    <div className="flex gap-2">
+                      <input type="date" value={p.date} onChange={(e) => updatePartialRow(idx, "date", e.target.value)} className={inputClass + " flex-[1.5] p-2 text-xs"} />
+                      <input type="text" value={p.amount} inputMode="numeric" onChange={(e) => updatePartialRow(idx, "amount", e.target.value)} className={inputClass + " flex-1 p-2 text-xs"} placeholder="상환액" />
                       <div className="flex gap-1 shrink-0">
-                        <button onClick={() => handlePartialSave(state.partialRepayments)} className="bg-beigeLight text-darkText px-2 rounded font-bold text-[9px] sm:text-xs">저장</button>
-                        <button onClick={() => deletePartialRow(idx)} className="bg-rose-600 text-white px-2 rounded font-bold text-[9px] sm:text-xs">삭제</button>
+                        <button onClick={() => onCalculate({ ...state, partialRepayments: state.partialRepayments })} className="bg-beigeLight text-darkText px-2 rounded-lg font-bold text-[10px]">저장</button>
+                        <button onClick={() => {
+                          const newList = state.partialRepayments.filter((_, i) => i !== idx);
+                          onCalculate({ ...state, partialRepayments: newList });
+                        }} className="bg-rose-600 text-white px-2 rounded-lg font-bold text-[10px]">삭제</button>
                       </div>
                     </div>
                   </div>
                 ))}
-                <button onClick={() => onStateChange({ ...state, partialRepayments: [...(state.partialRepayments || []), { date: "", amount: "" }] })} className="w-full py-2 rounded bg-gray-700 text-white font-black text-lg hover:bg-gray-600 transition">+</button>
+                <button onClick={() => onStateChange({ ...state, partialRepayments: [...(state.partialRepayments || []), { date: "", amount: "" }] })} className="w-full py-3 rounded-xl bg-gray-700 text-white font-black text-xl hover:bg-gray-600 transition">+</button>
               </div>
             )}
           </div>
         )}
 
+        {/* 결과 표 모바일 최적화 */}
         {isHomeLoan && state.schedule && state.schedule.length > 0 && (
-          <div className="mt-8 sm:mt-10 space-y-3 sm:space-y-4 w-full overflow-hidden">
+          <div className="mt-8 space-y-3 w-full">
             <div className="flex items-center justify-between px-1">
-              <h4 className="text-base sm:text-xl font-bold text-beigeLight">📅 5년 상환 계획</h4>
-              <select value={viewYear} onChange={(e) => setViewYear(Number(e.target.value))} className="bg-gray-700 text-white border border-brownBorder rounded px-2 py-1 text-[10px] sm:text-xs">
+              <h4 className="text-base font-bold text-beigeLight">📅 5년 상환 계획</h4>
+              <select value={viewYear} onChange={(e) => setViewYear(Number(e.target.value))} className="bg-gray-700 text-white border border-brownBorder rounded-lg px-2 py-1 text-[10px]">
                 {availableYears.map(y => <option key={y} value={y}>{y}년</option>)}
               </select>
             </div>
-            <div className="overflow-x-auto rounded-lg border border-brownBorder shadow-md scrollbar-hide">
-              <table className="w-full text-center text-[9px] sm:text-xs border-collapse min-w-[400px] sm:min-w-[500px]">
+            <div className="overflow-x-auto rounded-2xl border border-brownBorder shadow-lg scrollbar-hide">
+              <table className="w-full text-center text-[10px] border-collapse min-w-[400px]">
                 <thead className="bg-[#2f2a25] text-gray-400">
                   <tr>
-                    <th className="p-2 sm:p-3 border-b border-gray-700 font-bold uppercase">회차</th>
-                    <th className="p-2 sm:p-3 border-b border-gray-700 font-bold uppercase">상환일</th>
-                    <th className="p-2 sm:p-3 border-b border-gray-700 text-beigeLight font-bold uppercase">원리금</th>
-                    <th className="p-2 sm:p-3 border-b border-gray-700 font-bold uppercase">원금</th>
-                    <th className="p-2 sm:p-3 border-b border-gray-700 font-bold uppercase">이자</th>
-                    <th className="p-2 sm:p-3 border-b border-gray-700 font-bold uppercase">잔액</th>
+                    <th className="p-2 border-b border-gray-700">회차</th>
+                    <th className="p-2 border-b border-gray-700">상환일</th>
+                    <th className="p-2 border-b border-gray-700 text-beigeLight font-bold">원리금</th>
+                    <th className="p-2 border-b border-gray-700">원금</th>
+                    <th className="p-2 border-b border-gray-700">이자</th>
+                    <th className="p-2 border-b border-gray-700">잔액</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700/50 bg-[#3a312a]">
                   {filteredSchedule.map((row) => (
                     <tr key={row.idx} className="hover:bg-white/5 transition">
-                      <td className="p-2 sm:p-3 text-gray-500">{row.idx}</td>
-                      <td className="p-2 sm:p-3 text-gray-300 font-medium whitespace-nowrap">{row.date.slice(5)}</td>
-                      <td className="p-2 sm:p-3 font-bold text-beigeLight whitespace-nowrap">{row.total.toLocaleString()}</td>
-                      <td className="p-2 sm:p-3 text-white whitespace-nowrap">{row.principal.toLocaleString()}</td>
-                      <td className="p-2 sm:p-3 text-red-400 font-medium whitespace-nowrap">{row.interest.toLocaleString()}</td>
-                      <td className="p-2 sm:p-3 text-gray-400 font-mono text-[9px] sm:text-xs whitespace-nowrap">{row.remain.toLocaleString()}</td>
+                      <td className="p-2 text-gray-500">{row.idx}</td>
+                      <td className="p-2 text-gray-300 font-medium whitespace-nowrap">{row.date.slice(5)}</td>
+                      <td className="p-2 font-bold text-beigeLight whitespace-nowrap">{row.total.toLocaleString()}</td>
+                      <td className="p-2 text-white whitespace-nowrap">{row.principal.toLocaleString()}</td>
+                      <td className="p-2 text-red-400 font-medium whitespace-nowrap">{row.interest.toLocaleString()}</td>
+                      <td className="p-2 text-gray-400 font-mono text-[9px] whitespace-nowrap">{row.remain.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -328,12 +317,11 @@ const LoanCalculator = ({
         )}
 
         {!isHomeLoan && state.monthlyPayment > 0 && (
-          <div className="mt-6 sm:mt-8 p-5 sm:p-6 bg-green-900/10 rounded-xl border border-green-900/30 text-left leading-relaxed">
-            <p className="text-gray-300 text-[10px] sm:text-sm">{state.amount}원을 {state.period}개월 동안</p>
-            <p className="text-gray-300 text-[10px] sm:text-sm">{state.rate}% 만기일시상환으로 이용 시</p>
-            <div className="mt-3 sm:mt-4 pt-4 border-t border-green-900/20">
-              <p className="text-base sm:text-xl font-bold">매월 이자 <span className="text-beigeLight">{state.monthlyPayment.toLocaleString()}원</span></p>
-              <p className="text-base sm:text-xl font-bold mt-1">만기 시 상환 <span className="text-beigeLight">{state.lastMonthPayment.toLocaleString()}원</span></p>
+          <div className="mt-6 p-5 bg-green-900/10 rounded-2xl border border-green-900/30 text-left leading-relaxed w-full box-border">
+            <p className="text-gray-300 text-[11px]">{state.amount}원을 {state.period}개월 동안 {state.rate}% 상환 이용 시</p>
+            <div className="mt-4 pt-4 border-t border-green-900/20 space-y-1">
+              <p className="text-lg font-black">매월 이자 <span className="text-beigeLight">{state.monthlyPayment.toLocaleString()}원</span></p>
+              <p className="text-lg font-black">만기 상환 <span className="text-beigeLight">{state.lastMonthPayment.toLocaleString()}원</span></p>
             </div>
           </div>
         )}
@@ -343,7 +331,7 @@ const LoanCalculator = ({
 };
 
 export default function LoanPage() {
-  const initialLoanState: LoanState = { amount: "", startDate: "", repaymentDay: "", period: "", periodUnit: "month", rate: "", partialRepayments: [], method: "체증식", monthlyPayment: 0, lastMonthPayment: 0 };
+  const initialLoanState: LoanState = { amount: "", startDate: "", repaymentDay: "", period: "", periodUnit: "month", rate: "", partialRepayments: [], method: "만기일시", monthlyPayment: 0, lastMonthPayment: 0 };
   const [activeTab, setActiveTab] = useState<"dash" | "home" | "park" | "kim">("dash");
   const [homeLoan, setHomeLoan] = useState<LoanState>({ ...initialLoanState, method: "체증식" });
   const [creditLoanPark, setCreditLoanPark] = useState<LoanState>({ ...initialLoanState, method: "만기일시" });
@@ -366,16 +354,12 @@ export default function LoanPage() {
   const saveLoanData = async (type: string, newState: LoanState) => {
     try {
       const loanDocRef = doc(db, "loans", "loanStateV14");
+      await setDoc(loanDocRef, { [type]: newState }, { merge: true });
       if (type === "home") setHomeLoan(newState);
       else if (type === "park") setCreditLoanPark(newState);
       else if (type === "kim") setCreditLoanKim(newState);
-
-      await setDoc(loanDocRef, { [type]: newState }, { merge: true });
       alert("✅ 저장 및 계산이 완료되었습니다.");
-    } catch (e) {
-      console.error("저장 오류:", e);
-      alert("❌ 저장 중 오류가 발생했습니다.");
-    }
+    } catch (e) { console.error(e); }
   };
 
   const handleCalculate = (type: string, targetState?: LoanState) => {
@@ -383,10 +367,7 @@ export default function LoanPage() {
     const p = Number(loan.amount.replace(/,/g, ""));
     const n = Number(loan.period);
     const r = Number(loan.rate);
-
-    if (!p || isNaN(r) || !n || !loan.startDate) {
-      return alert("필수 항목을 모두 입력하세요.");
-    }
+    if (!p || isNaN(r) || !n || !loan.startDate) return alert("필수 항목을 모두 입력하세요.");
 
     if (type === "home") {
       const schedule = generateHFSchedule60(p, r, loan.startDate, Number(loan.repaymentDay || 21), loan.partialRepayments);
@@ -399,17 +380,20 @@ export default function LoanPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-[#2f2a25] flex flex-col items-center p-2 sm:p-8 text-white transition-colors">
+      <div className="min-h-screen bg-[#2f2a25] flex flex-col items-center p-3 sm:p-8 text-white transition-colors overflow-x-hidden">
         <div className="w-full max-w-4xl">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-white">🏦 대출 관리 시스템</h2>
-          <div className="flex bg-[#3a312a] p-1 rounded-xl mb-6 sm:mb-8 border border-brownBorder shadow-xl overflow-x-auto whitespace-nowrap scrollbar-hide">
+          <h2 className="text-2xl font-bold mb-8 text-center text-white">🏦 대출 관리 시스템</h2>
+
+          {/* 탭 메뉴 가로폭 최적화 */}
+          <div className="flex bg-[#3a312a] p-1 rounded-2xl mb-8 border border-brownBorder shadow-xl overflow-x-auto whitespace-nowrap scrollbar-hide gap-1">
             {["dash", "home", "park", "kim"].map((tab) => (
-              <button key={tab} onClick={() => setActiveTab(tab as any)} className={`flex-1 py-3 px-4 sm:px-6 text-xs sm:text-lg font-bold rounded-lg transition-all ${activeTab === tab ? "bg-beigeLight text-darkText shadow-md" : "text-gray-400"}`}>
+              <button key={tab} onClick={() => setActiveTab(tab as any)} className={`flex-1 py-3 px-4 text-xs font-bold rounded-xl transition-all ${activeTab === tab ? "bg-beigeLight text-darkText shadow-md" : "text-gray-400"}`}>
                 {tab === "dash" ? "📊 대시보드" : (tab === "home" ? "🏠 집대출" : (tab === "park" ? "박재현" : "김용휘"))}
               </button>
             ))}
           </div>
-          <div className="w-full">
+
+          <div className="w-full box-border">
             {activeTab === "dash" && <LoanDashboard home={homeLoan} park={creditLoanPark} kim={creditLoanKim} />}
             {activeTab === "home" && <LoanCalculator type="home" title="🏠 주택담보대출" state={homeLoan} onStateChange={setHomeLoan} onCalculate={(ts) => handleCalculate("home", ts)} onReset={() => setHomeLoan({ ...initialLoanState, method: "체증식" })} color="text-beigeLight" isHomeLoan={true} />}
             {activeTab === "park" && <LoanCalculator type="park" ownerName="박재현" title="💳 개인 신용대출" state={creditLoanPark} onStateChange={setCreditLoanPark} onCalculate={(ts) => handleCalculate("park", ts)} onReset={() => setCreditLoanPark({ ...initialLoanState, method: "만기일시" })} color="text-beigeLight" />}
@@ -417,6 +401,12 @@ export default function LoanPage() {
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        * { box-sizing: border-box; }
+      `}</style>
     </AuthGuard>
   );
 }

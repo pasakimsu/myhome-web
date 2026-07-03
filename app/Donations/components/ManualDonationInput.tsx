@@ -50,30 +50,24 @@ export default function ManualDonationInput({ onAfterRegister }: ManualDonationI
         return;
       }
 
-      const data = {
+      await addDoc(collection(db, userId), {
         date: form.date,
         name: form.name.trim(),
         nameKeywords: generateNameKeywords(form.name.trim()),
         reason: form.reason.trim(),
-        // 받은 부조금은 amount에, 보낸 부조금은 sentAmount에 저장하거나
-        // type 필드를 추가하여 구분합니다. 기존 SearchDonations 호환을 위해
-        // 받은 부조금은 amount: X, 보낸 부조금은 amount: 0, sentAmount: X 로 저장합니다.
         amount: type === "received" ? amountValue : 0,
         sentAmount: type === "sent" ? amountValue : null,
         sentDate: type === "sent" ? form.date : null,
         type: type
-      };
-
-      await addDoc(collection(db, userId), data);
+      });
 
       alert(`✅ ${type === "sent" ? "보낸" : "받은"} 부조금이 성공적으로 등록되었습니다!`);
       const resetForm = { date: new Date().toISOString().split('T')[0], name: "", reason: "", amount: "" };
       if (type === "sent") setSentForm(resetForm);
       else setReceivedForm(resetForm);
-
       onAfterRegister?.();
     } catch (error) {
-      console.error("❌ 등록 오류:", error);
+      console.error(error);
       alert("❌ 등록 중 오류가 발생했습니다.");
     }
   };
@@ -88,93 +82,33 @@ export default function ManualDonationInput({ onAfterRegister }: ManualDonationI
     return Array.from(keywords);
   };
 
+  const inputStyle = "w-full box-border p-3 rounded-lg bg-gray-800 text-white border border-brownBorder outline-none focus:ring-1 focus:ring-beigeLight text-base";
+
   return (
-    <div className="w-full max-w-2xl mt-8 flex flex-col gap-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="w-full mt-8 flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
 
         {/* 왼쪽: 내가 보낸 경우 */}
-        <div className="bg-[#2d3a35] p-4 rounded-xl shadow-md text-sm border border-[#4F7A6E]/30">
-          <h3 className="text-[#86b5a7] font-bold mb-4 flex items-center gap-2">
-            📤 내가 보낸 부조금
-          </h3>
-          <div className="space-y-2">
-            <input
-              name="date"
-              type="date"
-              value={sentForm.date}
-              onChange={(e) => handleTextChange("sent", e)}
-              className="w-full p-3 rounded bg-gray-800 text-white border border-brownBorder focus:ring-1 focus:ring-[#4F7A6E] outline-none"
-            />
-            <input
-              name="name"
-              placeholder="받는 사람 이름"
-              value={sentForm.name}
-              onChange={(e) => handleTextChange("sent", e)}
-              className="w-full p-3 rounded bg-gray-800 text-white border border-brownBorder focus:ring-1 focus:ring-[#4F7A6E] outline-none"
-            />
-            <input
-              name="reason"
-              placeholder="사유 (예: 결혼, 장례)"
-              value={sentForm.reason}
-              onChange={(e) => handleTextChange("sent", e)}
-              className="w-full p-3 rounded bg-gray-800 text-white border border-brownBorder focus:ring-1 focus:ring-[#4F7A6E] outline-none"
-            />
-            <input
-              name="amount"
-              placeholder="보낸 금액"
-              value={sentForm.amount}
-              onChange={(e) => handleTextChange("sent", e)}
-              className="w-full p-3 rounded bg-gray-800 text-white border border-brownBorder focus:ring-1 focus:ring-[#4F7A6E] outline-none"
-            />
-            <button
-              onClick={() => handleSubmit("sent")}
-              className="w-full bg-[#4F7A6E] hover:bg-[#5d8b7d] text-white font-bold py-3 rounded-lg mt-2 transition active:scale-95 shadow-md"
-            >
-              보낸 내역 등록
-            </button>
+        <div className="bg-[#2d3a35] p-4 sm:p-5 rounded-2xl shadow-lg border border-[#4F7A6E]/30 w-full box-border">
+          <h3 className="text-[#86b5a7] font-bold mb-4 flex items-center gap-2">📤 내가 보낸 부조금</h3>
+          <div className="space-y-3">
+            <input name="date" type="date" value={sentForm.date} onChange={(e) => handleTextChange("sent", e)} className={inputStyle} />
+            <input name="name" placeholder="받는 사람 이름" value={sentForm.name} onChange={(e) => handleTextChange("sent", e)} className={inputStyle} />
+            <input name="reason" placeholder="사유 (예: 결혼, 장례)" value={sentForm.reason} onChange={(e) => handleTextChange("sent", e)} className={inputStyle} />
+            <input name="amount" placeholder="보낸 금액" value={sentForm.amount} onChange={(e) => handleTextChange("sent", e)} className={inputStyle} />
+            <button onClick={() => handleSubmit("sent")} className="w-full bg-[#4F7A6E] text-white font-bold py-4 rounded-xl mt-2 active:scale-95 transition shadow-md">보낸 내역 등록</button>
           </div>
         </div>
 
         {/* 오른쪽: 내가 받은 경우 */}
-        <div className="bg-[#3a312a] p-4 rounded-xl shadow-md text-sm border border-brownBorder">
-          <h3 className="text-beigeLight font-bold mb-4 flex items-center gap-2">
-            📥 내가 받은 부조금
-          </h3>
-          <div className="space-y-2">
-            <input
-              name="date"
-              type="date"
-              value={receivedForm.date}
-              onChange={(e) => handleTextChange("received", e)}
-              className="w-full p-3 rounded bg-gray-800 text-white border border-brownBorder focus:ring-1 focus:ring-beigeLight outline-none"
-            />
-            <input
-              name="name"
-              placeholder="준 사람 이름"
-              value={receivedForm.name}
-              onChange={(e) => handleTextChange("received", e)}
-              className="w-full p-3 rounded bg-gray-800 text-white border border-brownBorder focus:ring-1 focus:ring-beigeLight outline-none"
-            />
-            <input
-              name="reason"
-              placeholder="사유 (예: 결혼, 돌잔치)"
-              value={receivedForm.reason}
-              onChange={(e) => handleTextChange("received", e)}
-              className="w-full p-3 rounded bg-gray-800 text-white border border-brownBorder focus:ring-1 focus:ring-beigeLight outline-none"
-            />
-            <input
-              name="amount"
-              placeholder="받은 금액"
-              value={receivedForm.amount}
-              onChange={(e) => handleTextChange("received", e)}
-              className="w-full p-3 rounded bg-gray-800 text-white border border-brownBorder focus:ring-1 focus:ring-beigeLight outline-none"
-            />
-            <button
-              onClick={() => handleSubmit("received")}
-              className="w-full bg-[#8d7864] hover:bg-[#a48d77] text-white font-bold py-3 rounded-lg mt-2 transition active:scale-95 shadow-md"
-            >
-              받은 내역 등록
-            </button>
+        <div className="bg-[#3a312a] p-4 sm:p-5 rounded-2xl shadow-lg border border-brownBorder w-full box-border">
+          <h3 className="text-beigeLight font-bold mb-4 flex items-center gap-2">📥 내가 받은 부조금</h3>
+          <div className="space-y-3">
+            <input name="date" type="date" value={receivedForm.date} onChange={(e) => handleTextChange("received", e)} className={inputStyle} />
+            <input name="name" placeholder="준 사람 이름" value={receivedForm.name} onChange={(e) => handleTextChange("received", e)} className={inputStyle} />
+            <input name="reason" placeholder="사유 (예: 결혼, 돌잔치)" value={receivedForm.reason} onChange={(e) => handleTextChange("received", e)} className={inputStyle} />
+            <input name="amount" placeholder="받은 금액" value={receivedForm.amount} onChange={(e) => handleTextChange("received", e)} className={inputStyle} />
+            <button onClick={() => handleSubmit("received")} className="w-full bg-[#8d7864] text-white font-bold py-4 rounded-xl mt-2 active:scale-95 transition shadow-md">받은 내역 등록</button>
           </div>
         </div>
 
