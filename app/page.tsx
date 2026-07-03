@@ -1,14 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { db, collection, getDocs, query, where } from "../lib/firebase";
+import { db, collection, getDocs, query, where, addDoc } from "../lib/firebase";
 
 export default function LoginPage() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+
+  // ✅ admin 계정 자동 생성 (없을 경우)
+  useEffect(() => {
+    const createAdminIfMissing = async () => {
+      try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("userId", "==", "admin"));
+        const snapshot = await getDocs(q);
+        if (snapshot.empty) {
+          await addDoc(usersRef, { userId: "admin", password: "admin" });
+          console.log("Admin account created.");
+        }
+      } catch (err) {
+        console.error("Admin creation failed:", err);
+      }
+    };
+    createAdminIfMissing();
+  }, []);
 
   const handleLogin = async () => {
     setError("");

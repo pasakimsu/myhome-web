@@ -154,7 +154,7 @@ export default function BudgetHomePage() {
             <AppStyleButton icon="📅" label="일정" onClick={() => router.push("/schedule")} />
             <AppStyleButton icon="💰" label="계산기" onClick={() => router.push("/calcul")} />
             <AppStyleButton icon="📁" label="부조금" onClick={() => router.push("/Donations")} />
-            <AppStyleButton icon="📈" label="주식" onClick={() => router.push("/stock")} />
+            <AppStyleButton icon="🏦" label="대출" onClick={() => router.push("/loan")} />
           </div>
         </div>
       </div>

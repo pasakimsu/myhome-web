@@ -47,8 +47,8 @@ interface Budget {
 
 export default function CalculPage() {
   const router = useRouter();
-  const year = "2025";
   const [userId, setUserId] = useState<string | null>(null);
+  const [year, setYear] = useState<string>(new Date().getFullYear().toString());
   const [month, setMonth] = useState<string>(
     (new Date().getMonth() + 1).toString().padStart(2, "0")
   );
@@ -172,6 +172,7 @@ export default function CalculPage() {
           <BudgetDateSelector
             year={year}
             month={month}
+            onYearChange={(e) => setYear(e.target.value)}
             onMonthChange={(e) => setMonth(e.target.value)}
           />
           <BudgetInput
