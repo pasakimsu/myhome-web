@@ -118,6 +118,14 @@ const generateHFSchedule60 = (principal: number, annualRate: number, startDateSt
   return schedule;
 };
 
+interface LoanSummaryCardProps {
+  title: string;
+  amount: string;
+  monthly: number;
+  remainMonths: number;
+  color: string;
+}
+
 const LoanDashboard = ({ home, park, kim }: { home: LoanState, park: LoanState, kim: LoanState }) => {
   const now = new Date();
   const curY = now.getFullYear();
@@ -131,7 +139,7 @@ const LoanDashboard = ({ home, park, kim }: { home: LoanState, park: LoanState, 
 
   const totalMonthlyDebt = homeMonthly + parkMonthly + kimMonthly;
 
-  const LoanSummaryCard = ({ title, amount, monthly, remainMonths, color }: any) => (
+  const LoanSummaryCard = ({ title, amount, monthly, remainMonths, color }: LoanSummaryCardProps) => (
     <div className="bg-[#3a312a] p-5 rounded-xl border border-brownBorder shadow-md">
       <div className="flex justify-between items-start mb-4">
         <h4 className={`text-lg font-bold ${color}`}>{title}</h4>
@@ -165,11 +173,21 @@ const LoanDashboard = ({ home, park, kim }: { home: LoanState, park: LoanState, 
   );
 };
 
+interface LoanCalculatorProps {
+  type: string;
+  ownerName?: string;
+  title: string;
+  state: LoanState;
+  onStateChange: (newState: LoanState) => void;
+  onCalculate: (targetState?: LoanState) => void;
+  onReset: () => void;
+  color: string;
+  isHomeLoan?: boolean;
+}
+
 const LoanCalculator = ({
   ownerName, title, state, onStateChange, onCalculate, onReset, color, isHomeLoan
-}: {
-  ownerName?: string, title: string, state: LoanState, onStateChange: (newState: LoanState) => void, onCalculate: (targetState?: LoanState) => void, onReset: () => void, color: string, isHomeLoan?: boolean
-}) => {
+}: LoanCalculatorProps) => {
   const [showPartial, setShowPartial] = useState(false);
   const amountNum = Number(state.amount.replace(/,/g, "")) || 0;
   const [viewYear, setViewYear] = useState(new Date().getFullYear());
@@ -266,6 +284,10 @@ const LoanCalculator = ({
               <div className="mt-4 space-y-4 bg-black/20 p-4 rounded-lg border border-gray-600">
                 {state.partialRepayments?.map((p, idx) => (
                   <div key={idx} className="space-y-2 pb-4 border-b border-gray-700 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-center px-1">
+                      <span className="text-[10px] text-gray-500 font-bold">상환 #{idx + 1}</span>
+                      <span className="text-[10px] text-yellow-500 font-black">{numberToKorean(Number(p.amount.replace(/,/g, "")) || 0)}</span>
+                    </div>
                     <div className="flex gap-2">
                       <input type="date" value={p.date} onChange={(e) => updatePartialRow(idx, "date", e.target.value)} className={inputClass + " flex-[1.2]"} />
                       <input type="text" value={p.amount} onChange={(e) => updatePartialRow(idx, "amount", e.target.value)} className={inputClass + " flex-1"} placeholder="상환액" />
@@ -362,7 +384,6 @@ export default function LoanPage() {
       else if (type === "park") setCreditLoanPark(newState);
       else if (type === "kim") setCreditLoanKim(newState);
 
-      // setDoc + merge: true 를 사용하여 문서가 없으면 생성하고, 있으면 덮어씌웁니다 (오류 방지)
       await setDoc(loanDocRef, { [type]: newState }, { merge: true });
       alert("✅ 저장 및 계산이 완료되었습니다.");
     } catch (e) {
