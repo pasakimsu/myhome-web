@@ -18,7 +18,7 @@ export default function DonationsPage() {
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
-    const allowedUsers = ["bak", "yong"]; // ✅ 접근 허용할 사용자 목록
+    const allowedUsers = ["bak", "yong", "admin"];
     if (storedUserId && !allowedUsers.includes(storedUserId)) {
       alert("🚨 접근 권한이 없습니다.");
       router.push("/budget");
@@ -28,15 +28,32 @@ export default function DonationsPage() {
 
   return (
     <AuthGuard>
-      <div className="flex flex-col items-center min-h-screen justify-center bg-[#2f2a25] text-white px-6 py-10 transition-colors">
-        <div className="w-full max-w-xl bg-[#3a312a] p-6 rounded-lg shadow-lg">
+      <div className="flex flex-col items-center min-h-screen bg-[#2f2a25] text-white px-4 py-8 sm:px-6 sm:py-10 transition-colors overflow-x-hidden">
+        <div className="w-full max-w-2xl bg-[#3a312a] p-4 sm:p-8 rounded-3xl shadow-2xl border border-brownBorder box-border overflow-hidden">
           <DonationsHeader />
-          <FileUpload />
-          <DeleteAllButton />
-          <ManualDonationInput onAfterRegister={handleAfterRegister} />
-          <SearchDonations />
+
+          <div className="space-y-6 mt-6">
+            <div className="flex flex-wrap gap-3 justify-center">
+              <FileUpload />
+              <DeleteAllButton />
+            </div>
+
+            <ManualDonationInput onAfterRegister={handleAfterRegister} />
+
+            <div className="border-t border-white/5 pt-8 mt-10">
+              <SearchDonations ref={searchRef} />
+            </div>
+          </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        * { box-sizing: border-box; }
+        input[type="date"] {
+          min-width: 0;
+          width: 100% !important;
+        }
+      `}</style>
     </AuthGuard>
   );
 }

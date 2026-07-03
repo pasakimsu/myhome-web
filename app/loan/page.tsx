@@ -132,7 +132,7 @@ const LoanDashboard = ({ home, park, kim }: { home: LoanState, park: LoanState, 
   const totalMonthlyDebt = homeMonthly + parkMonthly + kimMonthly;
 
   const LoanSummaryCard = ({ title, amount, monthly, remainMonths, color }: any) => (
-    <div className="bg-[#3a312a] p-4 rounded-2xl border border-brownBorder shadow-md w-full box-border">
+    <div className="bg-[#3a312a] p-4 rounded-2xl border border-brownBorder shadow-md w-full">
       <div className="flex justify-between items-start mb-3">
         <h4 className={`text-base font-bold ${color}`}>{title}</h4>
         <span className="text-[10px] text-gray-400 font-medium bg-black/20 px-2 py-1 rounded">잔여 {remainMonths}개월</span>
@@ -151,8 +151,8 @@ const LoanDashboard = ({ home, park, kim }: { home: LoanState, park: LoanState, 
   );
 
   return (
-    <div className="w-full space-y-4">
-      <div className="bg-beigeLight p-5 rounded-3xl shadow-xl text-darkText text-center w-full box-border">
+    <div className="w-full space-y-4 max-w-full">
+      <div className="bg-beigeLight p-5 rounded-3xl shadow-xl text-darkText text-center w-full">
         <p className="text-xs font-bold opacity-70 mb-1">이번 달 총 상환액</p>
         <h3 className="text-2xl font-black">{totalMonthlyDebt.toLocaleString()}원</h3>
       </div>
@@ -176,7 +176,7 @@ const LoanCalculator = ({
   const availableYears = state.schedule ? Array.from(new Set(state.schedule.map(s => s.year))).sort() : [];
   const filteredSchedule = state.schedule?.filter(s => s.year === viewYear) || [];
 
-  const inputClass = "w-full box-border p-3 rounded-lg bg-gray-700 text-white border border-brownBorder outline-none focus:ring-1 focus:ring-beigeLight text-base text-right";
+  const inputClass = "w-full box-border p-3 rounded-lg bg-gray-700 text-white border border-brownBorder outline-none focus:ring-1 focus:ring-beigeLight text-base text-right min-w-0";
   const mainBtnClass = "flex-1 bg-beigeLight text-darkText font-bold py-4 rounded-xl shadow-md active:scale-95 transition text-base";
   const grayBtnClass = "flex-1 bg-gray-600 text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition text-base";
 
@@ -187,11 +187,11 @@ const LoanCalculator = ({
   };
 
   return (
-    <div className="w-full box-border bg-[#3a312a] p-4 sm:p-6 rounded-3xl border border-brownBorder shadow-2xl">
+    <div className="w-full max-w-full bg-[#3a312a] p-4 sm:p-6 rounded-3xl border border-brownBorder shadow-2xl overflow-hidden">
       <h3 className={`text-xl font-bold mb-1 text-center ${color}`}>{title}</h3>
       {ownerName && <p className="text-gray-400 text-center mb-6 font-semibold text-sm">{ownerName}</p>}
 
-      <div className="space-y-5">
+      <div className="space-y-5 w-full">
         <div>
           <div className="flex justify-between mb-1 px-1 text-[11px]">
             <label className="text-gray-300 font-semibold">대출금액 (원)</label>
@@ -201,40 +201,40 @@ const LoanCalculator = ({
         </div>
 
         {isHomeLoan ? (
-          <div className="grid grid-cols-1 gap-5">
+          <div className="space-y-5">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출 금리 (%)</label>
+                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px]">대출 금리 (%)</label>
                 <input type="text" value={state.rate} inputMode="decimal" onChange={(e) => onStateChange({ ...state, rate: e.target.value })} className={inputClass} placeholder="금리" />
               </div>
               <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">납입일 (매달 몇 일)</label>
+                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px]">납입일</label>
                 <input type="number" min="1" max="31" value={state.repaymentDay} onChange={(e) => onStateChange({ ...state, repaymentDay: e.target.value })} className={inputClass} placeholder="일" />
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5">
+            <div className="space-y-5">
               <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출 시작일</label>
+                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px]">대출 시작일</label>
                 <input type="date" value={state.startDate || ""} onChange={(e) => onStateChange({ ...state, startDate: e.target.value })} className={inputClass} />
               </div>
               <div>
-                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출기간 (개월)</label>
+                <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px]">대출기간 (개월)</label>
                 <input type="text" value={state.period} inputMode="numeric" onChange={(e) => onStateChange({ ...state, period: e.target.value.replace(/[^0-9]/g, "") })} className={inputClass} placeholder="개월" />
               </div>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5">
+          <div className="space-y-5">
             <div>
-              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출 시작일</label>
+              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px]">대출 시작일</label>
               <input type="date" value={state.startDate || ""} onChange={(e) => onStateChange({ ...state, startDate: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출기간 (개월)</label>
+              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px]">대출기간 (개월)</label>
               <input type="text" value={state.period} inputMode="numeric" onChange={(e) => onStateChange({ ...state, period: e.target.value.replace(/[^0-9]/g, "") })} className={inputClass} placeholder="개월 수" />
             </div>
             <div>
-              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px] text-left">대출금리 (%)</label>
+              <label className="text-gray-300 block mb-1 font-semibold px-1 text-[11px]">대출금리 (%)</label>
               <input type="text" value={state.rate} inputMode="decimal" onChange={(e) => onStateChange({ ...state, rate: e.target.value })} className={inputClass} placeholder="이율" />
             </div>
           </div>
@@ -245,14 +245,13 @@ const LoanCalculator = ({
           <button onClick={onReset} className={grayBtnClass}>초기화</button>
         </div>
 
-        {/* 중도상환 섹션 최적화 */}
         {isHomeLoan && (
           <div className="pt-2">
             <button onClick={() => setShowPartial(!showPartial)} className="w-full py-4 rounded-xl border border-dashed border-gray-500 text-gray-400 font-bold hover:bg-white/5 transition text-sm">
               {showPartial ? "🔼 중도상환 닫기" : "🔽 중도상환 내역 관리"}
             </button>
             {showPartial && (
-              <div className="mt-4 space-y-4 bg-black/20 p-3 rounded-2xl border border-gray-600 w-full box-border">
+              <div className="mt-4 space-y-4 bg-black/20 p-3 rounded-2xl border border-gray-600 w-full overflow-hidden">
                 {state.partialRepayments?.map((p, idx) => (
                   <div key={idx} className="space-y-2 pb-4 border-b border-gray-700 last:border-0 last:pb-0">
                     <div className="flex justify-between items-center px-1">
@@ -260,8 +259,8 @@ const LoanCalculator = ({
                       <span className="text-[10px] text-yellow-500 font-black">{numberToKorean(Number(p.amount.replace(/,/g, "")) || 0)}</span>
                     </div>
                     <div className="flex gap-2">
-                      <input type="date" value={p.date} onChange={(e) => updatePartialRow(idx, "date", e.target.value)} className={inputClass + " flex-[1.5] p-2 text-xs"} />
-                      <input type="text" value={p.amount} inputMode="numeric" onChange={(e) => updatePartialRow(idx, "amount", e.target.value)} className={inputClass + " flex-1 p-2 text-xs"} placeholder="상환액" />
+                      <input type="date" value={p.date} onChange={(e) => updatePartialRow(idx, "date", e.target.value)} className={inputClass + " flex-[1.5] text-xs px-2"} />
+                      <input type="text" value={p.amount} inputMode="numeric" onChange={(e) => updatePartialRow(idx, "amount", e.target.value)} className={inputClass + " flex-1 text-xs px-2"} placeholder="상환액" />
                       <div className="flex gap-1 shrink-0">
                         <button onClick={() => onCalculate({ ...state, partialRepayments: state.partialRepayments })} className="bg-beigeLight text-darkText px-2 rounded-lg font-bold text-[10px]">저장</button>
                         <button onClick={() => {
@@ -278,7 +277,6 @@ const LoanCalculator = ({
           </div>
         )}
 
-        {/* 결과 표 모바일 최적화 */}
         {isHomeLoan && state.schedule && state.schedule.length > 0 && (
           <div className="mt-8 space-y-3 w-full">
             <div className="flex items-center justify-between px-1">
@@ -317,7 +315,7 @@ const LoanCalculator = ({
         )}
 
         {!isHomeLoan && state.monthlyPayment > 0 && (
-          <div className="mt-6 p-5 bg-green-900/10 rounded-2xl border border-green-900/30 text-left leading-relaxed w-full box-border">
+          <div className="mt-6 p-5 bg-green-900/10 rounded-2xl border border-green-900/30 text-left leading-relaxed w-full">
             <p className="text-gray-300 text-[11px]">{state.amount}원을 {state.period}개월 동안 {state.rate}% 상환 이용 시</p>
             <div className="mt-4 pt-4 border-t border-green-900/20 space-y-1">
               <p className="text-lg font-black">매월 이자 <span className="text-beigeLight">{state.monthlyPayment.toLocaleString()}원</span></p>
@@ -331,7 +329,7 @@ const LoanCalculator = ({
 };
 
 export default function LoanPage() {
-  const initialLoanState: LoanState = { amount: "", startDate: "", repaymentDay: "", period: "", periodUnit: "month", rate: "", partialRepayments: [], method: "만기일시", monthlyPayment: 0, lastMonthPayment: 0 };
+  const initialLoanState: LoanState = { amount: "", startDate: "", repaymentDay: "", period: "", periodUnit: "month", rate: "", partialRepayments: [], method: "체증식", monthlyPayment: 0, lastMonthPayment: 0 };
   const [activeTab, setActiveTab] = useState<"dash" | "home" | "park" | "kim">("dash");
   const [homeLoan, setHomeLoan] = useState<LoanState>({ ...initialLoanState, method: "체증식" });
   const [creditLoanPark, setCreditLoanPark] = useState<LoanState>({ ...initialLoanState, method: "만기일시" });
@@ -380,11 +378,10 @@ export default function LoanPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-[#2f2a25] flex flex-col items-center p-3 sm:p-8 text-white transition-colors overflow-x-hidden">
-        <div className="w-full max-w-4xl">
-          <h2 className="text-2xl font-bold mb-8 text-center text-white">🏦 대출 관리 시스템</h2>
+      <div className="min-h-screen bg-[#2f2a25] flex flex-col items-center p-4 sm:p-8 text-white transition-colors overflow-x-hidden">
+        <div className="w-full max-w-lg">
+          <h2 className="text-2xl font-bold mb-6 text-center text-white">🏦 대출 관리 시스템</h2>
 
-          {/* 탭 메뉴 가로폭 최적화 */}
           <div className="flex bg-[#3a312a] p-1 rounded-2xl mb-8 border border-brownBorder shadow-xl overflow-x-auto whitespace-nowrap scrollbar-hide gap-1">
             {["dash", "home", "park", "kim"].map((tab) => (
               <button key={tab} onClick={() => setActiveTab(tab as any)} className={`flex-1 py-3 px-4 text-xs font-bold rounded-xl transition-all ${activeTab === tab ? "bg-beigeLight text-darkText shadow-md" : "text-gray-400"}`}>
@@ -393,7 +390,7 @@ export default function LoanPage() {
             ))}
           </div>
 
-          <div className="w-full box-border">
+          <div className="w-full">
             {activeTab === "dash" && <LoanDashboard home={homeLoan} park={creditLoanPark} kim={creditLoanKim} />}
             {activeTab === "home" && <LoanCalculator type="home" title="🏠 주택담보대출" state={homeLoan} onStateChange={setHomeLoan} onCalculate={(ts) => handleCalculate("home", ts)} onReset={() => setHomeLoan({ ...initialLoanState, method: "체증식" })} color="text-beigeLight" isHomeLoan={true} />}
             {activeTab === "park" && <LoanCalculator type="park" ownerName="박재현" title="💳 개인 신용대출" state={creditLoanPark} onStateChange={setCreditLoanPark} onCalculate={(ts) => handleCalculate("park", ts)} onReset={() => setCreditLoanPark({ ...initialLoanState, method: "만기일시" })} color="text-beigeLight" />}
@@ -406,6 +403,12 @@ export default function LoanPage() {
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         * { box-sizing: border-box; }
+        input[type="date"] {
+          min-width: 0;
+          width: 100% !important;
+          -webkit-appearance: none;
+          appearance: none;
+        }
       `}</style>
     </AuthGuard>
   );
