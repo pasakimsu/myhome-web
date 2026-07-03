@@ -11,7 +11,12 @@ interface DonationData {
   amount: number;
 }
 
-export default function FileUpload() {
+interface FileUploadProps {
+  isCompact?: boolean;
+  showOnlyButton?: boolean;
+}
+
+export default function FileUpload({ isCompact, showOnlyButton }: FileUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
@@ -94,19 +99,12 @@ export default function FileUpload() {
     return Array.from(keywords);
   };
 
-  return (
-    <div className="flex flex-col items-center">
-      <label className="bg-[#2f2a25] text-white p-3 rounded-lg cursor-pointer hover:bg-[#3a2f28] mb-3 transition-colors shadow-md">
-        📂 파일 선택
-        <input type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
-      </label>
-
-      {fileName && <p className="text-gray-400 mb-4">📄 {fileName}</p>}
-
+  if (showOnlyButton) {
+    return (
       <button
         onClick={handleFileUpload}
         disabled={!selectedFile}
-        className={`w-40 px-4 py-3 rounded-lg font-semibold text-white shadow-md transition-colors duration-300 mb-4 ${
+        className={`w-full px-4 py-3 rounded-lg font-bold text-white shadow-md transition-all active:scale-95 ${
           selectedFile
             ? "bg-[#8d7864] hover:bg-[#a48d77]"
             : "bg-[#5c5249] cursor-not-allowed"
@@ -114,6 +112,16 @@ export default function FileUpload() {
       >
         {uploading ? "업로드 중..." : "⬆️ 업로드"}
       </button>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <label className="w-full bg-[#2f2a25] text-white p-3 rounded-lg cursor-pointer hover:bg-[#3a2f28] transition-colors shadow-md text-center">
+        📂 파일 선택
+        <input type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
+      </label>
+      {fileName && <p className="text-gray-400 mt-2 text-xs truncate w-full text-center">📄 {fileName}</p>}
     </div>
   );
 }
