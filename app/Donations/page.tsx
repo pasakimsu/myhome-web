@@ -12,6 +12,7 @@ import AuthGuard from "@/components/AuthGuard";
 export default function DonationsPage() {
   const router = useRouter();
   const searchRef = useRef<SearchDonationsRef>(null);
+
   const handleAfterRegister = () => {
     searchRef.current?.refreshSearch();
   };
@@ -24,25 +25,25 @@ export default function DonationsPage() {
       router.push("/budget");
     }
   }, [router]);
-  
 
   return (
     <AuthGuard>
-      <div className="flex flex-col items-center min-h-screen bg-[#2f2a25] text-white px-4 py-8 sm:px-6 sm:py-10 transition-colors overflow-x-hidden">
-        <div className="w-full max-w-2xl bg-[#3a312a] p-4 sm:p-8 rounded-3xl shadow-2xl border border-brownBorder box-border overflow-hidden">
+      <div className="min-h-screen bg-[#2f2a25] text-white p-4 sm:p-8 flex flex-col items-center overflow-x-hidden">
+        <div className="w-full max-w-2xl space-y-8">
           <DonationsHeader />
 
-          <div className="space-y-6 mt-6">
-            <div className="flex flex-wrap gap-3 justify-center">
-              <FileUpload />
-              <DeleteAllButton />
-            </div>
+          {/* 상단 관리 도구 (업로드/삭제) */}
+          <div className="flex flex-wrap gap-2 justify-center bg-[#3a312a] p-4 rounded-2xl border border-brownBorder/50 shadow-lg">
+            <FileUpload />
+            <DeleteAllButton />
+          </div>
 
-            <ManualDonationInput onAfterRegister={handleAfterRegister} />
+          {/* 등록 섹션 (기존 사각형 내부 사각형 제거됨) */}
+          <ManualDonationInput onAfterRegister={handleAfterRegister} />
 
-            <div className="border-t border-white/5 pt-8 mt-10">
-              <SearchDonations ref={searchRef} />
-            </div>
+          {/* 검색 섹션 */}
+          <div className="border-t border-white/5 pt-10">
+            <SearchDonations ref={searchRef} />
           </div>
         </div>
       </div>
@@ -52,6 +53,8 @@ export default function DonationsPage() {
         input[type="date"] {
           min-width: 0;
           width: 100% !important;
+          -webkit-appearance: none;
+          appearance: none;
         }
       `}</style>
     </AuthGuard>
