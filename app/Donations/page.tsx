@@ -32,21 +32,23 @@ export default function DonationsPage() {
         <div className="w-full max-w-2xl space-y-6">
           <DonationsHeader />
 
-          {/* 상단 관리 도구 정렬 수정 */}
-          <div className="bg-[#3a312a] p-4 rounded-2xl border border-brownBorder/50 shadow-lg space-y-3">
-            <div className="w-full">
-              <FileUpload isCompact={false} />
+          {/* 상단 관리 도구 정렬 수정 (admin 전용) */}
+          {typeof window !== "undefined" && localStorage.getItem("userId") === "admin" && (
+            <div className="bg-[#3a312a] p-4 rounded-2xl border border-brownBorder/50 shadow-lg space-y-3">
+              <div className="w-full">
+                <FileUpload isCompact={false} />
+              </div>
+              <div className="flex gap-2 w-full">
+                {/* 엑셀 업로드와 전체삭제 버튼을 1:1 비율로 배치 */}
+                <div className="flex-1">
+                  <FileUpload showOnlyButton={true} />
+                </div>
+                <div className="flex-1">
+                  <DeleteAllButton />
+                </div>
+              </div>
             </div>
-            <div className="flex gap-2 w-full">
-               {/* 엑셀 업로드와 전체삭제 버튼을 1:1 비율로 배치 */}
-               <div className="flex-1">
-                 <FileUpload showOnlyButton={true} />
-               </div>
-               <div className="flex-1">
-                 <DeleteAllButton />
-               </div>
-            </div>
-          </div>
+          )}
 
           <ManualDonationInput onAfterRegister={handleAfterRegister} />
 
