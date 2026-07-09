@@ -90,10 +90,7 @@ export default function BudgetHomePage() {
       const currentYear = today.getFullYear();
       const currentMonth = today.getMonth() + 1;
 
-      // 1년치 기념일 생성 (주간 일정이 달을 넘어가는 경우 대비)
       const autoAnniversaries: ScheduleItem[] = [];
-
-      // 현재 연도의 모든 날짜에 대해 체크
       for (let m = 1; m <= 12; m++) {
         const daysInM = new Date(currentYear, m, 0).getDate();
         for (let d = 1; d <= daysInM; d++) {
@@ -142,13 +139,21 @@ export default function BudgetHomePage() {
     return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
 
+  const getMonthsSinceReference = (referenceDateStr: string) => {
+    const start = new Date(referenceDateStr);
+    const now = new Date();
+    let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+    if (now.getDate() < start.getDate()) months--;
+    return months;
+  };
+
   return (
     <AuthGuard>
       <div className="min-h-screen flex items-center justify-center bg-beigeDark px-4 transition-colors">
         <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
           <h2 className="text-2xl font-bold text-white mb-2">{userId}님 로그인했습니다 🎉</h2>
           <div className="bg-[#3e352c] text-white p-4 rounded-md my-6 text-sm leading-relaxed shadow-inner text-left">
-            <p className="mb-2 font-bold text-lg border-b border-brownBorder pb-1">서한이-{getDaysSinceReference("2025-01-13")}일째</p>
+            <p className="mb-2 font-bold text-lg border-b border-brownBorder pb-1">서한이-{getDaysSinceReference("2025-01-13")}일째 ({getMonthsSinceReference("2025-01-13")}개월)</p>
             {weeklySchedules.length > 0 && (
               <>
                 <p className="mt-4 font-semibold text-gray-400">이번주 일정</p>
@@ -172,6 +177,7 @@ export default function BudgetHomePage() {
               </>
             )}
           </div>
+
           <div className="flex justify-center gap-6">
             <AppStyleButton icon="📅" label="일정" onClick={() => router.push("/schedule")} />
             <AppStyleButton icon="💰" label="계산기" onClick={() => router.push("/calcul")} />
