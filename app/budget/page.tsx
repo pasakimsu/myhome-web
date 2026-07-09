@@ -12,7 +12,6 @@ interface ScheduleItem {
   content: string;
 }
 
-// 매해 반복되는 양력 기념일
 const SOLAR_ANNIVERSARIES: Record<string, string> = {
   "12-06": "🎂 재현생일",
   "10-26": "🎂 용휘생일",
@@ -20,7 +19,6 @@ const SOLAR_ANNIVERSARIES: Record<string, string> = {
   "07-06": "💍 결혼기념일",
 };
 
-// 음력 기념일 -> 양력 변환 데이터 (2025 ~ 2035)
 const LUNAR_ANNIVERSARIES: Record<string, string[]> = {
   "2025-11-26": ["🎂 시부생신(음력 10.07)"], "2026-11-15": ["🎂 시부생신(음력 10.07)"], "2027-11-04": ["🎂 시부생신(음력 10.07)"],
   "2028-11-22": ["🎂 시부생신(음력 10.07)"], "2029-11-12": ["🎂 시부생신(음력 10.07)"], "2030-11-02": ["🎂 시부생신(음력 10.07)"],
@@ -48,22 +46,15 @@ export default function BudgetHomePage() {
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
-    if (storedUserId) {
-      setUserId(storedUserId);
-    }
+    if (storedUserId) setUserId(storedUserId);
   }, []);
 
   const toISODate = (dateStr: string) => {
     const [y, m, d] = dateStr.split("-");
-    const mm = m.padStart(2, "0");
-    const dd = d.padStart(2, "0");
-    return new Date(`${y}-${mm}-${dd}`);
+    return new Date(Number(y), Number(m) - 1, Number(d));
   };
 
-  const toKoreaDate = (date: Date) => new Date(date.getTime() + 9 * 60 * 60 * 1000);
-
   const getKoreanDay = (date: Date) => {
-    if (isNaN(date.getTime())) return "?";
     const days = ["일", "월", "화", "수", "목", "금", "토"];
     return days[date.getDay()];
   };
@@ -74,15 +65,9 @@ export default function BudgetHomePage() {
     const dates = items.map((item) => toISODate(item.date)).sort((a, b) => a.getTime() - b.getTime());
     const start = dates[0];
     const end = dates[dates.length - 1];
-  
-    const formatDate = (date: Date) =>
-      `${date.getMonth() + 1}.${date.getDate()}(${getKoreanDay(date)})`;
-  
-    return dates.length === 1
-      ? `${formatDate(start)} ${content}`
-      : `${formatDate(start)} ~ ${formatDate(end)} ${content}`;
+    const formatDate = (date: Date) => `${date.getMonth() + 1}.${date.getDate()}(${getKoreanDay(date)})`;
+    return dates.length === 1 ? `${formatDate(start)} ${content}` : `${formatDate(start)} ~ ${formatDate(end)} ${content}`;
   };
-  
 
   const groupSchedulesByContent = (schedules: ScheduleItem[]) => {
     const grouped: Record<string, ScheduleItem[]> = {};
@@ -100,38 +85,29 @@ export default function BudgetHomePage() {
         ...(doc.data() as Omit<ScheduleItem, "id">),
       }));
 
-      const today = toKoreaDate(new Date());
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
       const currentYear = today.getFullYear();
       const currentMonth = today.getMonth() + 1;
 
-      // 이번 달의 모든 날짜에 대해 자동 기념일 생성
+      // 1년치 기념일 생성 (주간 일정이 달을 넘어가는 경우 대비)
       const autoAnniversaries: ScheduleItem[] = [];
-      const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+      for (let month = 1; day <= 12; month++) {} // 아래에서 최적화된 방식으로 수정
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const d = String(day).padStart(2, '0');
-        const m = String(currentMonth).padStart(2, '0');
-        const dateStr = `${currentYear}-${m}-${d}`;
-        const mmDd = `${m}-${d}`;
-
-        // 양력 추가
-        if (SOLAR_ANNIVERSARIES[mmDd]) {
-          autoAnniversaries.push({
-            id: `solar-${dateStr}`,
-            date: dateStr,
-            content: SOLAR_ANNIVERSARIES[mmDd]
-          });
-        }
-
-        // 음력 추가
-        if (LUNAR_ANNIVERSARIES[dateStr]) {
-          LUNAR_ANNIVERSARIES[dateStr].forEach((content, i) => {
-            autoAnniversaries.push({
-              id: `lunar-${dateStr}-${i}`,
-              date: dateStr,
-              content: content
+      // 현재 연도의 모든 날짜에 대해 체크
+      for (let m = 1; m <= 12; m++) {
+        const daysInM = new Date(currentYear, m, 0).getDate();
+        for (let d = 1; d <= daysInM; d++) {
+          const dateStr = `${currentYear}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const mmDd = `${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          if (SOLAR_ANNIVERSARIES[mmDd]) {
+            autoAnniversaries.push({ id: `solar-${dateStr}`, date: dateStr, content: SOLAR_ANNIVERSARIES[mmDd] });
+          }
+          if (LUNAR_ANNIVERSARIES[dateStr]) {
+            LUNAR_ANNIVERSARIES[dateStr].forEach((content, i) => {
+              autoAnniversaries.push({ id: `lunar-${dateStr}-${i}`, date: dateStr, content });
             });
-          });
+          }
         }
       }
 
@@ -139,36 +115,30 @@ export default function BudgetHomePage() {
 
       const currentWeekStart = new Date(today);
       currentWeekStart.setDate(today.getDate() - today.getDay());
-      currentWeekStart.setHours(0, 0, 0, 0);
-
-      const currentWeekEnd = new Date(today);
-      currentWeekEnd.setDate(today.getDate() + (6 - today.getDay()));
+      const currentWeekEnd = new Date(currentWeekStart);
+      currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
       currentWeekEnd.setHours(23, 59, 59, 999);
 
-      const filteredMonth = all
-        .filter((item) => {
-          const [y, m] = item.date.split("-");
-          return Number(y) === currentYear && Number(m) === currentMonth;
-        })
-        .sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime());
+      const filteredMonth = all.filter((item) => {
+        const [y, m] = item.date.split("-");
+        return Number(y) === currentYear && Number(m) === currentMonth;
+      }).sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime());
 
-      const filteredWeek = all
-        .filter((item) => {
-          const date = toISODate(item.date);
-          return date >= currentWeekStart && date <= currentWeekEnd;
-        })
-        .sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime());
+      const filteredWeek = all.filter((item) => {
+        const date = toISODate(item.date);
+        return date >= currentWeekStart && date <= currentWeekEnd;
+      }).sort((a, b) => toISODate(a.date).getTime() - toISODate(b.date).getTime());
 
       setMonthlySchedules(filteredMonth);
       setWeeklySchedules(filteredWeek);
     });
-
     return () => unsubscribe();
   }, []);
 
   const getDaysSinceReference = (referenceDateStr: string) => {
     const referenceDate = new Date(referenceDateStr);
-    const today = toKoreaDate(new Date());
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const diffTime = today.getTime() - referenceDate.getTime();
     return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
@@ -177,48 +147,32 @@ export default function BudgetHomePage() {
     <AuthGuard>
       <div className="min-h-screen flex items-center justify-center bg-beigeDark px-4 transition-colors">
         <div className="bg-[#2f2a25] p-8 rounded-xl shadow-md w-full max-w-md text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">
-            {userId}님 로그인했습니다 🎉
-          </h2>
-
+          <h2 className="text-2xl font-bold text-white mb-2">{userId}님 로그인했습니다 🎉</h2>
           <div className="bg-[#3e352c] text-white p-4 rounded-md my-6 text-sm leading-relaxed shadow-inner text-left">
-            <p className="mb-2 font-bold text-lg border-b border-brownBorder pb-1">
-              서한이-{getDaysSinceReference("2025-01-13")}일째
-            </p>
-
+            <p className="mb-2 font-bold text-lg border-b border-brownBorder pb-1">서한이-{getDaysSinceReference("2025-01-13")}일째</p>
             {weeklySchedules.length > 0 && (
               <>
                 <p className="mt-4 font-semibold text-gray-400">이번주 일정</p>
                 <ul className="list-disc list-inside space-y-1">
                   {groupSchedulesByContent(weeklySchedules).map((group, idx) => {
                     const isSpecial = group[0].id.startsWith("lunar-") || group[0].id.startsWith("solar-");
-                    return (
-                      <li key={idx} className={`font-bold ${isSpecial ? "text-[#FFC90E]" : "text-white"}`}>
-                        {formatRangeContent(group)}
-                      </li>
-                    );
+                    return <li key={idx} className={`font-bold ${isSpecial ? "text-[#FFC90E]" : "text-white"}`}>{formatRangeContent(group)}</li>;
                   })}
                 </ul>
               </>
             )}
-
             {monthlySchedules.length > 0 && (
               <>
                 <p className="mt-4 font-semibold text-gray-400">이번달 일정</p>
                 <ul className="list-disc list-inside space-y-1">
                   {groupSchedulesByContent(monthlySchedules).map((group, idx) => {
                     const isSpecial = group[0].id.startsWith("lunar-") || group[0].id.startsWith("solar-");
-                    return (
-                      <li key={idx} className={isSpecial ? "text-[#FFC90E] font-bold" : "text-white"}>
-                        {formatRangeContent(group)}
-                      </li>
-                    );
+                    return <li key={idx} className={isSpecial ? "text-[#FFC90E] font-bold" : "text-white"}>{formatRangeContent(group)}</li>;
                   })}
                 </ul>
               </>
             )}
           </div>
-
           <div className="flex justify-center gap-6">
             <AppStyleButton icon="📅" label="일정" onClick={() => router.push("/schedule")} />
             <AppStyleButton icon="💰" label="계산기" onClick={() => router.push("/calcul")} />
