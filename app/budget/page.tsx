@@ -12,6 +12,34 @@ interface ScheduleItem {
   content: string;
 }
 
+// 매해 반복되는 양력 기념일
+const SOLAR_ANNIVERSARIES: Record<string, string> = {
+  "12-06": "🎂 재현생일",
+  "10-26": "🎂 용휘생일",
+  "01-13": "🎂 서한생일",
+  "07-06": "💍 결혼기념일",
+};
+
+// 음력 기념일 -> 양력 변환 데이터 (2025 ~ 2035)
+const LUNAR_ANNIVERSARIES: Record<string, string[]> = {
+  "2025-11-26": ["🎂 시부생신(음력 10.07)"], "2026-11-15": ["🎂 시부생신(음력 10.07)"], "2027-11-04": ["🎂 시부생신(음력 10.07)"],
+  "2028-11-22": ["🎂 시부생신(음력 10.07)"], "2029-11-12": ["🎂 시부생신(음력 10.07)"], "2030-11-02": ["🎂 시부생신(음력 10.07)"],
+  "2031-11-20": ["🎂 시부생신(음력 10.07)"], "2032-11-09": ["🎂 시부생신(음력 10.07)"], "2033-11-28": ["🎂 시부생신(음력 10.07)"],
+  "2034-11-17": ["🎂 시부생신(음력 10.07)"], "2035-11-06": ["🎂 시부생신(음력 10.07)"],
+  "2025-07-09": ["🎂 시모생신(음력 06.15)"], "2026-07-28": ["🎂 시모생신(음력 06.15)"], "2027-07-18": ["🎂 시모생신(음력 06.15)"],
+  "2028-08-05": ["🎂 시모생신(음력 06.15)"], "2029-07-26": ["🎂 시모생신(음력 06.15)"], "2030-07-15": ["🎂 시모생신(음력 06.15)"],
+  "2031-08-02": ["🎂 시모생신(음력 06.15)"], "2032-07-22": ["🎂 시모생신(음력 06.15)"], "2033-07-11": ["🎂 시모생신(음력 06.15)"],
+  "2034-07-30": ["🎂 시모생신(음력 06.15)"], "2035-07-19": ["🎂 시모생신(음력 06.15)"],
+  "2025-08-25": ["🎂 장모생신(음력 07.12)"], "2026-08-24": ["🎂 장모생신(음력 07.12)"], "2027-08-14": ["🎂 장모생신(음력 07.12)"],
+  "2028-08-31": ["🎂 장모생신(음력 07.12)"], "2029-08-21": ["🎂 장모생신(음력 07.12)"], "2030-08-10": ["🎂 장모생신(음력 07.12)"],
+  "2031-08-29": ["🎂 장모생신(음력 07.12)"], "2032-08-18": ["🎂 장모생신(음력 07.12)"], "2033-08-07": ["🎂 장모생신(음력 07.12)"],
+  "2034-08-26": ["🎂 장모생신(음력 07.12)"], "2035-08-15": ["🎂 장모생신(음력 07.12)"],
+  "2025-03-29": ["🎂 장인생신(음력 03.01)"], "2026-04-17": ["🎂 장인생신(음력 03.01)"], "2027-04-07": ["🎂 장인생신(음력 03.01)"],
+  "2028-03-26": ["🎂 장인생신(음력 03.01)"], "2029-04-14": ["🎂 장인생신(음력 03.01)"], "2030-04-03": ["🎂 장인생신(음력 03.01)"],
+  "2031-04-22": ["🎂 장인생신(음력 03.01)"], "2032-04-10": ["🎂 장인생신(음력 03.01)"], "2033-03-31": ["🎂 장인생신(음력 03.01)"],
+  "2034-04-19": ["🎂 장인생신(음력 03.01)"], "2035-04-08": ["🎂 장인생신(음력 03.01)"],
+};
+
 export default function BudgetHomePage() {
   const router = useRouter();
   const [userId, setUserId] = useState("");
@@ -67,7 +95,7 @@ export default function BudgetHomePage() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "schedules"), (snapshot) => {
-      const all = snapshot.docs.map((doc) => ({
+      const dbSchedules = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<ScheduleItem, "id">),
       }));
@@ -75,6 +103,39 @@ export default function BudgetHomePage() {
       const today = toKoreaDate(new Date());
       const currentYear = today.getFullYear();
       const currentMonth = today.getMonth() + 1;
+
+      // 이번 달의 모든 날짜에 대해 자동 기념일 생성
+      const autoAnniversaries: ScheduleItem[] = [];
+      const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const d = String(day).padStart(2, '0');
+        const m = String(currentMonth).padStart(2, '0');
+        const dateStr = `${currentYear}-${m}-${d}`;
+        const mmDd = `${m}-${d}`;
+
+        // 양력 추가
+        if (SOLAR_ANNIVERSARIES[mmDd]) {
+          autoAnniversaries.push({
+            id: `solar-${dateStr}`,
+            date: dateStr,
+            content: SOLAR_ANNIVERSARIES[mmDd]
+          });
+        }
+
+        // 음력 추가
+        if (LUNAR_ANNIVERSARIES[dateStr]) {
+          LUNAR_ANNIVERSARIES[dateStr].forEach((content, i) => {
+            autoAnniversaries.push({
+              id: `lunar-${dateStr}-${i}`,
+              date: dateStr,
+              content: content
+            });
+          });
+        }
+      }
+
+      const all = [...dbSchedules, ...autoAnniversaries];
 
       const currentWeekStart = new Date(today);
       currentWeekStart.setDate(today.getDate() - today.getDay());
@@ -127,24 +188,32 @@ export default function BudgetHomePage() {
 
             {weeklySchedules.length > 0 && (
               <>
-                <p className="mt-4 font-semibold">이번주 일정</p>
+                <p className="mt-4 font-semibold text-gray-400">이번주 일정</p>
                 <ul className="list-disc list-inside space-y-1">
-                  {groupSchedulesByContent(weeklySchedules).map((group, idx) => (
-                    <li key={idx} className="font-bold text-[#FFC90E]">
-                      {formatRangeContent(group)}
-                    </li>
-                  ))}
+                  {groupSchedulesByContent(weeklySchedules).map((group, idx) => {
+                    const isSpecial = group[0].id.startsWith("lunar-") || group[0].id.startsWith("solar-");
+                    return (
+                      <li key={idx} className={`font-bold ${isSpecial ? "text-[#FFC90E]" : "text-white"}`}>
+                        {formatRangeContent(group)}
+                      </li>
+                    );
+                  })}
                 </ul>
               </>
             )}
 
             {monthlySchedules.length > 0 && (
               <>
-                <p className="mt-4 font-semibold">이번달 일정</p>
+                <p className="mt-4 font-semibold text-gray-400">이번달 일정</p>
                 <ul className="list-disc list-inside space-y-1">
-                  {groupSchedulesByContent(monthlySchedules).map((group, idx) => (
-                    <li key={idx}>{formatRangeContent(group)}</li>
-                  ))}
+                  {groupSchedulesByContent(monthlySchedules).map((group, idx) => {
+                    const isSpecial = group[0].id.startsWith("lunar-") || group[0].id.startsWith("solar-");
+                    return (
+                      <li key={idx} className={isSpecial ? "text-[#FFC90E] font-bold" : "text-white"}>
+                        {formatRangeContent(group)}
+                      </li>
+                    );
+                  })}
                 </ul>
               </>
             )}
