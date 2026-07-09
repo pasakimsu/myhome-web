@@ -92,7 +92,6 @@ export default function BudgetHomePage() {
 
       // 1년치 기념일 생성 (주간 일정이 달을 넘어가는 경우 대비)
       const autoAnniversaries: ScheduleItem[] = [];
-      for (let month = 1; day <= 12; month++) {} // 아래에서 최적화된 방식으로 수정
 
       // 현재 연도의 모든 날짜에 대해 체크
       for (let m = 1; m <= 12; m++) {
