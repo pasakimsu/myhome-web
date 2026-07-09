@@ -128,6 +128,11 @@ const SearchDonations = forwardRef<SearchDonationsRef>((_, ref) => {
   const refreshSearch = async (isAll = false) => {
     const term = searchName.trim();
     if (!isAll && !term) return;
+
+    // ✅ 새로운 검색 시 기존의 추가/수정 창을 닫음
+    setAddingType(null);
+    setEditingId(null);
+
     setLoading(true);
     setHasSearched(true);
     try {
